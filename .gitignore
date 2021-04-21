@@ -1,0 +1,55 @@
+# Qtcreator files
+*.creator
+*.creator.*
+*.files
+*.includes
+*.config
+
+# Temporary files
+*.autosave
+*~
+
+# Binaries
+*.o
+*a.out
+*.a
+*.so
+
+# Visual Studio files
+.vs
+Debug
+x64
+Release
+*.vcxproj.filters
+*.obj
+*.opensdf
+*.tlog
+*.dll
+*.pdb
+*.obj
+*.lastbuildstate
+*.exp
+*.iobj
+*.ipdb
+*.lib
+*.sdf
+
+
+# Random files
+*.tasks
+*.gcda
+todo
+*.aux
+*.dvi
+*.pdf
+*.log
+*.toc
+*.out
+*.pem
+build
+build-*
+.ycm_extra_conf.py
+.ycm_extra_conf.pyc
+conan_ycm_flags.json
+compile_commands.json
+conan_ycm_flags.json
