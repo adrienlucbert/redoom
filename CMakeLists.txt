@@ -86,10 +86,11 @@ if (USE_CLANG_TIDY)
 endif()
 
 add_executable(redoom
-  src/main.cpp
+  src/redoom/main.cpp
 )
 target_link_options(redoom PRIVATE -rdynamic)
 target_compile_options(redoom PRIVATE ${WARNING_FLAGS})
+target_include_directories(redoom PUBLIC src)
 set_property(TARGET redoom PROPERTY CXX_STANDARD 20)
 set_property(TARGET redoom PROPERTY CXX_STANDARD_REQUIRED ON)
 
