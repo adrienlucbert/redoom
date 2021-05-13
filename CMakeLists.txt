@@ -7,9 +7,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake-modules"
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib/)
 
 option(REDOOM_BUILD_TESTS "Build the tests" ON)
-option(REDOOM_BUILD_TOOLS "Build the tools" ON)
 
 add_subdirectory(deps)
+add_subdirectory(modules)
 
 # Warning flags
 set(GCC_WARNING_FLAGS
@@ -33,6 +33,8 @@ set(CLANG_WARNING_FLAGS
   -Wno-global-constructors
   -Wno-implicit-int-float-conversion
   -Wno-return-std-move
+  -Wno-c++20-compat
+  -Wno-signed-enum-bitfield
 )
 
 if (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 13.0.0)
@@ -85,12 +87,23 @@ if (USE_CLANG_TIDY)
   endif()
 endif()
 
+add_library(redoom-core STATIC
+  src/ecs/ComponentBase.cpp
+)
+target_compile_options(redoom-core PRIVATE ${WARNING_FLAGS})
+target_include_directories(redoom-core PUBLIC include)
+set_property(TARGET redoom-core PROPERTY CXX_STANDARD 20)
+set_property(TARGET redoom-core PROPERTY CXX_STANDARD_REQUIRED ON)
+# target_link_libraries(redoom-core )
+
 add_executable(redoom
-  src/redoom/main.cpp
+  src/main.cpp
+)
+target_link_libraries(redoom
+  redoom-core
 )
 target_link_options(redoom PRIVATE -rdynamic)
 target_compile_options(redoom PRIVATE ${WARNING_FLAGS})
-target_include_directories(redoom PUBLIC src)
 set_property(TARGET redoom PROPERTY CXX_STANDARD 20)
 set_property(TARGET redoom PROPERTY CXX_STANDARD_REQUIRED ON)
 
