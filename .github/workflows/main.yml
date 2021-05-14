@@ -1,0 +1,30 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Compile, run tests and thread sanitizer
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: "Build with ThreadSanitizer"
+        run: |
+          mkdir build && cd build
+          cmake .. -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=tsan
+          make
+      - name: "Run tests"
+        run: ./build/bin/tests-redoom
+
+      - name: "Run thread-safety tests"
+        run: ./build/bin/tests-redoom "[Thread]"
