@@ -5,6 +5,8 @@ project("redoom" VERSION 0.1
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin/)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake-modules")
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib/)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 
 option(REDOOM_BUILD_TESTS "Build the tests" ON)
 
@@ -61,8 +63,13 @@ set(WARNING_FLAGS
   -Wno-ctad-maybe-unsupported
 )
 
+set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE}
+    CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel tsan"
+    FORCE)
 if (CMAKE_BUILD_TYPE MATCHES "Debug")
-  set(CXX_FLAGS ${CXX_FLAGS} -ggdb3)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb3")
+elseif (CMAKE_BUILD_TYPE MATCHES "tsan")
+  set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -fno-omit-frame-pointer -fsanitize=thread")
 endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -88,13 +95,13 @@ if (USE_CLANG_TIDY)
 endif()
 
 add_library(redoom-core STATIC
-  src/ecs/ComponentBase.cpp
+  src/main.cpp
 )
 target_compile_options(redoom-core PRIVATE ${WARNING_FLAGS})
 target_include_directories(redoom-core PUBLIC include)
 set_property(TARGET redoom-core PROPERTY CXX_STANDARD 20)
 set_property(TARGET redoom-core PROPERTY CXX_STANDARD_REQUIRED ON)
-# target_link_libraries(redoom-core )
+target_link_libraries(redoom-core PRIVATE Threads::Threads)
 
 add_executable(redoom
   src/main.cpp
