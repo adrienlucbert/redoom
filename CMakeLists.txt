@@ -96,7 +96,8 @@ if (USE_CLANG_TIDY)
 endif()
 
 add_library(redoom-core STATIC
-  src/main.cpp
+  src/ecs/ComponentBase.cpp
+  src/ecs/Entity.cpp
 )
 target_compile_options(redoom-core PRIVATE ${WARNING_FLAGS})
 target_include_directories(redoom-core PUBLIC include)
