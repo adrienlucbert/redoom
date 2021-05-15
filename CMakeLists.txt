@@ -98,6 +98,9 @@ endif()
 add_library(redoom-core STATIC
   src/ecs/ComponentBase.cpp
   src/ecs/Entity.cpp
+  src/ecs/EntityManager.cpp
+  src/memory/Allocator.cpp
+  src/memory/IAllocator.cpp
 )
 target_compile_options(redoom-core PRIVATE ${WARNING_FLAGS})
 target_include_directories(redoom-core PUBLIC include)

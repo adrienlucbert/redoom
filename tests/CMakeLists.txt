@@ -5,6 +5,7 @@ set(SRCS
   src/main.cpp
   src/tests_Component.cpp
   src/tests_Entity.cpp
+  src/tests_EntityManager.cpp
 )
 
 # Binary
