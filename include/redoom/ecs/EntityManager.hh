@@ -18,8 +18,8 @@ public:
   EntityManager& operator=(EntityManager const& rhs) noexcept = delete;
   EntityManager& operator=(EntityManager&& rhs) noexcept = delete;
 
-  [[nodiscard]] Entity& makeEntity() noexcept;
-  void releaseEntity(Entity& entity) noexcept;
+  [[nodiscard]] Entity& make() noexcept;
+  void release(Entity& entity) noexcept;
 
 private:
   mutable std::mutex mutex;

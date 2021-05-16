@@ -5,16 +5,17 @@
 
 namespace redoom::ecs
 {
-Entity& EntityManager::makeEntity() noexcept
+Entity& EntityManager::make() noexcept
 {
   auto* entity_p = static_cast<Entity*>(memory::Allocator<Entity>{}.get());
   this->mutex.lock();
-  this->entities.emplace(entity_p->getId(), entity_p);
+  auto const& entity_it =
+      this->entities.emplace(entity_p->getId(), entity_p).first;
   this->mutex.unlock();
-  return *this->entities.at(entity_p->getId());
+  return *entity_it->second;
 }
 
-void EntityManager::releaseEntity(Entity& entity) noexcept
+void EntityManager::release(Entity& entity) noexcept
 {
   auto entity_it = this->entities.find(entity.getId());
 

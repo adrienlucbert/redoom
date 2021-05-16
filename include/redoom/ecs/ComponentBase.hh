@@ -7,7 +7,7 @@ class ComponentBase
 public:
   ComponentBase(ComponentBase const& b) noexcept = delete;
   ComponentBase(ComponentBase&& b) noexcept = delete;
-  virtual ~ComponentBase() noexcept = default;
+  virtual ~ComponentBase() noexcept;
 
   ComponentBase& operator=(ComponentBase const& rhs) noexcept = delete;
   ComponentBase& operator=(ComponentBase&& rhs) noexcept = delete;

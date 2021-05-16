@@ -7,7 +7,7 @@ using redoom::ecs::Entity;
 
 TEST_CASE("[Entity] Basic tests", "[ECS][Entity]")
 {
-  SECTION("Different id for each Entity instance")
+  SECTION("Each entity instance has a unique id")
   {
     CHECK(Entity{}.getId() != Entity{}.getId());
   }
@@ -15,7 +15,7 @@ TEST_CASE("[Entity] Basic tests", "[ECS][Entity]")
 
 TEST_CASE("[Entity] Thread safety tests", "[.][Thread][ECS][Entity]")
 {
-  SECTION("Different id for each Entity instance")
+  SECTION("Entities can be created on different threads")
   {
     auto t1 = std::thread{[]() { (void)Entity{}.getId(); }};
     auto t2 = std::thread{[]() { (void)Entity{}.getId(); }};

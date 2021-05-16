@@ -3,7 +3,9 @@ cmake_minimum_required(VERSION 3.6)
 # Source files
 set(SRCS
   src/main.cpp
+  src/tests_Allocator.cpp
   src/tests_Component.cpp
+  src/tests_ComponentManager.cpp
   src/tests_Entity.cpp
   src/tests_EntityManager.cpp
 )
