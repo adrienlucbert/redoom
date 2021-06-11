@@ -99,6 +99,8 @@ add_library(redoom-core STATIC
   src/ecs/ComponentBase.cpp
   src/ecs/Entity.cpp
   src/ecs/EntityManager.cpp
+  src/ecs/System.cpp
+  src/ecs/SystemManager.cpp
   src/memory/AllocatorBase.cpp
 )
 target_compile_options(redoom-core PRIVATE ${WARNING_FLAGS})

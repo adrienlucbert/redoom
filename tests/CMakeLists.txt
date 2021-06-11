@@ -8,6 +8,7 @@ set(SRCS
   src/tests_ComponentManager.cpp
   src/tests_Entity.cpp
   src/tests_EntityManager.cpp
+  src/tests_SystemManager.cpp
 )
 
 # Binary
