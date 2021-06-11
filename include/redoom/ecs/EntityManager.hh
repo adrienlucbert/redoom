@@ -1,12 +1,15 @@
 #pragma once
 
-#include <redoom/ecs/Entity.hh>
-
 #include <mutex>
 #include <unordered_map>
 
+#include <redoom/ecs/Entity.hh>
+#include <redoom/memory/Allocator.hh>
+
 namespace redoom::ecs
 {
+using memory::Allocator;
+
 class EntityManager
 {
 public:
@@ -23,6 +26,7 @@ public:
 
 private:
   mutable std::mutex mutex;
-  std::unordered_map<unsigned int, Entity*> entities;
+  Allocator<Entity> allocator;
+  std::unordered_map<unsigned int, Allocator<Entity>::ptr_t> entities;
 };
 } // namespace redoom::ecs

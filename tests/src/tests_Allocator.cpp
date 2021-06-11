@@ -1,4 +1,3 @@
-#include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 #include <thread>
@@ -13,39 +12,37 @@ TEST_CASE("[Allocator] Basic tests", "[Allocator]")
 
   SECTION("Allocated objects are different")
   {
-    auto* i1_p = static_cast<int*>(int_allocator.get(1));
-    auto* i2_p = static_cast<int*>(int_allocator.get(2));
-    REQUIRE(i1_p != i2_p);
-    CHECK(*i1_p == 1);
-    CHECK(*i2_p == 2);
-    int_allocator.release(i1_p);
-    int_allocator.release(i2_p);
+    auto i1 = int_allocator.get(1);
+    auto i2 = int_allocator.get(2);
+    REQUIRE(i1 != i2);
+    CHECK(*i1 == 1);
+    CHECK(*i2 == 2);
   }
 }
 
-// TODO(alucbert) uncomment these tests once the Allocator is an Object Pool
+// TODO(alucbert): uncomment these tests once the Allocator is an Object Pool
 // TEST_CASE("[Allocator] Object pool implementation tests", "[Allocator]")
 // {
-//   auto int_allocator = Allocator<int>{};
+//   auto& int_allocator = Allocator<int>::getInstance();
 //
 //   SECTION("Reallocation reuses memory chunks")
 //   {
-//     auto* i1_p = static_cast<int*>(int_allocator.get(1));
-//     auto* i2_p = static_cast<int*>(int_allocator.get(2));
-//     int_allocator.release(i1_p);
-//     auto* i3_p = static_cast<int*>(int_allocator.get(3));
-//     int_allocator.release(i2_p);
-//     int_allocator.release(i3_p);
-//     CHECK(i1_p == i3_p);
+//     int* i1_p = nullptr;
+//     {
+//       auto i1 = int_allocator.get(1);
+//       i1_p = i1.get();
+//       auto i2 = int_allocator.get(2);
+//     }
+//     auto i3 = int_allocator.get(3);
+//     CHECK(i1_p == i3.get());
 //   }
 //
 //   SECTION("Objects are contiguous")
 //   {
-//     auto* i1_p = int_allocator.get(1);
-//     auto* i2_p = int_allocator.get(2);
-//     auto* i3_p = int_allocator.get(3);
-//     CHECK(static_cast<char*>(i2_p) - static_cast<char*>(i1_p) ==
-//     sizeof(int));
+//     auto i1 = int_allocator.get(1);
+//     auto i2 = int_allocator.get(2);
+//     auto diff = i2.get() - i1.get();
+//     CHECK(diff == sizeof(int));
 //   }
 // }
 
@@ -55,14 +52,8 @@ TEST_CASE("[Allocator] Thread safety tests", "[.][Thread][Allocator]")
 
   SECTION("Objects can be allocated and released from different threads")
   {
-    auto t1 = std::thread([&]() {
-      auto* i1_p = static_cast<int*>(int_allocator.get(1));
-      int_allocator.release(i1_p);
-    });
-    auto t2 = std::thread([&]() {
-      auto* i2_p = static_cast<int*>(int_allocator.get(2));
-      int_allocator.release(i2_p);
-    });
+    auto t1 = std::thread([&]() { int_allocator.get(1); });
+    auto t2 = std::thread([&]() { int_allocator.get(2); });
     t1.join();
     t2.join();
   }

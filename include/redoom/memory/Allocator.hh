@@ -1,15 +1,18 @@
 #pragma once
 
-#include <utility>
+#include <functional>
+#include <memory>
 
-#include <redoom/memory/IAllocator.hh>
+#include <redoom/memory/AllocatorBase.hh>
 
 namespace redoom::memory
 {
 template <typename T>
-class Allocator : public IAllocator
+class Allocator : public AllocatorBase
 {
 public:
+  using ptr_t = std::unique_ptr<T, std::function<void(void*)>>;
+
   Allocator() noexcept = default;
   Allocator(Allocator const& b) noexcept = delete;
   Allocator(Allocator&& b) noexcept = delete;
@@ -18,26 +21,17 @@ public:
   Allocator& operator=(Allocator const& rhs) noexcept = delete;
   Allocator& operator=(Allocator&& rhs) noexcept = delete;
 
-  void* get() noexcept override
-  {
-    return this->make_object();
-  }
   template <typename... Args>
-  void* get(Args&&... args) noexcept
+  ptr_t get(Args&&... args) noexcept
   {
-    return this->make_object(std::forward<Args>(args)...);
-  }
-
-  void release(void* object) noexcept override
-  {
-    delete static_cast<T*>(object); // NOLINT(cppcoreguidelines-owning-memory)
+    return ptr_t{new T(std::forward<Args>(args)...),
+        [this](void* ptr) { this->release(static_cast<T*>(ptr)); }};
   }
 
 private:
-  template <typename... Args>
-  void* make_object(Args&&... args) noexcept
+  void release(T* object) noexcept
   {
-    return static_cast<void*>(new T(std::forward<Args>(args)...));
+    delete static_cast<T*>(object); // NOLINT(cppcoreguidelines-owning-memory)
   }
 };
 } // namespace redoom::memory
