@@ -1,0 +1,28 @@
+Submodule deps/fmt contains modified content
+diff --git a/deps/fmt/CMakeLists.txt b/deps/fmt/CMakeLists.txt
+index f21cf456..f8fe4a4b 100644
+--- a/deps/fmt/CMakeLists.txt
++++ b/deps/fmt/CMakeLists.txt
+@@ -214,7 +214,7 @@ endif ()
+ 
+ target_compile_features(fmt INTERFACE ${FMT_REQUIRED_FEATURES})
+ 
+-target_include_directories(fmt PUBLIC
++target_include_directories(fmt SYSTEM PUBLIC
+   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+   $<INSTALL_INTERFACE:${FMT_INC_DIR}>)
+ 
+Submodule deps/spdlog contains modified content
+diff --git a/deps/spdlog/CMakeLists.txt b/deps/spdlog/CMakeLists.txt
+index b9694655..1d2dd8c9 100644
+--- a/deps/spdlog/CMakeLists.txt
++++ b/deps/spdlog/CMakeLists.txt
+@@ -150,7 +150,7 @@ endif()
+ add_library(spdlog::spdlog ALIAS spdlog)
+ 
+ target_compile_definitions(spdlog PUBLIC SPDLOG_COMPILED_LIB)
+-target_include_directories(spdlog PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
++target_include_directories(spdlog SYSTEM PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+                                          "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+ target_link_libraries(spdlog PUBLIC Threads::Threads)
+ spdlog_enable_warnings(spdlog)

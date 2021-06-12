@@ -17,7 +17,9 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-
+      - name: "Apply patches"
+        run: |
+          git apply .patches/system_includes.diff
       - name: "Build with ThreadSanitizer"
         run: |
           mkdir build && cd build

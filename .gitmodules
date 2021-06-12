@@ -1,3 +1,15 @@
 [submodule "deps/Catch2"]
 	path = deps/Catch2
-	url = https://github.com/catchorg/Catch2
+	url = git://github.com/catchorg/Catch2
+[submodule "deps/spdlog"]
+	path = deps/spdlog
+	url = git://github.com/gabime/spdlog
+[submodule "deps/fmt"]
+	path = deps/fmt
+	url = git://github.com/fmtlib/fmt
+[submodule "deps/tl_optional"]
+	path = deps/tl_optional
+	url = git://github.com/TartanLlama/optional
+[submodule "deps/tl_expected"]
+	path = deps/tl_expected
+	url = git://github.com/TartanLlama/expected

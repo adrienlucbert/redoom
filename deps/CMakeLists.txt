@@ -1,5 +1,9 @@
 cmake_policy(SET CMP0077 NEW)
 
+add_subdirectory(fmt)
+add_subdirectory(spdlog)
+add_subdirectory(tl)
+
 if (REDOOM_BUILD_TESTS)
   set(OLD_CMAKE_CXX_STANDARD ${CMAKE_CXX_STANDARD})
   set(CMAKE_CXX_STANDARD 17)
