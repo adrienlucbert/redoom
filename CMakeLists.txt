@@ -9,6 +9,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 option(REDOOM_BUILD_TESTS "Build the tests" ON)
+option(REDOOM_BUILD_BENCHMARKS "Build the benchmarks" ON)
 
 add_subdirectory(deps)
 add_subdirectory(modules)
@@ -116,4 +117,7 @@ set_property(TARGET redoom PROPERTY CXX_STANDARD_REQUIRED ON)
 
 if (REDOOM_BUILD_TESTS)
   add_subdirectory(tests)
+endif()
+if (REDOOM_BUILD_BENCHMARKS)
+  add_subdirectory(benchmarks)
 endif()

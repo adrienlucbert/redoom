@@ -13,3 +13,6 @@
 [submodule "deps/tl_expected"]
 	path = deps/tl_expected
 	url = git://github.com/TartanLlama/expected
+[submodule "deps/benchmark"]
+	path = deps/benchmark
+	url = git://github.com/google/benchmark
