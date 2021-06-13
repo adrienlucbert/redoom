@@ -8,12 +8,12 @@ template <typename T>
 class Component : public ComponentBase
 {
 public:
-  Component(Component const& b) noexcept = delete;
-  Component(Component&& b) noexcept = delete;
+  Component(Component const& b) noexcept = default;
+  Component(Component&& b) noexcept = default;
   ~Component() noexcept override = default;
 
-  Component& operator=(Component const& rhs) noexcept = delete;
-  Component& operator=(Component&& rhs) noexcept = delete;
+  Component& operator=(Component const& rhs) noexcept = default;
+  Component& operator=(Component&& rhs) noexcept = default;
 
   [[nodiscard]] static unsigned int getTypeId() noexcept
   {

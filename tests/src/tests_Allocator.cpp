@@ -1,5 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
+#include <cstddef>
+#include <cstdint>
 #include <thread>
 
 #include <redoom/memory/Allocator.hh>
@@ -21,30 +23,33 @@ TEST_CASE("[Allocator] Basic tests", "[Allocator]")
 }
 
 // TODO(alucbert): uncomment these tests once the Allocator is an Object Pool
-// TEST_CASE("[Allocator] Object pool implementation tests", "[Allocator]")
-// {
-//   auto& int_allocator = Allocator<int>::getInstance();
-//
-//   SECTION("Reallocation reuses memory chunks")
-//   {
-//     int* i1_p = nullptr;
-//     {
-//       auto i1 = int_allocator.get(1);
-//       i1_p = i1.get();
-//       auto i2 = int_allocator.get(2);
-//     }
-//     auto i3 = int_allocator.get(3);
-//     CHECK(i1_p == i3.get());
-//   }
-//
-//   SECTION("Objects are contiguous")
-//   {
-//     auto i1 = int_allocator.get(1);
-//     auto i2 = int_allocator.get(2);
-//     auto diff = i2.get() - i1.get();
-//     CHECK(diff == sizeof(int));
-//   }
-// }
+TEST_CASE("[Allocator] Object pool implementation tests", "[Allocator]")
+{
+  auto int_allocator = Allocator<int>{};
+
+  SECTION("Reallocation reuses memory chunks")
+  {
+    int* i1_p = nullptr;
+    {
+      auto i1 = int_allocator.get(1);
+      i1_p = i1.get();
+      auto i2 = int_allocator.get(2);
+    }
+    auto i3 = int_allocator.get(3);
+    CHECK(i1_p == i3.get());
+  }
+
+  SECTION("Objects are contiguous")
+  {
+    auto i1 = int_allocator.get(1);
+    auto i2 = int_allocator.get(2);
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    auto diff = reinterpret_cast<std::intptr_t>(i2.get())
+              // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+              - reinterpret_cast<std::intptr_t>(i1.get());
+    CHECK(diff == sizeof(int));
+  }
+}
 
 TEST_CASE("[Allocator] Thread safety tests", "[.][Thread][Allocator]")
 {

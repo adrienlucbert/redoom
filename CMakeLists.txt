@@ -38,6 +38,7 @@ set(CLANG_WARNING_FLAGS
   -Wno-return-std-move
   -Wno-c++20-compat
   -Wno-signed-enum-bitfield
+  -Wno-weak-vtables
 )
 
 if (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 13.0.0)

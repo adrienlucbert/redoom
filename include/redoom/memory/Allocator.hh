@@ -2,8 +2,11 @@
 
 #include <functional>
 #include <memory>
+#include <type_traits>
 
 #include <redoom/memory/AllocatorBase.hh>
+#include <redoom/memory/ObjectPool.hh>
+#include <redoom/memory/Ptr.hh>
 
 namespace redoom::memory
 {
@@ -11,7 +14,9 @@ template <typename T>
 class Allocator : public AllocatorBase
 {
 public:
-  using ptr_t = std::unique_ptr<T, std::function<void(void*)>>;
+  using ptr_t = Ptr<T, std::function<void(void*)>>;
+
+  friend ptr_t;
 
   Allocator() noexcept = default;
   Allocator(Allocator const& b) noexcept = delete;
@@ -24,14 +29,16 @@ public:
   template <typename... Args>
   ptr_t get(Args&&... args) noexcept
   {
-    return ptr_t{new T(std::forward<Args>(args)...),
-        [this](void* ptr) { this->release(static_cast<T*>(ptr)); }};
+    return ptr_t{this->pool.get(std::forward<Args>(args)...),
+        [this](void* ptr) { this->release(ptr); }};
   }
 
 private:
-  void release(T* object) noexcept
+  ObjectPool<T> pool;
+
+  void release(void* object) noexcept
   {
-    delete static_cast<T*>(object); // NOLINT(cppcoreguidelines-owning-memory)
+    this->pool.release(static_cast<T*>(object));
   }
 };
 } // namespace redoom::memory
