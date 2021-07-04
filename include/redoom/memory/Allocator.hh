@@ -20,11 +20,11 @@ public:
 
   Allocator() noexcept = default;
   Allocator(Allocator const& b) noexcept = delete;
-  Allocator(Allocator&& b) noexcept = delete;
+  Allocator(Allocator&& b) noexcept = default;
   ~Allocator() noexcept override = default;
 
   Allocator& operator=(Allocator const& rhs) noexcept = delete;
-  Allocator& operator=(Allocator&& rhs) noexcept = delete;
+  Allocator& operator=(Allocator&& rhs) noexcept = default;
 
   template <typename... Args>
   ptr_t get(Args&&... args) noexcept
