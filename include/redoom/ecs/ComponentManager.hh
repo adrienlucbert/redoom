@@ -37,11 +37,6 @@ public:
     return static_cast<T&>(*component_it->second);
   }
 
-  // TODO(alucbert): read about time complexity between map/unordered_map and
-  // find/find_if/operator[]
-  // choose accordingly the best option
-  // might be binary_search over map
-  // https://thispointer.com/map-vs-unordered_map-when-to-choose-one-over-another/#:~:text=Even%20in%20worst%20case%20it,keys%20are%20in%20same%20bucket).
   template <typename T>
   void release(T& component) noexcept
   {
@@ -55,6 +50,8 @@ public:
         });
     if (component_it != list.end())
       list.erase(component_it);
+    else
+      assert("Exactly one element should be released" == nullptr);
   }
 
 private:

@@ -17,11 +17,11 @@ Entity& EntityManager::make() noexcept
 
 void EntityManager::release(Entity& entity) noexcept
 {
-  auto entity_it = this->entities.find(entity.getId());
-
-  if (entity_it != this->entities.end()) {
-    auto lock = std::lock_guard{this->mutex};
+  auto const& entity_it = this->entities.find(entity.getId());
+  auto lock = std::lock_guard{this->mutex};
+  if (entity_it != this->entities.end())
     this->entities.erase(entity_it);
-  }
+  else
+    assert("Exactly one element should be released" == nullptr);
 }
 } // namespace redoom::ecs

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+#include <cassert>
 #include <memory>
 #include <mutex>
 #include <type_traits>
@@ -38,8 +40,11 @@ public:
         this->systems.begin(), this->systems.end(), [&](auto const& psystem) {
           return std::addressof(*psystem) == std::addressof(system);
         });
-    if (system_it != this->systems.end())
-      this->systems.erase(system_it);
+    if (system_it != this->systems.end()) {
+      std::iter_swap(system_it, this->systems.end() - 1);
+      this->systems.erase(this->systems.end() - 1);
+    } else
+      assert("Exactly one element should be released" == nullptr);
   }
   void update(long elapsed_time) noexcept;
 

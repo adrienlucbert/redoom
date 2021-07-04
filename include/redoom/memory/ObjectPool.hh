@@ -11,7 +11,7 @@
 
 namespace redoom::memory
 {
-template <typename T, std::size_t chunk_size = 32>
+template <typename T, std::size_t chunk_size = 512>
 class ObjectPool
 {
 private:
@@ -36,7 +36,7 @@ private:
 
     [[nodiscard]] bool isFull() const noexcept
     {
-      return this->available.size() == 0;
+      return this->available.empty();
     }
 
     template <typename... Args>
@@ -118,9 +118,9 @@ public:
   template <typename... Args>
   [[nodiscard]] T* get(Args&&... args)
   {
-    for (auto& chunk : this->chunks)
-      if (!chunk.isFull())
-        return chunk.get(std::forward<Args>(args)...);
+    for (auto it = this->chunks.rbegin(); it != this->chunks.rend(); ++it)
+      if (!it->isFull())
+        return it->get(std::forward<Args>(args)...);
     this->grow();
     return this->chunks.back().get(std::forward<Args>(args)...);
   }
