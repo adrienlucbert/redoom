@@ -25,8 +25,8 @@ TEST_CASE("[ComponentManager] Basic tests", "[ECS][Component]")
     auto& component1 = component_manager.make<DummyComponent1>(0);
     auto& component2 = component_manager.make<DummyComponent2>(0);
     CHECK(component1.getTypeId() != component2.getTypeId());
-    component_manager.release<DummyComponent1>(component1);
-    component_manager.release<DummyComponent2>(component2);
+    component_manager.release<DummyComponent1>(0);
+    component_manager.release<DummyComponent2>(0);
   }
 }
 
@@ -39,11 +39,11 @@ TEST_CASE("[ComponentManager] Thread safety tests",
   {
     auto t1 = std::thread([&]() {
       auto& component = component_manager.make<DummyComponent1>(0);
-      component_manager.release<DummyComponent1>(component);
+      component_manager.release<DummyComponent1>(0);
     });
     auto t2 = std::thread([&]() {
       auto& component = component_manager.make<DummyComponent2>(0);
-      component_manager.release<DummyComponent2>(component);
+      component_manager.release<DummyComponent2>(0);
     });
     t1.join();
     t2.join();

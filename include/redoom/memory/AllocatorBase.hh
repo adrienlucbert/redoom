@@ -7,7 +7,7 @@ class AllocatorBase
 public:
   AllocatorBase(AllocatorBase const& b) noexcept = delete;
   AllocatorBase(AllocatorBase&& b) noexcept = default;
-  virtual ~AllocatorBase() noexcept;
+  virtual ~AllocatorBase() noexcept = default;
 
   AllocatorBase& operator=(AllocatorBase const& rhs) noexcept = delete;
   AllocatorBase& operator=(AllocatorBase&& rhs) noexcept = default;

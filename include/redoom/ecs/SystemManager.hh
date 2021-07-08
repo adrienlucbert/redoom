@@ -5,9 +5,12 @@
 #include <memory>
 #include <mutex>
 #include <type_traits>
-#include <vector>
+#include <unordered_map>
 
+#include <Utils/UniqueTypeId.hh>
+#include <redoom/ecs/ComponentManager.hh>
 #include <redoom/ecs/System.hh>
+#include <redoom/ecs/SystemBase.hh>
 
 namespace redoom::ecs
 {
@@ -25,31 +28,29 @@ public:
   template <typename T, typename... Args>
   void make(Args&&... args) noexcept
   {
-    static_assert(std::is_base_of_v<System, T>, "T must inherit from System");
+    static_assert(
+        std::is_base_of_v<System<T>, T>, "T must inherit from System");
     auto lock = std::lock_guard{*this->mutex};
-    this->systems.emplace_back(
-        std::make_unique<T>(T{std::forward<Args>(args)...}));
+    this->systems.emplace(
+        T::getTypeId(), std::make_unique<T>(T{std::forward<Args>(args)...}));
   }
 
   template <typename T>
-  void release(T& system) noexcept
+  void release() noexcept
   {
-    static_assert(std::is_base_of_v<System, T>, "T must inherit from System");
+    static_assert(
+        std::is_base_of_v<System<T>, T>, "T must inherit from System");
     auto lock = std::lock_guard{*this->mutex};
-    auto const& system_it = std::find_if(
-        this->systems.begin(), this->systems.end(), [&](auto const& psystem) {
-          return std::addressof(*psystem) == std::addressof(system);
-        });
-    if (system_it != this->systems.end()) {
-      std::iter_swap(system_it, this->systems.end() - 1);
-      this->systems.erase(this->systems.end() - 1);
-    } else
+    auto const& system_it = this->systems.find(T::getTypeId());
+    if (system_it != this->systems.end())
+      this->systems.erase(system_it);
+    else
       assert("Exactly one element should be released" == nullptr);
   }
-  void update(long elapsed_time) noexcept;
+  void update(long elapsed_time, ComponentManager& component_manager) noexcept;
 
 private:
   mutable std::unique_ptr<std::mutex> mutex{std::make_unique<std::mutex>()};
-  std::vector<std::unique_ptr<System>> systems;
+  std::unordered_map<Utils::type_id, std::unique_ptr<SystemBase>> systems;
 };
 } // namespace redoom::ecs

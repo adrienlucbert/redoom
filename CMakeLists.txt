@@ -97,19 +97,19 @@ if (USE_CLANG_TIDY)
 endif()
 
 add_library(redoom-core STATIC
-  src/ecs/ComponentBase.cpp
   src/ecs/Entity.cpp
   src/ecs/EntityManager.cpp
-  src/ecs/System.cpp
+  src/ecs/Registry.cpp
+  src/ecs/SystemBase.cpp
   src/ecs/SystemManager.cpp
-  src/memory/AllocatorBase.cpp
 )
 target_compile_options(redoom-core PRIVATE ${WARNING_FLAGS})
 target_include_directories(redoom-core PUBLIC include)
 set_property(TARGET redoom-core PROPERTY CXX_STANDARD 20)
 set_property(TARGET redoom-core PROPERTY CXX_STANDARD_REQUIRED ON)
-target_link_libraries(redoom-core PRIVATE
+target_link_libraries(redoom-core
   Threads::Threads
+  redoom-utils
 )
 
 add_executable(redoom

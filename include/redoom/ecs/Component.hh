@@ -1,11 +1,12 @@
 #pragma once
 
+#include <Utils/UniqueTypeId.hh>
 #include <redoom/ecs/ComponentBase.hh>
 
 namespace redoom::ecs
 {
 template <typename T>
-class Component : public ComponentBase
+class Component : public ComponentBase, public Utils::UniqueTypeId<T>
 {
 public:
   Component(Component const& b) noexcept = default;
@@ -14,12 +15,6 @@ public:
 
   Component& operator=(Component const& rhs) noexcept = default;
   Component& operator=(Component&& rhs) noexcept = default;
-
-  [[nodiscard]] static unsigned int getTypeId() noexcept
-  {
-    static unsigned int id = ComponentBase::getNextTypeId();
-    return id;
-  }
 
 protected:
   Component() noexcept = default;

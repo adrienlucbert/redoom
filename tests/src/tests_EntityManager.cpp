@@ -12,8 +12,8 @@ TEST_CASE("[EntityManager] Basic tests", "[ECS][Entity]")
 
   SECTION("Each entity instance has a unique id")
   {
-    auto entity1 = entity_manager.make();
-    auto entity2 = entity_manager.make();
+    auto& entity1 = entity_manager.make();
+    auto& entity2 = entity_manager.make();
     CHECK(entity1.getId() != entity2.getId());
   }
 }

@@ -26,7 +26,7 @@ public:
   ComponentManager& operator=(ComponentManager&& rhs) noexcept = default;
 
   template <typename T, typename... Args>
-  [[nodiscard]] T& make(unsigned int entity_id, Args&&... args) noexcept
+  T& make(unsigned int entity_id, Args&&... args) noexcept
   {
     auto& allocator = this->getAllocator<T>();
     auto& list = this->getComponentsList<T>();
@@ -38,20 +38,25 @@ public:
   }
 
   template <typename T>
-  void release(T& component) noexcept
+  void release(unsigned int entity_id) noexcept
   {
     static_assert(std::is_base_of_v<ComponentBase, T>,
         "T must inherit from ComponentBase");
     auto& list = this->getComponentsList<T>();
     auto lock = std::lock_guard{*this->mutex};
-    auto const& component_it =
-        std::find_if(list.begin(), list.end(), [&](auto const& pair) {
-          return std::addressof(*pair.second) == std::addressof(component);
-        });
+    auto const& component_it = list.find(entity_id);
     if (component_it != list.end())
       list.erase(component_it);
     else
       assert("Exactly one element should be released" == nullptr);
+  }
+
+  template <typename T, typename Callable>
+  void apply(Callable f) noexcept
+  {
+    auto& list = this->getComponentsList<T>();
+    for (auto& component : list)
+      f(static_cast<T&>(*component.second));
   }
 
 private:
