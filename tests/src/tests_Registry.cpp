@@ -1,16 +1,18 @@
 #include <catch2/catch_test_macros.hpp>
 
+#include <thread>
+
 #include <redoom/ecs/Component.hh>
 #include <redoom/ecs/ComponentManager.hh>
 #include <redoom/ecs/Registry.hh>
 #include <redoom/ecs/System.hh>
 
-#include <thread>
-
 using redoom::ecs::Component;
 using redoom::ecs::Registry;
 using redoom::ecs::System;
 
+namespace
+{
 class DummyComponent1 final : public Component<DummyComponent1>
 {
 };
@@ -19,9 +21,18 @@ class DummyComponent2 final : public Component<DummyComponent2>
 {
 };
 
-class DummySystem1 final : public System<DummySystem1>
+// This global variable is used to test DummySystem's execution
+auto test_value = 0L; // NOLINT
+
+class DummySystem : public System<DummySystem> // NOLINT
 {
+public:
+  void update(long elapsed_time) noexcept override
+  {
+    test_value = elapsed_time;
+  }
 };
+} // namespace
 
 TEST_CASE("[Registry] Basic tests", "[ECS][Registry]")
 {
@@ -37,45 +48,46 @@ TEST_CASE("[Registry] Basic tests", "[ECS][Registry]")
   SECTION("Entities can be released from a registry")
   {
     auto& entity = registry.makeEntity();
+    CHECK(registry.hasEntity(entity));
     registry.releaseEntity(entity);
-    // TODO(alucbert): add checks
   }
 
   SECTION("Components can be attached to entities")
   {
     auto& entity = registry.makeEntity();
     registry.attachComponent<DummyComponent1>(entity);
-    // TODO(alucbert): check if entity has component
+    CHECK(registry.hasComponent<DummyComponent1>(entity));
   }
 
   SECTION("Components can be detached from entities")
   {
     auto& entity = registry.makeEntity();
     registry.attachComponent<DummyComponent1>(entity);
-    // TODO(alucbert): check if entity has component
+    CHECK(registry.hasComponent<DummyComponent1>(entity));
     registry.detachComponent<DummyComponent1>(entity);
-    // TODO(alucbert): check if entity no longer has component
+    CHECK(!registry.hasComponent<DummyComponent1>(entity));
   }
 
   SECTION("Systems can be attached to a registry")
   {
-    registry.attachSystem<DummySystem1>();
-    // TODO(alucbert): check if system is attached
+    registry.attachSystem<DummySystem>();
+    CHECK(registry.hasSystem<DummySystem>());
   }
 
   SECTION("Systems can be detached from a registry")
   {
-    registry.attachSystem<DummySystem1>();
-    // TODO(alucbert): check if system is attached
-    registry.detachSystem<DummySystem1>();
-    // TODO(alucbert): check if system is no longer attached
+    registry.attachSystem<DummySystem>();
+    REQUIRE(registry.hasSystem<DummySystem>());
+    registry.detachSystem<DummySystem>();
+    CHECK(!registry.hasSystem<DummySystem>());
   }
 
   SECTION("Systems can be updated")
   {
-    registry.attachSystem<DummySystem1>();
-    registry.update(0);
-    // TODO(alucbert): add checks
+    registry.attachSystem<DummySystem>();
+    REQUIRE(test_value == 0);
+    registry.update(14);
+    REQUIRE(test_value == 14);
   }
 }
 
@@ -115,12 +127,12 @@ TEST_CASE("[Registry] Thread safety tests", "[.][Thread][ECS][Registry]")
   SECTION("Systems can be attached and detached from different threads")
   {
     auto t1 = std::thread([&]() {
-      registry.attachSystem<DummySystem1>();
-      registry.detachSystem<DummySystem1>();
+      registry.attachSystem<DummySystem>();
+      registry.detachSystem<DummySystem>();
     });
     auto t2 = std::thread([&]() {
-      registry.attachSystem<DummySystem1>();
-      registry.detachSystem<DummySystem1>();
+      registry.attachSystem<DummySystem>();
+      registry.detachSystem<DummySystem>();
     });
     t1.join();
     t2.join();

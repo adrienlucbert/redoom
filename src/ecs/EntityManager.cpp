@@ -24,4 +24,9 @@ void EntityManager::release(Entity& entity) noexcept
   else
     assert("Exactly one element should be released" == nullptr);
 }
+
+bool EntityManager::has(Entity const& entity) const noexcept
+{
+  return this->entities.contains(entity.getId());
+}
 } // namespace redoom::ecs

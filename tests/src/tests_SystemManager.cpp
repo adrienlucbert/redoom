@@ -10,6 +10,8 @@ using redoom::ecs::ComponentManager;
 using redoom::ecs::System;
 using redoom::ecs::SystemManager;
 
+namespace
+{
 class DummySystem1 final : public System<DummySystem1>
 {
 };
@@ -17,6 +19,7 @@ class DummySystem1 final : public System<DummySystem1>
 class DummySystem2 final : public System<DummySystem2>
 {
 };
+} // namespace
 
 TEST_CASE("[SystemManager] Basic tests", "[ECS][System]")
 {

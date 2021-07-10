@@ -22,7 +22,6 @@ TEST_CASE("[Allocator] Basic tests", "[Allocator]")
   }
 }
 
-// TODO(alucbert): uncomment these tests once the Allocator is an Object Pool
 TEST_CASE("[Allocator] Object pool implementation tests", "[Allocator]")
 {
   auto int_allocator = Allocator<int>{};

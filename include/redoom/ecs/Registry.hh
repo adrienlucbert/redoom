@@ -19,17 +19,7 @@ public:
 
   [[nodiscard]] Entity& makeEntity() noexcept;
   void releaseEntity(Entity& entity) noexcept;
-
-  template <typename T, typename... Args>
-  void attachSystem(Args&&... args) noexcept
-  {
-    this->system_manager.make<T>(std::forward<Args>(args)...);
-  }
-  template <typename T>
-  void detachSystem() noexcept
-  {
-    this->system_manager.release<T>();
-  }
+  [[nodiscard]] bool hasEntity(Entity const& entity) const noexcept;
 
   template <typename C, typename... Args>
   void attachComponent(Entity const& entity, Args&&... args) noexcept
@@ -41,6 +31,27 @@ public:
   void detachComponent(Entity const& entity) noexcept
   {
     this->component_manager.release<C>(entity.getId());
+  }
+  template <typename C>
+  [[nodiscard]] bool hasComponent(Entity const& entity) const noexcept
+  {
+    return this->component_manager.has<C>(entity.getId());
+  }
+
+  template <typename T, typename... Args>
+  void attachSystem(Args&&... args) noexcept
+  {
+    this->system_manager.make<T>(std::forward<Args>(args)...);
+  }
+  template <typename T>
+  void detachSystem() noexcept
+  {
+    this->system_manager.release<T>();
+  }
+  template <typename T>
+  [[nodiscard]] bool hasSystem() const noexcept
+  {
+    return this->system_manager.has<T>();
   }
 
   void update(long elapsed_time) noexcept;
