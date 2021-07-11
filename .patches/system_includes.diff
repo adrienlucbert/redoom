@@ -26,3 +26,37 @@ index b9694655..1d2dd8c9 100644
                                           "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
  target_link_libraries(spdlog PUBLIC Threads::Threads)
  spdlog_enable_warnings(spdlog)
+
+Submodule deps/glfw contains modified content
+diff --git a/deps/glfw/src/CMakeLists.txt b/deps/glfw/src/CMakeLists.txt
+index a409459b..417d2ed3 100644
+--- a/deps/glfw/src/CMakeLists.txt
++++ b/deps/glfw/src/CMakeLists.txt
+@@ -100,10 +100,10 @@ else()
+ endif()
+ 
+ target_compile_definitions(glfw PRIVATE _GLFW_USE_CONFIG_H)
+-target_include_directories(glfw PUBLIC
++target_include_directories(glfw SYSTEM PUBLIC
+                            "$<BUILD_INTERFACE:${GLFW_SOURCE_DIR}/include>"
+                            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+-target_include_directories(glfw PRIVATE
++target_include_directories(glfw SYSTEM PRIVATE
+                            "${GLFW_SOURCE_DIR}/src"
+                            "${GLFW_BINARY_DIR}/src"
+                            ${glfw_INCLUDE_DIRS})
+
+Submodule deps/glew contains modified content
+diff --git a/deps/glew/CMakeLists.txt b/deps/glew/CMakeLists.txt
+index 5bfdcb2..9932675 100644
+--- a/deps/glew/CMakeLists.txt
++++ b/deps/glew/CMakeLists.txt
+@@ -120,7 +120,7 @@ endif()
+ 
+ foreach(GLEW_TARGET ${GLEW_TARGETS})
+ 	target_compile_definitions(${GLEW_TARGET} PUBLIC ${DEFINITIONS})
+-	target_include_directories(${GLEW_TARGET} PUBLIC ${INCLUDE_DIR})
++  target_include_directories(${GLEW_TARGET} SYSTEM PUBLIC ${INCLUDE_DIR})
+ 	target_link_libraries(${GLEW_TARGET} ${LIBRARIES})
+ 	set_target_properties(${GLEW_TARGET} PROPERTIES VERSION ${GLEW_VERSION})
+ endforeach()

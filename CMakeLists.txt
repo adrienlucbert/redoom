@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
+project(redoom)
 
-project("redoom" VERSION 0.1
-                 LANGUAGES CXX)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin/)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake-modules")
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib/)
@@ -117,6 +116,9 @@ add_executable(redoom
 )
 target_link_libraries(redoom
   redoom-core
+  glfw
+  glew
+  glm
 )
 target_link_options(redoom PRIVATE -rdynamic)
 target_compile_options(redoom PRIVATE ${WARNING_FLAGS})

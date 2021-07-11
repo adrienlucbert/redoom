@@ -16,3 +16,12 @@
 [submodule "deps/benchmark"]
 	path = deps/benchmark
 	url = git://github.com/google/benchmark
+[submodule "deps/glfw"]
+	path = deps/glfw
+	url = git://github.com/glfw/glfw
+[submodule "deps/glm"]
+	path = deps/glm
+	url = git://github.com/g-truc/glm
+[submodule "deps/glew"]
+	path = deps/glew
+	url = git://github.com/Perlmint/glew-cmake
