@@ -14,7 +14,8 @@ add_subdirectory(deps)
 add_subdirectory(modules)
 
 # Warning flags
-set(GCC_WARNING_FLAGS
+set(
+  GCC_WARNING_FLAGS
   -Wmisleading-indentation
   -Wduplicated-cond
   -Wduplicated-branches
@@ -23,7 +24,8 @@ set(GCC_WARNING_FLAGS
   -Wuseless-cast
 )
 
-set(CLANG_WARNING_FLAGS
+set(
+  CLANG_WARNING_FLAGS
   -Weverything
   -Wno-c++98-c++11-compat-binary-literal
   -Wno-c++98-compat
@@ -40,11 +42,12 @@ set(CLANG_WARNING_FLAGS
   -Wno-weak-vtables
 )
 
-if (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 13.0.0)
+if(${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 13.0.0)
   set(CLANG_WARNING_FLAGS ${CLANG_WARNING_FLAGS} -Wno-return-std-move-in-c++11)
 endif()
 
-set(WARNING_FLAGS
+set(
+  WARNING_FLAGS
   -Wall
   -Wextra
   -Wshadow
@@ -64,18 +67,20 @@ set(WARNING_FLAGS
   -Wno-ctad-maybe-unsupported
 )
 
-set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE}
-    CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel tsan"
-    FORCE)
-if (CMAKE_BUILD_TYPE MATCHES "Debug")
+set(
+  CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE}
+  CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel tsan"
+  FORCE
+)
+if(CMAKE_BUILD_TYPE MATCHES "Debug")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb3")
-elseif (CMAKE_BUILD_TYPE MATCHES "tsan")
+elseif(CMAKE_BUILD_TYPE MATCHES "tsan")
   set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -fno-omit-frame-pointer -fsanitize=thread")
 endif()
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(WARNING_FLAGS ${WARNING_FLAGS} ${CLANG_WARNING_FLAGS})
-elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(WARNING_FLAGS ${WARNING_FLAGS} ${GCC_WARNING_FLAGS})
 else()
   error("${CMAKE_CXX_COMPILER_ID}: Unsupported compiler.")
@@ -85,7 +90,7 @@ set(WARNING_FLAGS ${WARNING_FLAGS} ${REDOOM_WARNING_FLAGS})
 message("Warning flags: ${WARNING_FLAGS}")
 
 # Clang-tidy
-if (USE_CLANG_TIDY)
+if(USE_CLANG_TIDY)
   find_program(CLANG_TIDY_EXE NAMES "clang-tidy" DOC "Path to clang-tidy executable")
   if(CLANG_TIDY_EXE)
     set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")
@@ -95,26 +100,34 @@ if (USE_CLANG_TIDY)
   endif()
 endif()
 
-add_library(redoom-core STATIC
+add_library(
+  redoom-core STATIC
   src/ecs/Entity.cpp
   src/ecs/EntityManager.cpp
   src/ecs/Registry.cpp
   src/ecs/SystemBase.cpp
   src/ecs/SystemManager.cpp
+  src/graphics/Program.cpp
+  src/graphics/Shader.cpp
+  src/graphics/VertexArray.cpp
 )
 target_compile_options(redoom-core PRIVATE ${WARNING_FLAGS})
 target_include_directories(redoom-core PUBLIC include)
 set_property(TARGET redoom-core PROPERTY CXX_STANDARD 20)
 set_property(TARGET redoom-core PROPERTY CXX_STANDARD_REQUIRED ON)
-target_link_libraries(redoom-core
+target_link_libraries(
+  redoom-core
   Threads::Threads
   redoom-utils
+  fmt
 )
 
-add_executable(redoom
+add_executable(
+  redoom
   src/main.cpp
 )
-target_link_libraries(redoom
+target_link_libraries(
+  redoom
   redoom-core
   glfw
   glew
@@ -125,9 +138,9 @@ target_compile_options(redoom PRIVATE ${WARNING_FLAGS})
 set_property(TARGET redoom PROPERTY CXX_STANDARD 20)
 set_property(TARGET redoom PROPERTY CXX_STANDARD_REQUIRED ON)
 
-if (REDOOM_BUILD_TESTS)
+if(REDOOM_BUILD_TESTS)
   add_subdirectory(tests)
 endif()
-if (REDOOM_BUILD_BENCHMARKS)
+if(REDOOM_BUILD_BENCHMARKS)
   add_subdirectory(benchmarks)
 endif()
