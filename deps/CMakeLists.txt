@@ -5,7 +5,7 @@ add_subdirectory(spdlog)
 add_subdirectory(tl)
 
 # Catch2
-if (REDOOM_BUILD_TESTS)
+if(REDOOM_BUILD_TESTS)
   set(OLD_CMAKE_CXX_STANDARD ${CMAKE_CXX_STANDARD})
   set(CMAKE_CXX_STANDARD 17)
   add_subdirectory(Catch2)
@@ -14,12 +14,15 @@ if (REDOOM_BUILD_TESTS)
 endif()
 
 # Google Benchmark
-if (REDOOM_BUILD_BENCHMARKS)
+if(REDOOM_BUILD_BENCHMARKS)
   set(BENCHMARK_ENABLE_TESTING OFF)
   set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
   set(BENCHMARK_ENABLE_INSTALL OFF)
   add_subdirectory(benchmark)
 endif()
+
+# stb
+add_subdirectory(stb)
 
 # glfw
 add_subdirectory(glfw EXCLUDE_FROM_ALL)
