@@ -120,6 +120,10 @@ target_link_libraries(
   Threads::Threads
   redoom-utils
   fmt
+  glfw
+  glew
+  glm
+  stb
 )
 
 add_executable(
@@ -129,9 +133,6 @@ add_executable(
 target_link_libraries(
   redoom
   redoom-core
-  glfw
-  glew
-  glm
 )
 target_link_options(redoom PRIVATE -rdynamic)
 target_compile_options(redoom PRIVATE ${WARNING_FLAGS})
