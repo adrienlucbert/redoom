@@ -5,21 +5,23 @@
 
 #include <GL/glew.h>
 
+#include <Utils/Expected.hh>
+
 namespace redoom::graphics
 {
 class Shader
 {
 public:
   Shader(Shader const& b) noexcept = delete;
-  Shader(Shader&& b) noexcept = default;
+  Shader(Shader&& b) noexcept;
   ~Shader() noexcept;
 
   Shader& operator=(Shader const& rhs) noexcept = delete;
-  Shader& operator=(Shader&& rhs) noexcept = default;
+  Shader& operator=(Shader&& rhs) noexcept;
 
-  [[nodiscard]] static Shader fromString(
+  [[nodiscard]] static Expected<Shader> fromString(
       std::string_view source, unsigned int shader_type);
-  [[nodiscard]] static Shader fromFile(
+  [[nodiscard]] static Expected<Shader> fromFile(
       std::filesystem::path const& path, unsigned int shader_type);
 
   [[nodiscard]] unsigned int getId() const noexcept;
@@ -31,22 +33,24 @@ private:
 };
 
 struct VertexShader : public Shader {
-  [[nodiscard]] static Shader fromString(std::string_view source)
+  [[nodiscard]] static Expected<Shader> fromString(std::string_view source)
   {
     return Shader::fromString(source, GL_VERTEX_SHADER);
   }
-  [[nodiscard]] static Shader fromFile(std::filesystem::path const& path)
+  [[nodiscard]] static Expected<Shader> fromFile(
+      std::filesystem::path const& path)
   {
     return Shader::fromFile(path, GL_VERTEX_SHADER);
   }
 };
 
 struct FragmentShader : public Shader {
-  [[nodiscard]] static Shader fromString(std::string_view source)
+  [[nodiscard]] static Expected<Shader> fromString(std::string_view source)
   {
     return Shader::fromString(source, GL_FRAGMENT_SHADER);
   }
-  [[nodiscard]] static Shader fromFile(std::filesystem::path const& path)
+  [[nodiscard]] static Expected<Shader> fromFile(
+      std::filesystem::path const& path)
   {
     return Shader::fromFile(path, GL_FRAGMENT_SHADER);
   }

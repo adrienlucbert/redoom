@@ -4,6 +4,7 @@
 #include <initializer_list>
 #include <string_view>
 
+#include <Utils/Expected.hh>
 #include <Utils/traits.hpp>
 #include <redoom/graphics/Shader.hh>
 
@@ -13,13 +14,13 @@ class Program
 {
 public:
   Program(Program const& b) noexcept = delete;
-  Program(Program&& b) noexcept = default;
+  Program(Program&& b) noexcept;
   ~Program() noexcept;
 
   Program& operator=(Program const& rhs) noexcept = delete;
-  Program& operator=(Program&& rhs) noexcept = default;
+  Program& operator=(Program&& rhs) noexcept;
 
-  [[nodiscard]] static Program create(
+  [[nodiscard]] static Expected<Program> create(
       Shader const& vertex_shader, Shader const& fragment_shader);
 
   [[nodiscard]] unsigned int getId() const noexcept;

@@ -1,9 +1,8 @@
 #pragma once
 
-#include <GL/glew.h>
-
 #include <array>
-#include <iostream>
+
+#include <GL/glew.h>
 
 namespace redoom::graphics
 {

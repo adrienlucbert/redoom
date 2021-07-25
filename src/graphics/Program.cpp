@@ -11,12 +11,26 @@ Program::Program(unsigned int pid) noexcept
 {
 }
 
-Program::~Program() noexcept
+Program::Program(Program&& b) noexcept
+  : id{b.id}
 {
-  glDeleteProgram(this->id);
+  b.id = 0;
 }
 
-Program Program::create(
+Program::~Program() noexcept
+{
+  if (this->id != 0)
+    glDeleteProgram(this->id);
+}
+
+Program& Program::operator=(Program&& rhs) noexcept
+{
+  if (this != &rhs)
+    std::swap(this->id, rhs.id);
+  return *this;
+}
+
+Expected<Program> Program::create(
     Shader const& vertex_shader, Shader const& fragment_shader)
 {
   auto id = glCreateProgram();
@@ -28,8 +42,7 @@ Program Program::create(
   glGetProgramiv(id, GL_LINK_STATUS, &success);
   if (success == 0) {
     glGetProgramInfoLog(id, 512, nullptr, infoLog);
-    throw std::invalid_argument{
-        fmt::format("Program linking failed: {}", infoLog)};
+    return make_formatted_unexpected("Program linking failed: {}", infoLog);
   }
   return Program{id};
 }

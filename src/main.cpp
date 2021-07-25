@@ -4,11 +4,14 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include <Utils/Expected.hh>
 #include <redoom/graphics/Buffer.hh>
 #include <redoom/graphics/Program.hh>
 #include <redoom/graphics/Shader.hh>
 #include <redoom/graphics/VertexArray.hh>
 
+using redoom::Expected;
+using redoom::make_formatted_unexpected;
 using redoom::graphics::BufferUsage;
 using redoom::graphics::FragmentShader;
 using redoom::graphics::IndexBuffer;
@@ -38,7 +41,7 @@ static void processInput(GLFWwindow* window)
     is_pressed = false;
 }
 
-int main()
+static Expected<int> expMain() noexcept
 {
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -49,9 +52,8 @@ int main()
   GLFWwindow* window =
       glfwCreateWindow(800, 600, "LearnOpenGL", nullptr, nullptr);
   if (window == nullptr) {
-    std::cout << "Failed to create GLFW window" << std::endl;
     glfwTerminate();
-    return -1;
+    return tl::make_unexpected("Failed to create GLFW window");
   }
   glfwMakeContextCurrent(window);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -59,11 +61,18 @@ int main()
   glewExperimental = GL_TRUE;
   GLenum err = glewInit();
   if (err != GLEW_OK)
-    fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+    return make_formatted_unexpected("{}", glewGetErrorString(err));
 
   // Link the shaders to a program
-  auto program = Program::create(VertexShader::fromFile("../glsl/vs.glslx"),
-      FragmentShader::fromFile("../glsl/fs.glslx"));
+  auto vertex_shader_exp = VertexShader::fromFile("../glsl/vs.glslx");
+  RETURN_IF_UNEXPECTED(vertex_shader_exp);
+  auto& vertex_shader = *vertex_shader_exp;
+  auto fragment_shader_exp = FragmentShader::fromFile("../glsl/fs.glslx");
+  RETURN_IF_UNEXPECTED(vertex_shader_exp);
+  auto& fragment_shader = *fragment_shader_exp;
+  auto program_exp = Program::create(vertex_shader, fragment_shader);
+  RETURN_IF_UNEXPECTED(program_exp);
+  auto& program = *program_exp;
 
   // clang-format off
   auto vertices = std::array{
@@ -114,4 +123,14 @@ int main()
   }
   glfwTerminate();
   return 0;
+}
+
+int main()
+{
+  auto exp = expMain();
+  if (!exp) {
+    std::cerr << exp.error() << '\n';
+    return 1;
+  } else
+    return *exp;
 }

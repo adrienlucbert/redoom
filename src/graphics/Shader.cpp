@@ -13,12 +13,27 @@ Shader::Shader(unsigned int pid) noexcept
 {
 }
 
-Shader::~Shader() noexcept
+Shader::Shader(Shader&& b) noexcept
+  : id{b.id}
 {
-  glDeleteShader(this->id);
+  b.id = 0;
 }
 
-Shader Shader::fromString(std::string_view source, unsigned int shader_type)
+Shader::~Shader() noexcept
+{
+  if (this->id != 0)
+    glDeleteShader(this->id);
+}
+
+Shader& Shader::operator=(Shader&& rhs) noexcept
+{
+  if (this != &rhs)
+    std::swap(this->id, rhs.id);
+  return *this;
+}
+
+Expected<Shader> Shader::fromString(
+    std::string_view source, unsigned int shader_type)
 {
   auto id = glCreateShader(shader_type);
   const auto* const source_data = source.data();
@@ -30,19 +45,17 @@ Shader Shader::fromString(std::string_view source, unsigned int shader_type)
   glGetShaderiv(id, GL_COMPILE_STATUS, &success);
   if (success == 0) {
     glGetShaderInfoLog(id, 512, nullptr, infoLog);
-    throw std::invalid_argument{
-        fmt::format("Shader compilation failed: {}", infoLog)};
+    return make_formatted_unexpected("Shader compilation failed: {}", infoLog);
   }
   return Shader{id};
 }
 
-Shader Shader::fromFile(
+Expected<Shader> Shader::fromFile(
     std::filesystem::path const& path, unsigned int shader_type)
 {
   auto ifs = std::ifstream{path};
   if (!ifs.is_open())
-    throw std::invalid_argument{
-        fmt::format("Could not open file: {}", path.c_str())};
+    return make_formatted_unexpected("Could not open file: {}", path.c_str());
   auto sstream = std::stringstream{};
   sstream << ifs.rdbuf();
   return Shader::fromString(sstream.str(), shader_type);
