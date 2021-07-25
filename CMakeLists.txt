@@ -109,6 +109,7 @@ add_library(
   src/ecs/SystemManager.cpp
   src/graphics/Program.cpp
   src/graphics/Shader.cpp
+  src/graphics/Texture.cpp
   src/graphics/VertexArray.cpp
 )
 target_compile_options(redoom-core PRIVATE ${WARNING_FLAGS})

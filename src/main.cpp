@@ -3,11 +3,13 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <stb/stb_image.h>
 
 #include <Utils/Expected.hh>
 #include <redoom/graphics/Buffer.hh>
 #include <redoom/graphics/Program.hh>
 #include <redoom/graphics/Shader.hh>
+#include <redoom/graphics/Texture.hh>
 #include <redoom/graphics/VertexArray.hh>
 
 using redoom::Expected;
@@ -16,6 +18,7 @@ using redoom::graphics::BufferUsage;
 using redoom::graphics::FragmentShader;
 using redoom::graphics::IndexBuffer;
 using redoom::graphics::Program;
+using redoom::graphics::Texture2D;
 using redoom::graphics::VertexArray;
 using redoom::graphics::VertexBuffer;
 using redoom::graphics::VertexShader;
@@ -75,17 +78,27 @@ static Expected<int> expMain() noexcept
   auto& program = *program_exp;
 
   // clang-format off
-  auto vertices = std::array{
-       0.5f,  0.5f, 0.0f,  // top right
-       0.5f, -0.5f, 0.0f,  // bottom right
-      -0.5f, -0.5f, 0.0f,  // bottom left
-      -0.5f,  0.5f, 0.0f   // top left
+  auto vertices= std::array{
+    // positions          // colors           // texture coords
+     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
   };
   auto indices = std::array{
-      0u, 1u, 3u,   // first triangle
-      1u, 2u, 3u    // second triangle
+    0u, 1u, 3u, // first triangle
+    1u, 2u, 3u  // second triangle
   };
   // clang-format on
+
+  // Create texture from file
+  stbi_set_flip_vertically_on_load(1);
+  auto tex1_exp = Texture2D::fromFile("../assets/wall.jpg");
+  RETURN_IF_UNEXPECTED(tex1_exp);
+  auto& tex1 = *tex1_exp;
+  auto tex2_exp = Texture2D::fromFile("../assets/awesomeface.png");
+  RETURN_IF_UNEXPECTED(tex2_exp);
+  auto& tex2 = *tex2_exp;
 
   // Create the element buffer object
   auto ebo = IndexBuffer{indices, BufferUsage::STATIC};
@@ -97,12 +110,29 @@ static Expected<int> expMain() noexcept
   // Create the vertex buffer object
   auto vbo = VertexBuffer{vertices, BufferUsage::STATIC};
   vbo.bind();
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+  // position attribute
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
+  // color attribute
+  glVertexAttribPointer(
+      1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
+  // texture coord attribute
+  glVertexAttribPointer(2,
+      2,
+      GL_FLOAT,
+      GL_FALSE,
+      8 * sizeof(float),
+      (void*)(6 * sizeof(float))); // NOLINT
+  glEnableVertexAttribArray(2);
 
   // Unbind the vertex array object and vertex buffer object
   vbo.unbind();
   VertexArray::unbind();
+
+  program.use();
+  program.setUniform("texture1", 0);
+  program.setUniform("texture2", 1);
 
   while (glfwWindowShouldClose(window) == 0) {
     processInput(window);
@@ -110,10 +140,11 @@ static Expected<int> expMain() noexcept
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    tex1.setUnit(GL_TEXTURE0);
+    tex1.bind();
+    tex2.setUnit(GL_TEXTURE1);
+    tex2.bind();
     program.use();
-    auto value = (static_cast<float>(std::sin(glfwGetTime())) / 2.0f) + 0.5f;
-    program.setUniform("fillColor", 0.0f, 1.0f, value);
-
     vao.bind();
     ebo.bind();
     ebo.draw();

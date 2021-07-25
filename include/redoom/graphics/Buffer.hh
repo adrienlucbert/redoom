@@ -13,7 +13,8 @@ class Buffer
 {
 public:
   Buffer(unsigned int ptype, std::array<T, N> data, BufferUsage usage) noexcept
-    : type{ptype}
+    : id{}
+    , type{ptype}
   {
     glCreateBuffers(1, &this->id);
     this->bind();
@@ -22,14 +23,27 @@ public:
     this->unbind();
   }
   Buffer(Buffer const& b) noexcept = delete;
-  Buffer(Buffer&& b) noexcept = default;
+  Buffer(Buffer&& b) noexcept
+    : id{b.id}
+    , type{b.type}
+  {
+    b.id = 0;
+  }
   ~Buffer() noexcept
   {
-    glDeleteBuffers(1, &this->id);
+    if (this->id != 0)
+      glDeleteBuffers(1, &this->id);
   }
 
   Buffer& operator=(Buffer const& rhs) noexcept = delete;
-  Buffer& operator=(Buffer&& rhs) noexcept = default;
+  Buffer& operator=(Buffer&& rhs) noexcept
+  {
+    if (this != &rhs) {
+      std::swap(this->id, rhs.id);
+      this->type = rhs.type;
+    }
+    return *this;
+  }
 
   [[nodiscard]] unsigned int getId() const noexcept
   {
@@ -46,7 +60,7 @@ public:
   }
 
 private:
-  unsigned int id{};
+  unsigned int id;
   unsigned int type;
 };
 
