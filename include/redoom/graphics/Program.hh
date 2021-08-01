@@ -105,6 +105,130 @@ public:
           arg1,
           std::forward<Ts>(args)...);
   }
+  template <typename T>
+  void setUniform1v(
+      std::string_view name, GLsizei count, T const* value) const noexcept
+  {
+    if constexpr (std::is_same_v<GLfloat, T>)
+      glUniform1fv(glGetUniformLocation(this->id, name.data()), count, value);
+    else if constexpr (std::is_same_v<GLint, T>)
+      glUniform1iv(glGetUniformLocation(this->id, name.data()), count, value);
+    else if constexpr (std::is_same_v<GLuint, T>)
+      glUniform1uiv(glGetUniformLocation(this->id, name.data()), count, value);
+    else
+      static_assert("Unsupported type T" != nullptr);
+  }
+  template <typename T>
+  void setUniform2v(
+      std::string_view name, GLsizei count, T const* value) const noexcept
+  {
+    if constexpr (std::is_same_v<GLfloat, T>)
+      glUniform2fv(glGetUniformLocation(this->id, name.data()), count, value);
+    else if constexpr (std::is_same_v<GLint, T>)
+      glUniform2iv(glGetUniformLocation(this->id, name.data()), count, value);
+    else if constexpr (std::is_same_v<GLuint, T>)
+      glUniform2uiv(glGetUniformLocation(this->id, name.data()), count, value);
+    else
+      static_assert("Unsupported type T" != nullptr);
+  }
+  template <typename T>
+  void setUniform3v(
+      std::string_view name, GLsizei count, T const* value) const noexcept
+  {
+    if constexpr (std::is_same_v<GLfloat, T>)
+      glUniform3fv(glGetUniformLocation(this->id, name.data()), count, value);
+    else if constexpr (std::is_same_v<GLint, T>)
+      glUniform3iv(glGetUniformLocation(this->id, name.data()), count, value);
+    else if constexpr (std::is_same_v<GLuint, T>)
+      glUniform3uiv(glGetUniformLocation(this->id, name.data()), count, value);
+    else
+      static_assert("Unsupported type T" != nullptr);
+  }
+  template <typename T>
+  void setUniform4v(
+      std::string_view name, GLsizei count, T const* value) const noexcept
+  {
+    if constexpr (std::is_same_v<GLfloat, T>)
+      glUniform4fv(glGetUniformLocation(this->id, name.data()), count, value);
+    else if constexpr (std::is_same_v<GLint, T>)
+      glUniform4iv(glGetUniformLocation(this->id, name.data()), count, value);
+    else if constexpr (std::is_same_v<GLuint, T>)
+      glUniform4uiv(glGetUniformLocation(this->id, name.data()), count, value);
+    else
+      static_assert("Unsupported type T" != nullptr);
+  }
+  void setUniformMatrix2(std::string_view name,
+      GLsizei count,
+      GLboolean transpose,
+      float const* value) const noexcept
+  {
+    glUniformMatrix2fv(
+        glGetUniformLocation(this->id, name.data()), count, transpose, value);
+  }
+  void setUniformMatrix3(std::string_view name,
+      GLsizei count,
+      GLboolean transpose,
+      float const* value) const noexcept
+  {
+    glUniformMatrix3fv(
+        glGetUniformLocation(this->id, name.data()), count, transpose, value);
+  }
+  void setUniformMatrix4(std::string_view name,
+      GLsizei count,
+      GLboolean transpose,
+      float const* value) const noexcept
+  {
+    glUniformMatrix4fv(
+        glGetUniformLocation(this->id, name.data()), count, transpose, value);
+  }
+  void setUniformMatrix2x3(std::string_view name,
+      GLsizei count,
+      GLboolean transpose,
+      float const* value) const noexcept
+  {
+    glUniformMatrix2x3fv(
+        glGetUniformLocation(this->id, name.data()), count, transpose, value);
+  }
+  void setUniformMatrix3x2(std::string_view name,
+      GLsizei count,
+      GLboolean transpose,
+      float const* value) const noexcept
+  {
+    glUniformMatrix3x2fv(
+        glGetUniformLocation(this->id, name.data()), count, transpose, value);
+  }
+  void setUniformMatrix2x4(std::string_view name,
+      GLsizei count,
+      GLboolean transpose,
+      float const* value) const noexcept
+  {
+    glUniformMatrix2x4fv(
+        glGetUniformLocation(this->id, name.data()), count, transpose, value);
+  }
+  void setUniformMatrix4x2(std::string_view name,
+      GLsizei count,
+      GLboolean transpose,
+      float const* value) const noexcept
+  {
+    glUniformMatrix4x2fv(
+        glGetUniformLocation(this->id, name.data()), count, transpose, value);
+  }
+  void setUniformMatrix3x4(std::string_view name,
+      GLsizei count,
+      GLboolean transpose,
+      float const* value) const noexcept
+  {
+    glUniformMatrix3x4fv(
+        glGetUniformLocation(this->id, name.data()), count, transpose, value);
+  }
+  void setUniformMatrix4x3(std::string_view name,
+      GLsizei count,
+      GLboolean transpose,
+      float const* value) const noexcept
+  {
+    glUniformMatrix4x3fv(
+        glGetUniformLocation(this->id, name.data()), count, transpose, value);
+  }
 
   void use() const noexcept;
 
