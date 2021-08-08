@@ -12,9 +12,13 @@ template <typename T, std::size_t N>
 class Buffer
 {
 public:
-  Buffer(unsigned int ptype, std::array<T, N> data, BufferUsage usage) noexcept
+  Buffer(unsigned int ptype,
+      std::array<T, N> data,
+      unsigned int pcount,
+      BufferUsage usage) noexcept
     : id{}
     , type{ptype}
+    , count{pcount}
   {
     glCreateBuffers(1, &this->id);
     this->bind();
@@ -26,6 +30,7 @@ public:
   Buffer(Buffer&& b) noexcept
     : id{b.id}
     , type{b.type}
+    , count{b.count}
   {
     b.id = 0;
   }
@@ -41,6 +46,7 @@ public:
     if (this != &rhs) {
       std::swap(this->id, rhs.id);
       this->type = rhs.type;
+      this->count = rhs.count;
     }
     return *this;
   }
@@ -59,15 +65,16 @@ public:
     glBindBuffer(this->type, 0);
   }
 
-private:
+protected:
   unsigned int id;
   unsigned int type;
+  unsigned int count;
 };
 
 template <std::size_t N>
 struct IndexBuffer : public Buffer<GLuint, N> {
   IndexBuffer(std::array<GLuint, N> data, BufferUsage usage) noexcept
-    : Buffer<GLuint, N>{GL_ELEMENT_ARRAY_BUFFER, std::move(data), usage}
+    : Buffer<GLuint, N>{GL_ELEMENT_ARRAY_BUFFER, std::move(data), N, usage}
   {
   }
 
@@ -79,14 +86,16 @@ struct IndexBuffer : public Buffer<GLuint, N> {
 
 template <std::size_t N>
 struct VertexBuffer : public Buffer<GLfloat, N> {
-  VertexBuffer(std::array<GLfloat, N> data, BufferUsage usage) noexcept
-    : Buffer<GLfloat, N>{GL_ARRAY_BUFFER, std::move(data), usage}
+  VertexBuffer(std::array<GLfloat, N> data,
+      unsigned int pcount,
+      BufferUsage usage) noexcept
+    : Buffer<GLfloat, N>{GL_ARRAY_BUFFER, std::move(data), pcount, usage}
   {
   }
 
   void draw() const noexcept
   {
-    glDrawArrays(GL_TRIANGLES, 0, N / 4);
+    glDrawArrays(GL_TRIANGLES, 0, this->count);
   }
 };
 } // namespace redoom::graphics
