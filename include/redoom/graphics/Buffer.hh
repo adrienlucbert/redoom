@@ -1,19 +1,20 @@
 #pragma once
 
-#include <array>
-
 #include <GL/glew.h>
+
+#include <Utils/Concepts.hpp>
+#include <redoom/graphics/Vertex.hh>
 
 namespace redoom::graphics
 {
 enum class BufferUsage { STATIC = GL_STATIC_DRAW, DYNAMIC = GL_DYNAMIC_DRAW };
 
-template <typename T, std::size_t N>
+template <typename T>
 class Buffer
 {
 public:
   Buffer(unsigned int ptype,
-      std::array<T, N> data,
+      T const* data,
       unsigned int pcount,
       BufferUsage usage) noexcept
     : id{}
@@ -23,7 +24,7 @@ public:
     glCreateBuffers(1, &this->id);
     this->bind();
     glBufferData(
-        this->type, sizeof(T) * N, data.data(), static_cast<GLenum>(usage));
+        this->type, sizeof(T) * this->count, data, static_cast<GLenum>(usage));
     this->unbind();
   }
   Buffer(Buffer const& b) noexcept = delete;
@@ -71,31 +72,52 @@ protected:
   unsigned int count;
 };
 
-template <std::size_t N>
-struct IndexBuffer : public Buffer<GLuint, N> {
-  IndexBuffer(std::array<GLuint, N> data, BufferUsage usage) noexcept
-    : Buffer<GLuint, N>{GL_ELEMENT_ARRAY_BUFFER, std::move(data), N, usage}
+template <concepts::ContiguousContainer<GLuint> Container>
+struct IndexBuffer : public Buffer<GLuint> {
+  IndexBuffer(Container const& data, BufferUsage usage) noexcept
+    : Buffer<GLuint>{GL_ELEMENT_ARRAY_BUFFER,
+        data.data(),
+        static_cast<unsigned int>(data.size()),
+        usage}
   {
   }
 
   void draw() const noexcept
   {
-    glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES,
+        static_cast<GLsizei>(this->count),
+        GL_UNSIGNED_INT,
+        nullptr);
   }
 };
 
-template <std::size_t N>
-struct VertexBuffer : public Buffer<GLfloat, N> {
-  VertexBuffer(std::array<GLfloat, N> data,
-      unsigned int pcount,
-      BufferUsage usage) noexcept
-    : Buffer<GLfloat, N>{GL_ARRAY_BUFFER, std::move(data), pcount, usage}
+template <concepts::ContiguousContainer<Vertex> Container>
+struct VertexBuffer : public Buffer<Vertex> {
+  VertexBuffer(Container const& data, BufferUsage usage) noexcept
+    : Buffer<Vertex>{GL_ARRAY_BUFFER,
+        data.data(),
+        static_cast<unsigned int>(data.size()),
+        usage}
   {
+  }
+
+  void linkAttrib(
+      GLuint layout, GLint size, GLenum vtype, GLsizei offset) const noexcept
+  {
+    this->bind();
+    glVertexAttribPointer(layout,
+        size,
+        vtype,
+        GL_FALSE,
+        sizeof(Vertex),
+        reinterpret_cast<void*>(offset)); // NOLINT
+    glEnableVertexAttribArray(layout);
+    this->unbind();
   }
 
   void draw() const noexcept
   {
-    glDrawArrays(GL_TRIANGLES, 0, this->count);
+    glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(this->count));
   }
 };
 } // namespace redoom::graphics

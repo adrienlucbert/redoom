@@ -1,16 +1,16 @@
 #include <redoom/graphics/Texture.hh>
 
+#include <iostream>
+
 #include <fmt/core.h>
 #include <stb/stb_image.h>
-
-#include <Utils/Expected.hh>
-#include <tl/expected.hpp>
 
 namespace redoom::graphics
 {
 Texture2D::Texture2D(
     unsigned int pid, int pwidth, int pheight, int pchannels) noexcept
   : id{pid}
+  , unit{0}
   , width{pwidth}
   , height{pheight}
   , channels{pchannels}
@@ -19,6 +19,7 @@ Texture2D::Texture2D(
 
 Texture2D::Texture2D(Texture2D&& b) noexcept
   : id{b.id}
+  , unit{0}
   , width{b.width}
   , height{b.height}
   , channels{b.channels}
@@ -59,6 +60,7 @@ Expected<Texture2D> Texture2D::fromFile(
   int width;    // NOLINT
   int height;   // NOLINT
   int channels; // NOLINT
+  stbi_set_flip_vertically_on_load(1);
   unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
   if (data == nullptr)
     return tl::make_unexpected("Failed to load texture");
@@ -84,6 +86,7 @@ Expected<Texture2D> Texture2D::fromFile(
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(data);
   }
+  glBindTexture(GL_TEXTURE_2D, 0);
   return Texture2D{id, width, height, channels};
 }
 
@@ -107,13 +110,18 @@ int Texture2D::getChannels() const noexcept
   return this->channels;
 }
 
-void Texture2D::setUnit(GLenum texture_unit) const noexcept // NOLINT
+void Texture2D::setUnit(
+    Program& program, std::string_view uniform, GLint punit) const noexcept
 {
-  glActiveTexture(texture_unit);
+  this->unit = punit;
+  program.use();
+  program.setUniform(uniform, this->unit);
+  glActiveTexture(GL_TEXTURE0 + this->unit);
 }
 
 void Texture2D::bind() const noexcept
 {
+  glActiveTexture(GL_TEXTURE0 + this->unit);
   glBindTexture(GL_TEXTURE_2D, this->id);
 }
 

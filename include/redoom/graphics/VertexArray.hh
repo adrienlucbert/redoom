@@ -2,6 +2,8 @@
 
 #include <GL/glew.h>
 
+#include <redoom/graphics/Buffer.hh>
+
 namespace redoom::graphics
 {
 class VertexArray
@@ -16,7 +18,7 @@ public:
   VertexArray& operator=(VertexArray&& rhs) noexcept;
 
   void bind() const noexcept;
-  static void unbind() noexcept;
+  void unbind() noexcept;
 
 private:
   unsigned int id;
