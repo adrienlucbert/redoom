@@ -1,8 +1,10 @@
 #pragma once
 
 #include <GL/glew.h>
+#include <fmt/core.h>
 
 #include <Utils/Concepts.hpp>
+#include <redoom/graphics/BufferLayout.hh>
 #include <redoom/graphics/Vertex.hh>
 
 namespace redoom::graphics
@@ -82,12 +84,10 @@ struct IndexBuffer : public Buffer<GLuint> {
   {
   }
 
-  void draw() const noexcept
+  void draw(GLenum topology = GL_TRIANGLES) const noexcept
   {
-    glDrawElements(GL_TRIANGLES,
-        static_cast<GLsizei>(this->count),
-        GL_UNSIGNED_INT,
-        nullptr);
+    glDrawElements(
+        topology, static_cast<GLsizei>(this->count), GL_UNSIGNED_INT, nullptr);
   }
 };
 
@@ -101,23 +101,28 @@ struct VertexBuffer : public Buffer<Vertex> {
   {
   }
 
-  void linkAttrib(
-      GLuint layout, GLint size, GLenum vtype, GLsizei offset) const noexcept
+  void setLayout(BufferLayout const& layout) const noexcept
   {
+    auto index = 0u;
+    auto offset = 0u;
     this->bind();
-    glVertexAttribPointer(layout,
-        size,
-        vtype,
-        GL_FALSE,
-        sizeof(Vertex),
-        reinterpret_cast<void*>(offset)); // NOLINT
-    glEnableVertexAttribArray(layout);
+    for (auto const& element : layout) {
+      glVertexAttribPointer(index,
+          static_cast<GLint>(element.components_count),
+          element.gl_type,
+          element.normalized ? GL_TRUE : GL_FALSE,
+          static_cast<GLint>(layout.stride),
+          reinterpret_cast<void*>(offset)); // NOLINT
+      glEnableVertexAttribArray(index);
+      offset += element.size;
+      ++index;
+    }
     this->unbind();
   }
 
-  void draw() const noexcept
+  void draw(GLenum topology = GL_TRIANGLES) const noexcept
   {
-    glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(this->count));
+    glDrawArrays(topology, 0, static_cast<GLsizei>(this->count));
   }
 };
 } // namespace redoom::graphics

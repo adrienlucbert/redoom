@@ -21,10 +21,12 @@ class Mesh
 public:
   Mesh(VerticesContainer pvertices,
       IndicesContainer pindices,
-      TexturesContainer ptextures) noexcept
+      TexturesContainer ptextures,
+      GLenum ptopology = GL_TRIANGLES) noexcept
     : vertices{std::move(pvertices)}
     , indices{std::move(pindices)}
     , textures{std::move(ptextures)}
+    , topology{ptopology}
     , vao{}
     , vbo{this->vertices, BufferUsage::STATIC}
     , ebo{this->indices, BufferUsage::STATIC}
@@ -32,17 +34,17 @@ public:
     this->vao.bind();
     this->vbo.bind();
     this->ebo.bind();
-    this->vbo.linkAttrib(0, 3, GL_FLOAT, 0);
-    this->vbo.linkAttrib(1, 3, GL_FLOAT, 3 * sizeof(float));
-    this->vbo.linkAttrib(2, 3, GL_FLOAT, 6 * sizeof(float));
-    this->vbo.linkAttrib(3, 2, GL_FLOAT, 9 * sizeof(float));
+    this->vbo.setLayout({{ShaderDataType::Float3, "aPos"},
+        {ShaderDataType::Float3, "aNormal"},
+        {ShaderDataType::Float3, "aColor"},
+        {ShaderDataType::Float2, "aTexCoord"}});
     this->vao.unbind();
     this->vbo.unbind();
     this->ebo.unbind();
   }
   Mesh(Mesh const& b) noexcept = delete;
   Mesh(Mesh&& b) noexcept = default;
-  ~Mesh() noexcept = default;
+  virtual ~Mesh() noexcept = default;
 
   Mesh& operator=(Mesh const& rhs) noexcept = delete;
   Mesh& operator=(Mesh&& rhs) noexcept = default;
@@ -61,15 +63,17 @@ public:
     }
 
     if (!this->indices.empty())
-      this->ebo.draw();
+      this->ebo.draw(this->topology);
     else
-      this->vbo.draw();
+      this->vbo.draw(this->topology);
   }
 
 private:
   VerticesContainer vertices;
   IndicesContainer indices;
   TexturesContainer textures;
+
+  GLenum topology;
   VertexArray vao;
   VertexBuffer<VerticesContainer> vbo;
   IndexBuffer<IndicesContainer> ebo;

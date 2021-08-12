@@ -1,4 +1,3 @@
-#include <cmath>
 #include <iostream>
 
 #include <GL/glew.h>
@@ -14,20 +13,16 @@
 #include <redoom/graphics/Texture.hh>
 #include <redoom/graphics/Vertex.hh>
 #include <redoom/graphics/VertexArray.hh>
+#include <redoom/graphics/mesh/Torus.hh>
 
 using redoom::Expected;
 using redoom::make_formatted_unexpected;
-using redoom::graphics::BufferUsage;
 using redoom::graphics::Camera;
 using redoom::graphics::FragmentShader;
-using redoom::graphics::IndexBuffer;
-using redoom::graphics::Mesh;
 using redoom::graphics::Program;
 using redoom::graphics::Texture2D;
-using redoom::graphics::Vertex;
-using redoom::graphics::VertexArray;
-using redoom::graphics::VertexBuffer;
 using redoom::graphics::VertexShader;
+using redoom::graphics::mesh::Torus;
 
 static auto camera = Camera{glm::vec3(0.0f, 0.0f, 3.0f)}; // NOLINT
 
@@ -158,53 +153,7 @@ static Expected<int> expMain() noexcept
   auto& program = *program_exp;
 
   // clang-format off
-  auto vertices = std::vector{
-    // positions                  // normals       // colors         // texture coords
-    Vertex{{-0.5f, -0.5f, -0.5f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {0.0f, 0.0f}},
-    Vertex{{0.5f, -0.5f, -0.5f},  {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {1.0f, 0.0f}},
-    Vertex{{0.5f,  0.5f, -0.5f},  {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {1.0f, 1.0f}},
-    Vertex{{0.5f,  0.5f, -0.5f},  {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {1.0f, 1.0f}},
-    Vertex{{-0.5f,  0.5f, -0.5f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {0.0f, 1.0f}},
-    Vertex{{-0.5f, -0.5f, -0.5f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {0.0f, 0.0f}},
-
-    Vertex{{-0.5f, -0.5f,  0.5f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {0.0f, 0.0f}},
-    Vertex{{0.5f, -0.5f,  0.5f},  {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {1.0f, 0.0f}},
-    Vertex{{0.5f,  0.5f,  0.5f},  {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {1.0f, 1.0f}},
-    Vertex{{0.5f,  0.5f,  0.5f},  {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {1.0f, 1.0f}},
-    Vertex{{-0.5f,  0.5f,  0.5f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {0.0f, 1.0f}},
-    Vertex{{-0.5f, -0.5f,  0.5f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {0.0f, 0.0f}},
-
-    Vertex{{-0.5f,  0.5f,  0.5f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {1.0f, 0.0f}},
-    Vertex{{-0.5f,  0.5f, -0.5f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {1.0f, 1.0f}},
-    Vertex{{-0.5f, -0.5f, -0.5f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {0.0f, 1.0f}},
-    Vertex{{-0.5f, -0.5f, -0.5f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {0.0f, 1.0f}},
-    Vertex{{-0.5f, -0.5f,  0.5f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {0.0f, 0.0f}},
-    Vertex{{-0.5f,  0.5f,  0.5f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {1.0f, 0.0f}},
-
-    Vertex{{0.5f,  0.5f,  0.5f},  {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {1.0f, 0.0f}},
-    Vertex{{0.5f,  0.5f, -0.5f},  {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {1.0f, 1.0f}},
-    Vertex{{0.5f, -0.5f, -0.5f},  {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {0.0f, 1.0f}},
-    Vertex{{0.5f, -0.5f, -0.5f},  {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {0.0f, 1.0f}},
-    Vertex{{0.5f, -0.5f,  0.5f},  {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {0.0f, 0.0f}},
-    Vertex{{0.5f,  0.5f,  0.5f},  {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {1.0f, 0.0f}},
-
-    Vertex{{-0.5f, -0.5f, -0.5f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {0.0f, 1.0f}},
-    Vertex{{0.5f, -0.5f, -0.5f},  {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {1.0f, 1.0f}},
-    Vertex{{0.5f, -0.5f,  0.5f},  {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {1.0f, 0.0f}},
-    Vertex{{0.5f, -0.5f,  0.5f},  {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {1.0f, 0.0f}},
-    Vertex{{-0.5f, -0.5f,  0.5f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {0.0f, 0.0f}},
-    Vertex{{-0.5f, -0.5f, -0.5f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {0.0f, 1.0f}},
-
-    Vertex{{-0.5f,  0.5f, -0.5f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {0.0f, 1.0f}},
-    Vertex{{0.5f,  0.5f, -0.5f},  {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {1.0f, 1.0f}},
-    Vertex{{0.5f,  0.5f,  0.5f},  {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {1.0f, 0.0f}},
-    Vertex{{0.5f,  0.5f,  0.5f},  {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {1.0f, 0.0f}},
-    Vertex{{-0.5f,  0.5f,  0.5f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {0.0f, 0.0f}},
-    Vertex{{-0.5f,  0.5f, -0.5f}, {0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}, {0.0f, 1.0f}}
-  };
-  auto indices = std::vector<GLuint>{};
-
-  auto cube_positions = std::array{
+  auto objects_data = std::array{
     glm::vec3( 0.0f,  0.0f,  0.0f),
     glm::vec3( 2.0f,  5.0f, -15.0f),
     glm::vec3(-1.5f, -2.2f, -2.5f),
@@ -219,18 +168,16 @@ static Expected<int> expMain() noexcept
   // clang-format on
 
   // Create texture from file
-  auto tex0_exp = Texture2D::fromFile("../assets/box.png");
-  RETURN_IF_UNEXPECTED(tex0_exp);
-  auto& tex0 = *tex0_exp;
-  auto tex1_exp = Texture2D::fromFile("../assets/awesomeface.png");
-  RETURN_IF_UNEXPECTED(tex1_exp);
-  auto& tex1 = *tex1_exp;
-  auto textures = std::vector<Texture2D>{};
-  textures.push_back(std::move(tex0));
-  textures.push_back(std::move(tex1));
+  auto donut_tex_exp = Texture2D::fromFile("../assets/donut.jpg");
+  RETURN_IF_UNEXPECTED(donut_tex_exp);
+  auto& donut_tex = *donut_tex_exp;
 
-  auto cube_mesh =
-      Mesh{std::move(vertices), std::move(indices), std::move(textures)};
+  auto mesh = Torus{1.0f,
+      0.5f,
+      100,
+      100,
+      {1.0f, 1.0f, 1.0f},
+      std::array{std::move(donut_tex)}};
 
   // auto previous_time = glfwGetTime();
   while (glfwWindowShouldClose(window) == 0) {
@@ -252,15 +199,15 @@ static Expected<int> expMain() noexcept
     auto const view = camera.getView();
     program.setUniformMatrix4("view", 1, GL_FALSE, glm::value_ptr(view));
 
-    for (auto i = 0u; i < 10; ++i) {
-      auto const& pos = cube_positions[i];
+    for (auto i = 0u; i < objects_data.size(); ++i) {
+      auto const& pos = objects_data[i];
       auto model = glm::mat4(1.0f);
       model = glm::translate(model, pos);
       auto angle = 20.0f * static_cast<float>(i);
       model =
           glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
       program.setUniformMatrix4("model", 1, GL_FALSE, glm::value_ptr(model));
-      cube_mesh.draw(program);
+      mesh.draw(program);
     }
 
     glfwSwapBuffers(window);

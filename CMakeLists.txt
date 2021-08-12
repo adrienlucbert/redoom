@@ -107,6 +107,7 @@ add_library(
   src/ecs/Registry.cpp
   src/ecs/SystemBase.cpp
   src/ecs/SystemManager.cpp
+  src/graphics/BufferLayout.cpp
   src/graphics/Camera.cpp
   src/graphics/Program.cpp
   src/graphics/Shader.cpp
