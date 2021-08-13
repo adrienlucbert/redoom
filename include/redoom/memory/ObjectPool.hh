@@ -11,23 +11,25 @@
 
 namespace redoom::memory
 {
-template <typename T, std::size_t chunk_size = 512>
+template <typename T>
 class ObjectPool
 {
 private:
   class Chunk
   {
   public:
-    Chunk() noexcept
+    explicit Chunk(std::size_t size) noexcept
+      : chunk_size{size}
+      , buffer(sizeof(T) * size)
     {
-      for (unsigned int i = chunk_size; i > 0; --i)
+      for (auto i = this->chunk_size; i > 0; --i)
         this->available.push(i - 1);
     }
     Chunk(Chunk const& b) noexcept = default;
     Chunk(Chunk&& b) noexcept = default;
     ~Chunk() noexcept
     {
-      assert(this->available.size() == chunk_size
+      assert(this->available.size() == this->chunk_size
              && "Some objects were not released");
     }
 
@@ -61,13 +63,19 @@ private:
     [[nodiscard]] bool contains(T* ptr) const noexcept
     {
       // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-      auto region_start = reinterpret_cast<std::intptr_t>(&this->buffer);
-      std::intptr_t region_size = sizeof(T) * chunk_size;
+      auto region_start = reinterpret_cast<std::intptr_t>(this->buffer.data());
+      auto region_size =
+          static_cast<std::intptr_t>(sizeof(T) * this->chunk_size);
       std::intptr_t region_end = region_start + region_size;
       // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
       auto object_ptr = reinterpret_cast<std::intptr_t>(ptr);
       auto res = (region_start <= object_ptr && object_ptr < region_end);
       return res;
+    }
+
+    [[nodiscard]] std::size_t size() const noexcept
+    {
+      return this->chunk_size;
     }
 
   private:
@@ -89,20 +97,18 @@ private:
       // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
       auto iptr = reinterpret_cast<std::intptr_t>(ptr);
       // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-      auto optr = reinterpret_cast<std::intptr_t>(&this->buffer);
+      auto optr = reinterpret_cast<std::intptr_t>(this->buffer.data());
       auto index = static_cast<unsigned long>(iptr - optr) / sizeof(T);
       return index;
     }
 
-    std::array<std::byte, sizeof(T) * chunk_size> buffer;
+    std::size_t chunk_size;
+    std::vector<std::byte> buffer;
     std::stack<std::size_t> available;
   };
 
 public:
-  ObjectPool() noexcept
-    : chunks(1)
-  {
-  }
+  ObjectPool() noexcept = default;
   ObjectPool(ObjectPool const& b) noexcept = default;
   ObjectPool(ObjectPool&& b) noexcept = default;
   ~ObjectPool() noexcept = default;
@@ -110,9 +116,10 @@ public:
   ObjectPool& operator=(ObjectPool const& rhs) noexcept = default;
   ObjectPool& operator=(ObjectPool&& rhs) noexcept = default;
 
-  void grow() noexcept
+  Chunk& grow() noexcept
   {
-    this->chunks.emplace_back();
+    auto const size = this->chunks.empty() ? 1 : this->chunks.back().size() * 2;
+    return this->chunks.emplace_back(size);
   }
 
   template <typename... Args>
@@ -121,21 +128,22 @@ public:
     for (auto it = this->chunks.rbegin(); it != this->chunks.rend(); ++it)
       if (!it->isFull())
         return it->get(std::forward<Args>(args)...);
-    this->grow();
-    return this->chunks.back().get(std::forward<Args>(args)...);
+    auto& new_chunk = this->grow();
+    return new_chunk.get(std::forward<Args>(args)...);
   }
 
   void release(T* ptr)
   {
     auto type_ptr = static_cast<T*>(ptr);
-    for (auto& chunk : this->chunks) {
-      if (chunk.contains(type_ptr)) {
-        chunk.release(type_ptr);
+
+    // NOTE: This surprisingly proves to perform better than a binary search
+    // using std::lower_bound(rbegin, rend, value, std::greater)
+    for (auto it = this->chunks.rbegin(); it != this->chunks.rend(); ++it) {
+      if (it->contains(type_ptr)) {
+        it->release(type_ptr);
         return;
       }
     }
-    assert("Unable to release ptr: ptr is not contained in this allocator"
-           == nullptr);
   }
 
 private:

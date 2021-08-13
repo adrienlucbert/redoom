@@ -29,6 +29,7 @@ public:
   Ptr& operator=(Ptr const& rhs) noexcept = delete;
   Ptr& operator=(Ptr&& rhs) noexcept
   {
+    this->release();
     this->ptr = std::move(rhs.ptr);
     rhs.ptr = nullptr;
     this->deleter = std::move(rhs.deleter);

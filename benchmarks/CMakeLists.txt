@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.6)
 
 # Sources files
-set(SRCS
+set(
+  SRCS
   src/main.cpp
-  src/bm_allocator.cpp
+  src/bm_Allocator.cpp
 )
 
 # Binary
