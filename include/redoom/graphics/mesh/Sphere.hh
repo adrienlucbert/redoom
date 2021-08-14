@@ -4,24 +4,20 @@
 
 #include <GL/glew.h>
 
-#include <Utils/Concepts.hpp>
 #include <redoom/graphics/Mesh.hh>
 #include <redoom/graphics/Texture.hh>
 #include <redoom/graphics/Vertex.hh>
 
 namespace redoom::graphics::mesh
 {
-template <concepts::Container<Texture2D> TexturesContainer>
-class Sphere
-  : public Mesh<std::vector<Vertex>, std::vector<GLuint>, TexturesContainer>
+class Sphere : public Mesh
 {
 public:
   Sphere(unsigned int x_segments,
       unsigned int y_segments,
       glm::vec3 color = {1.0f, 1.0f, 1.0f},
-      TexturesContainer ptextures = {}) noexcept
-    : Mesh<std::vector<Vertex>, std::vector<GLuint>, TexturesContainer>{
-        Sphere::create(x_segments, y_segments, color, std::move(ptextures))}
+      std::vector<Texture2D> ptextures = {}) noexcept
+    : Mesh{Sphere::create(x_segments, y_segments, color, std::move(ptextures))}
   {
   }
   Sphere(Sphere const& b) noexcept = delete;
@@ -32,11 +28,10 @@ public:
   Sphere& operator=(Sphere&& rhs) noexcept = default;
 
 private:
-  static Mesh<std::vector<Vertex>, std::vector<GLuint>, TexturesContainer>
-  create(unsigned int x_segments,
+  static Mesh create(unsigned int x_segments,
       unsigned int y_segments,
       glm::vec3 color,
-      TexturesContainer ptextures = {}) noexcept
+      std::vector<Texture2D> ptextures = {}) noexcept
   {
     // source:
     // https://github.com/JoeyDeVries/Cell/blob/master/cell/mesh/sphere.cpp

@@ -4,12 +4,15 @@
 
 #include <redoom/ecs/Component.hh>
 #include <redoom/ecs/ComponentManager.hh>
+#include <redoom/ecs/Entity.hh>
 #include <redoom/ecs/Registry.hh>
 #include <redoom/ecs/System.hh>
 
 using redoom::ecs::Component;
+using redoom::ecs::Entity;
 using redoom::ecs::Registry;
 using redoom::ecs::System;
+using redoom::ecs::UpdateContext;
 
 namespace
 {
@@ -27,9 +30,9 @@ auto test_value = 0L; // NOLINT
 class DummySystem : public System<DummySystem> // NOLINT
 {
 public:
-  void update(long elapsed_time) noexcept override
+  void update(UpdateContext& context) noexcept override
   {
-    test_value = elapsed_time;
+    test_value = context.elapsed_time;
   }
 };
 } // namespace
@@ -40,28 +43,28 @@ TEST_CASE("[Registry] Basic tests", "[ECS][Registry]")
 
   SECTION("Entities can be created from a registry")
   {
-    auto& entity1 = registry.makeEntity();
-    auto& entity2 = registry.makeEntity();
-    CHECK(entity2.getId() > entity1.getId());
+    auto entity1 = registry.makeEntity();
+    auto entity2 = registry.makeEntity();
+    CHECK(entity2 != entity1);
   }
 
   SECTION("Entities can be released from a registry")
   {
-    auto& entity = registry.makeEntity();
+    auto entity = registry.makeEntity();
     CHECK(registry.hasEntity(entity));
     registry.releaseEntity(entity);
   }
 
   SECTION("Components can be attached to entities")
   {
-    auto& entity = registry.makeEntity();
+    auto entity = registry.makeEntity();
     registry.attachComponent<DummyComponent1>(entity);
     CHECK(registry.hasComponent<DummyComponent1>(entity));
   }
 
   SECTION("Components can be detached from entities")
   {
-    auto& entity = registry.makeEntity();
+    auto entity = registry.makeEntity();
     registry.attachComponent<DummyComponent1>(entity);
     CHECK(registry.hasComponent<DummyComponent1>(entity));
     registry.detachComponent<DummyComponent1>(entity);
@@ -98,11 +101,11 @@ TEST_CASE("[Registry] Thread safety tests", "[.][Thread][ECS][Registry]")
   SECTION("Entities can be created and released from different threads")
   {
     auto t1 = std::thread([&]() {
-      auto& entity = registry.makeEntity();
+      auto entity = registry.makeEntity();
       registry.releaseEntity(entity);
     });
     auto t2 = std::thread([&]() {
-      auto& entity = registry.makeEntity();
+      auto entity = registry.makeEntity();
       registry.releaseEntity(entity);
     });
     t1.join();
@@ -111,7 +114,7 @@ TEST_CASE("[Registry] Thread safety tests", "[.][Thread][ECS][Registry]")
 
   SECTION("Components can be attached and detached from different threads")
   {
-    auto& entity = registry.makeEntity();
+    auto entity = registry.makeEntity();
     auto t1 = std::thread([&]() {
       registry.attachComponent<DummyComponent1>(entity);
       registry.detachComponent<DummyComponent1>(entity);

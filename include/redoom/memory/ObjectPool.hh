@@ -48,10 +48,7 @@ private:
           "Type T must be constructible with Args.");
       auto const index = this->claimIndex();
       auto* dest = this->getObjectPtr(index);
-      auto src = T{std::forward<Args>(args)...};
-      std::memcpy(
-          static_cast<void*>(dest), static_cast<void*>(&src), sizeof(T));
-      return dest;
+      return  std::construct_at(dest, std::forward<Args>(args)...);
     }
 
     void release(T* ptr) noexcept

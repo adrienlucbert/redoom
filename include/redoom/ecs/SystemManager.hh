@@ -11,6 +11,7 @@
 #include <redoom/ecs/ComponentManager.hh>
 #include <redoom/ecs/System.hh>
 #include <redoom/ecs/SystemBase.hh>
+#include <redoom/ecs/UpdateContext.hh>
 
 namespace redoom::ecs
 {
@@ -55,7 +56,8 @@ public:
         std::is_base_of_v<System<T>, T>, "T must inherit from System<T>");
     return this->systems.contains(T::getTypeId());
   }
-  void update(long elapsed_time, ComponentManager& component_manager) noexcept;
+
+  void update(UpdateContext& context) noexcept;
 
 private:
   mutable std::unique_ptr<std::mutex> mutex{std::make_unique<std::mutex>()};

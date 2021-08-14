@@ -7,6 +7,7 @@
 
 #include <redoom/ecs/Component.hh>
 #include <redoom/ecs/ComponentBase.hh>
+#include <redoom/ecs/Entity.hh>
 #include <redoom/memory/Allocator.hh>
 
 namespace redoom::ecs
@@ -26,33 +27,43 @@ public:
   ComponentManager& operator=(ComponentManager&& rhs) noexcept = default;
 
   template <typename T, typename... Args>
-  T& make(unsigned int entity_id, Args&&... args) noexcept
+  T& make(Entity entity, Args&&... args) noexcept
   {
     auto& allocator = this->getAllocator<T>();
     auto& list = this->getComponentsList<T>();
     auto lock = std::lock_guard{*this->mutex};
     auto const& component_it =
-        list.emplace(entity_id, allocator.get(std::forward<Args>(args)...))
-            .first;
+        list.emplace(entity, allocator.get(std::forward<Args>(args)...)).first;
     return static_cast<T&>(*component_it->second);
   }
 
+  void releaseAll(Entity entity) noexcept
+  {
+    for (auto& [type_id, list] : this->components_lists) {
+      auto const& component_it = list.find(entity);
+      if (component_it != list.end())
+        list.erase(component_it);
+    }
+  }
+
   template <typename T>
-  void release(unsigned int entity_id) noexcept
+  bool release(Entity entity) noexcept
   {
     static_assert(std::is_base_of_v<ComponentBase, T>,
         "T must inherit from ComponentBase");
     auto& list = this->getComponentsList<T>();
     auto lock = std::lock_guard{*this->mutex};
-    auto const& component_it = list.find(entity_id);
-    if (component_it != list.end())
+    auto const& component_it = list.find(entity);
+    if (component_it == list.end())
+      return false;
+    else {
       list.erase(component_it);
-    else
-      assert("Exactly one element should be released" == nullptr);
+      return true;
+    }
   }
 
   template <typename T>
-  [[nodiscard]] bool has(unsigned int entity_id) const noexcept
+  [[nodiscard]] bool has(Entity entity) const noexcept
   {
     static_assert(std::is_base_of_v<ComponentBase, T>,
         "T must inherit from ComponentBase");
@@ -62,7 +73,7 @@ public:
     if (list_it == this->components_lists.end())
       return false;
     auto const& list = this->components_lists.at(T::getTypeId());
-    return list.contains(entity_id);
+    return list.contains(entity);
   }
 
   template <typename T, typename Callable>
@@ -70,12 +81,12 @@ public:
   {
     auto& list = this->getComponentsList<T>();
     for (auto& component : list)
-      f(static_cast<T&>(*component.second));
+      f(component.first, static_cast<T&>(*component.second));
   }
 
 private:
   template <typename T>
-  std::unordered_map<unsigned int, typename Allocator<ComponentBase>::ptr_t>&
+  std::unordered_map<Entity, typename Allocator<ComponentBase>::ptr_t>&
   getComponentsList() noexcept
   {
     static_assert(std::is_base_of_v<ComponentBase, T>,
@@ -107,7 +118,7 @@ private:
   mutable std::unique_ptr<std::mutex> mutex{std::make_unique<std::mutex>()};
   std::unordered_map<unsigned int, std::unique_ptr<AllocatorBase>> allocators;
   std::unordered_map<unsigned int,
-      std::unordered_map<unsigned int, Allocator<ComponentBase>::ptr_t>>
+      std::unordered_map<Entity, Allocator<ComponentBase>::ptr_t>>
       components_lists;
 };
 } // namespace redoom::ecs

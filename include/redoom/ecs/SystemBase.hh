@@ -1,6 +1,6 @@
 #pragma once
 
-#include <redoom/ecs/ComponentManager.hh>
+#include <redoom/ecs/UpdateContext.hh>
 
 namespace redoom::ecs
 {
@@ -14,8 +14,7 @@ public:
   SystemBase& operator=(SystemBase const& rhs) noexcept = default;
   SystemBase& operator=(SystemBase&& rhs) noexcept = default;
 
-  virtual void update(long /*unused*/) noexcept;
-  virtual void update(long /*unused*/, ComponentManager& /*unused*/) noexcept;
+  virtual void update(UpdateContext& /*unused*/) noexcept;
 
 protected:
   SystemBase() noexcept = default;

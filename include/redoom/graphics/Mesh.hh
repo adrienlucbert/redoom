@@ -3,7 +3,6 @@
 #include <GL/glew.h>
 #include <fmt/format.h>
 
-#include <Utils/Concepts.hpp>
 #include <redoom/graphics/Buffer.hh>
 #include <redoom/graphics/Camera.hh>
 #include <redoom/graphics/Program.hh>
@@ -13,15 +12,12 @@
 
 namespace redoom::graphics
 {
-template <concepts::Container<Vertex> VerticesContainer,
-    concepts::Container<GLuint> IndicesContainer,
-    concepts::Container<Texture2D> TexturesContainer>
 class Mesh
 {
 public:
-  Mesh(VerticesContainer pvertices,
-      IndicesContainer pindices,
-      TexturesContainer ptextures,
+  Mesh(std::vector<Vertex> pvertices,
+      std::vector<unsigned int> pindices,
+      std::vector<Texture2D> ptextures,
       GLenum ptopology = GL_TRIANGLES) noexcept
     : vertices{std::move(pvertices)}
     , indices{std::move(pindices)}
@@ -55,7 +51,7 @@ public:
     this->vao.bind();
 
     for (auto i = 0u; i < this->textures.size(); ++i) {
-      auto& texture = this->textures[i];
+      const auto& texture = this->textures[i];
       auto const unit = static_cast<GLint>(i);
       auto const uniform = fmt::format("texture{}", unit);
       texture.setUnit(program, uniform, unit);
@@ -69,13 +65,13 @@ public:
   }
 
 private:
-  VerticesContainer vertices;
-  IndicesContainer indices;
-  TexturesContainer textures;
+  std::vector<Vertex> vertices;
+  std::vector<unsigned int> indices;
+  std::vector<Texture2D> textures;
 
   GLenum topology;
   VertexArray vao;
-  VertexBuffer<VerticesContainer> vbo;
-  IndexBuffer<IndicesContainer> ebo;
+  VertexBuffer<std::vector<Vertex>> vbo;
+  IndexBuffer<std::vector<unsigned int>> ebo;
 };
 } // namespace redoom::graphics

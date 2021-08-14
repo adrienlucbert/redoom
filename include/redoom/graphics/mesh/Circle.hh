@@ -4,25 +4,21 @@
 
 #include <GL/glew.h>
 
-#include <Utils/Concepts.hpp>
 #include <redoom/graphics/Mesh.hh>
 #include <redoom/graphics/Texture.hh>
 #include <redoom/graphics/Vertex.hh>
 
 namespace redoom::graphics::mesh
 {
-template <concepts::Container<Texture2D> TexturesContainer>
-class Circle
-  : public Mesh<std::vector<Vertex>, std::vector<GLuint>, TexturesContainer>
+class Circle : public Mesh
 {
 public:
   Circle(unsigned int edge_segments,
       unsigned int ring_segments,
       glm::vec3 color = {1.0f, 1.0f, 1.0f},
-      TexturesContainer ptextures = {}) noexcept
-    : Mesh<std::vector<Vertex>, std::vector<GLuint>, TexturesContainer>{
-        Circle::create(
-            edge_segments, ring_segments, color, std::move(ptextures))}
+      std::vector<Texture2D> ptextures = {}) noexcept
+    : Mesh{Circle::create(
+        edge_segments, ring_segments, color, std::move(ptextures))}
   {
   }
   Circle(Circle const& b) noexcept = delete;
@@ -33,11 +29,10 @@ public:
   Circle& operator=(Circle&& rhs) noexcept = default;
 
 private:
-  static Mesh<std::vector<Vertex>, std::vector<GLuint>, TexturesContainer>
-  create(unsigned int edge_segments,
+  static Mesh create(unsigned int edge_segments,
       unsigned int ring_segments,
       glm::vec3 color,
-      TexturesContainer ptextures = {}) noexcept
+      std::vector<Texture2D> ptextures = {}) noexcept
   {
     // source:
     // https://github.com/JoeyDeVries/Cell/blob/master/cell/mesh/circle.cpp

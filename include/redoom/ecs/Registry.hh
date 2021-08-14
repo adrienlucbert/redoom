@@ -17,25 +17,24 @@ public:
   Registry& operator=(Registry const& rhs) noexcept = delete;
   Registry& operator=(Registry&& rhs) noexcept = default;
 
-  [[nodiscard]] Entity& makeEntity() noexcept;
-  void releaseEntity(Entity& entity) noexcept;
-  [[nodiscard]] bool hasEntity(Entity const& entity) const noexcept;
+  [[nodiscard]] Entity makeEntity() noexcept;
+  void releaseEntity(Entity entity) noexcept;
+  [[nodiscard]] bool hasEntity(Entity entity) const noexcept;
 
   template <typename C, typename... Args>
-  void attachComponent(Entity const& entity, Args&&... args) noexcept
+  void attachComponent(Entity entity, Args&&... args) noexcept
   {
-    this->component_manager.make<C>(
-        entity.getId(), std::forward<Args>(args)...);
+    this->component_manager.make<C>(entity, std::forward<Args>(args)...);
   }
   template <typename C>
-  void detachComponent(Entity const& entity) noexcept
+  void detachComponent(Entity entity) noexcept
   {
-    this->component_manager.release<C>(entity.getId());
+    this->component_manager.release<C>(entity);
   }
   template <typename C>
-  [[nodiscard]] bool hasComponent(Entity const& entity) const noexcept
+  [[nodiscard]] bool hasComponent(Entity entity) const noexcept
   {
-    return this->component_manager.has<C>(entity.getId());
+    return this->component_manager.has<C>(entity);
   }
 
   template <typename T, typename... Args>

@@ -6,19 +6,17 @@
 
 namespace redoom::graphics::mesh
 {
-template <concepts::Container<Texture2D> TexturesContainer>
-class Quad
-  : public Mesh<std::vector<Vertex>, std::vector<GLuint>, TexturesContainer>
+class Quad : public Mesh
 {
 public:
   explicit Quad(float width,
       float height,
       glm::vec3 color = {1.0f, 1.0f, 1.0f},
-      TexturesContainer ptextures = {}) noexcept
+      std::vector<Texture2D> ptextures = {}) noexcept
     // source:
     // https://github.com/JoeyDeVries/Cell/blob/master/cell/mesh/quad.cpp
     // clang-format off
-    : Mesh<std::vector<Vertex>, std::vector<GLuint>, TexturesContainer>{
+    : Mesh{
         std::vector{
           // TODO(alucbert): determine actual normals
           Vertex{{-width,  height, 0.0f}, {0.0f, 0.0f, 0.0f}, color, {0.0f, 1.0f}},

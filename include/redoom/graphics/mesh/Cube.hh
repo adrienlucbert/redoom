@@ -8,17 +8,15 @@
 
 namespace redoom::graphics::mesh
 {
-template <concepts::Container<Texture2D> TexturesContainer>
-class Cube
-  : public Mesh<std::vector<Vertex>, std::vector<GLuint>, TexturesContainer>
+class Cube : public Mesh
 {
 public:
   explicit Cube(glm::vec3 color = {1.0f, 1.0f, 1.0f},
-      TexturesContainer ptextures = {}) noexcept
+      std::vector<Texture2D> ptextures = {}) noexcept
     // source:
     // https://github.com/JoeyDeVries/Cell/blob/master/cell/mesh/sphere.cpp
     // clang-format off
-    : Mesh<std::vector<Vertex>, std::vector<GLuint>, TexturesContainer>{
+    : Mesh{
         std::vector{
           Vertex{{-0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}, color, {0.0f, 0.0f}},
           Vertex{{0.5f, 0.5f, -0.5f},   { 0.0f,  0.0f, -1.0f}, color, {1.0f, 1.0f}},

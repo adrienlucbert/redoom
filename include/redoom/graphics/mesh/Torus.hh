@@ -4,16 +4,13 @@
 
 #include <GL/glew.h>
 
-#include <Utils/Concepts.hpp>
 #include <redoom/graphics/Mesh.hh>
 #include <redoom/graphics/Texture.hh>
 #include <redoom/graphics/Vertex.hh>
 
 namespace redoom::graphics::mesh
 {
-template <concepts::Container<Texture2D> TexturesContainer>
-class Torus
-  : public Mesh<std::vector<Vertex>, std::vector<GLuint>, TexturesContainer>
+class Torus : public Mesh
 {
 public:
   Torus(float r1,
@@ -21,10 +18,9 @@ public:
       unsigned int num_steps1,
       unsigned int num_steps2,
       glm::vec3 color,
-      TexturesContainer ptextures = {}) noexcept
-    : Mesh<std::vector<Vertex>, std::vector<GLuint>, TexturesContainer>{
-        Torus::create(
-            r1, r2, num_steps1, num_steps2, color, std::move(ptextures))}
+      std::vector<Texture2D> ptextures = {}) noexcept
+    : Mesh{Torus::create(
+        r1, r2, num_steps1, num_steps2, color, std::move(ptextures))}
   {
   }
   Torus(Torus const& b) noexcept = delete;
@@ -35,13 +31,12 @@ public:
   Torus& operator=(Torus&& rhs) noexcept = default;
 
 private:
-  static Mesh<std::vector<Vertex>, std::vector<GLuint>, TexturesContainer>
-  create(float r1,
+  static Mesh create(float r1,
       float r2,
       unsigned int num_steps1,
       unsigned int num_steps2,
       glm::vec3 color,
-      TexturesContainer ptextures = {}) noexcept
+      std::vector<Texture2D> ptextures = {}) noexcept
   {
     // source:
     // https://github.com/JoeyDeVries/Cell/blob/master/cell/mesh/sphere.cpp
