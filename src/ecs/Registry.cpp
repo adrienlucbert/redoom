@@ -19,7 +19,7 @@ bool Registry::hasEntity(Entity entity) const noexcept
   return this->entity_manager.has(entity);
 }
 
-void Registry::update(long elapsed_time) noexcept
+void Registry::update(double elapsed_time) noexcept
 {
   auto context = UpdateContext{
       elapsed_time, this->component_manager, this->entity_manager};

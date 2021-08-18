@@ -3,6 +3,7 @@
 #include <redoom/ecs/ComponentManager.hh>
 #include <redoom/ecs/EntityManager.hh>
 #include <redoom/ecs/SystemManager.hh>
+#include <redoom/ecs/components/BehaviourComponent.hh>
 
 namespace redoom::ecs
 {
@@ -24,8 +25,14 @@ public:
   template <typename C, typename... Args>
   void attachComponent(Entity entity, Args&&... args) noexcept
   {
-    this->component_manager.make<C>(entity, std::forward<Args>(args)...);
+    if constexpr (std::is_base_of_v<Behaviour, C>) {
+      this->component_manager.make<components::BehaviourComponent>(
+          entity, std::make_unique<C>(std::forward<Args>(args)...));
+    } else {
+      this->component_manager.make<C>(entity, std::forward<Args>(args)...);
+    }
   }
+
   template <typename C>
   void detachComponent(Entity entity) noexcept
   {
@@ -42,6 +49,11 @@ public:
   {
     this->system_manager.make<T>(std::forward<Args>(args)...);
   }
+  template <typename T, typename... Args>
+  void attachSystem(SystemPriority priority, Args&&... args) noexcept
+  {
+    this->system_manager.make<T>(priority, std::forward<Args>(args)...);
+  }
   template <typename T>
   void detachSystem() noexcept
   {
@@ -53,7 +65,7 @@ public:
     return this->system_manager.has<T>();
   }
 
-  void update(long elapsed_time) noexcept;
+  void update(double elapsed_time) noexcept;
 
 private:
   ComponentManager component_manager;

@@ -2,7 +2,7 @@
 
 namespace redoom::ecs
 {
-UpdateContext::UpdateContext(long pelapsed_time,
+UpdateContext::UpdateContext(double pelapsed_time,
     ComponentManager& pcomponent_manager,
     EntityManager& pentity_manager) noexcept
   : elapsed_time{pelapsed_time}

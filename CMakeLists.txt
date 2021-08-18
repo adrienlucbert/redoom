@@ -103,17 +103,31 @@ endif()
 
 add_library(
   redoom-core STATIC
-  src/ecs/Entity.cpp
+  src/Application.cpp
+  src/ecs/components/BehaviourComponent.cpp
   src/ecs/EntityManager.cpp
   src/ecs/Registry.cpp
   src/ecs/SystemBase.cpp
   src/ecs/SystemManager.cpp
+  src/ecs/systems/BehaviourSystem.cpp
+  src/ecs/systems/CameraSystem.cpp
+  src/ecs/systems/MeshSystem.cpp
+  src/ecs/UpdateContext.cpp
   src/graphics/BufferLayout.cpp
   src/graphics/Camera.cpp
   src/graphics/Program.cpp
   src/graphics/Shader.cpp
+  src/graphics/ShaderLibrary.cpp
   src/graphics/Texture.cpp
   src/graphics/VertexArray.cpp
+  src/platform/OpenGL/OpenGLContext.cpp
+  src/platform/OpenGL/OpenGLRendererAPI.cpp
+  src/platform/OpenGL/OpenGLWindow.cpp
+  src/platform/Platform.cpp
+  src/renderer/RendererAPI.cpp
+  src/renderer/RendererContext.cpp
+  src/renderer/Renderer.cpp
+  src/renderer/Window.cpp
 )
 target_compile_options(redoom-core PRIVATE ${WARNING_FLAGS})
 target_include_directories(redoom-core PUBLIC include)

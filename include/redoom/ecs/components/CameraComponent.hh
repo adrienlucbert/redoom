@@ -6,6 +6,11 @@
 namespace redoom::ecs::components
 {
 struct CameraComponent : public Component<CameraComponent> {
+  explicit CameraComponent(
+      graphics::Camera pcamera = graphics::Camera{}) noexcept
+    : camera{pcamera}
+  {
+  }
   graphics::Camera camera;
 };
 } // namespace redoom::ecs::components

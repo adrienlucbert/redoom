@@ -3,28 +3,12 @@
 #include <memory>
 #include <type_traits>
 
-#include <tl/expected.hpp>
-
 #include <Utils/Expected.hh>
+#include <redoom/ecs/Behaviour.hh>
 #include <redoom/ecs/Component.hh>
-#include <redoom/ecs/UpdateContext.hh>
 
 namespace redoom::ecs::components
 {
-class Behaviour
-{
-public:
-  Behaviour() noexcept = default;
-  Behaviour(Behaviour const& b) noexcept = delete;
-  Behaviour(Behaviour&& b) noexcept = default;
-  virtual ~Behaviour() noexcept = default;
-
-  Behaviour& operator=(Behaviour const& rhs) noexcept = delete;
-  Behaviour& operator=(Behaviour&& rhs) noexcept = default;
-
-  virtual void onUpdate(Entity /*entity*/, UpdateContext& context) noexcept;
-};
-
 class BehaviourComponent : public Component<BehaviourComponent>
 {
 public:

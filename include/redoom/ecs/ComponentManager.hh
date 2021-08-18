@@ -5,6 +5,8 @@
 #include <type_traits>
 #include <unordered_map>
 
+#include <tl/optional.hpp>
+
 #include <redoom/ecs/Component.hh>
 #include <redoom/ecs/ComponentBase.hh>
 #include <redoom/ecs/Entity.hh>
@@ -82,6 +84,24 @@ public:
     auto& list = this->getComponentsList<T>();
     for (auto& component : list)
       f(component.first, static_cast<T&>(*component.second));
+  }
+
+  template <typename T>
+  tl::optional<T&> get(Entity entity) noexcept
+  {
+    static_assert(std::is_base_of_v<ComponentBase, T>,
+        "T must inherit from ComponentBase");
+    auto lock = std::lock_guard{*this->mutex};
+    auto const& list_it = this->components_lists.find(T::getTypeId());
+
+    if (list_it == this->components_lists.end())
+      return tl::nullopt;
+    auto& list = this->components_lists.at(T::getTypeId());
+    auto const& component_it = list.find(entity);
+    if (component_it == list.end())
+      return tl::nullopt;
+    else
+      return static_cast<T&>(*component_it->second);
   }
 
 private:

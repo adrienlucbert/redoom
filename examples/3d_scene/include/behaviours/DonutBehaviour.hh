@@ -1,11 +1,19 @@
-#include <iostream>
+#pragma once
 
-#include <redoom/ecs/components/BehaviourComponent.hh>
+#include <redoom/ecs/Behaviour.hh>
 
-struct DonutBehaviour : public redoom::ecs::components::Behaviour {
+#include <glm/gtc/type_ptr.hpp>
+
+#include <redoom/ecs/components/TransformComponent.hh>
+
+struct DonutBehaviour : public redoom::ecs::Behaviour {
   void onUpdate(redoom::ecs::Entity entity,
       redoom::ecs::UpdateContext& context) noexcept override
   {
-    std::cout << "NO PLEEEAAAAAASE! DON'T EAT MEEEEE!" << '\n';
+    auto transform_opt =
+        context.component_manager
+            .get<redoom::ecs::components::TransformComponent>(entity);
+    auto& transform = *transform_opt;
+    transform.angle += static_cast<float>(context.elapsed_time * 5);
   }
 };

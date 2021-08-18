@@ -37,7 +37,7 @@ public:
   {
     b.id = 0;
   }
-  ~Buffer() noexcept
+  virtual ~Buffer() noexcept
   {
     if (this->id != 0)
       glDeleteBuffers(1, &this->id);
@@ -68,6 +68,11 @@ public:
     glBindBuffer(this->type, 0);
   }
 
+  virtual void draw(GLenum /*topology*/) const noexcept
+  {
+    assert("This buffer is not drawable" == nullptr);
+  }
+
 protected:
   unsigned int id;
   unsigned int type;
@@ -83,8 +88,15 @@ struct IndexBuffer : public Buffer<GLuint> {
         usage}
   {
   }
+  ~IndexBuffer() noexcept override = default;
 
-  void draw(GLenum topology = GL_TRIANGLES) const noexcept
+  IndexBuffer(IndexBuffer const&) noexcept = delete;
+  IndexBuffer(IndexBuffer&&) noexcept = default;
+
+  IndexBuffer& operator=(IndexBuffer const&) noexcept = delete;
+  IndexBuffer& operator=(IndexBuffer&&) noexcept = default;
+
+  void draw(GLenum topology) const noexcept override
   {
     glDrawElements(
         topology, static_cast<GLsizei>(this->count), GL_UNSIGNED_INT, nullptr);
@@ -100,6 +112,13 @@ struct VertexBuffer : public Buffer<Vertex> {
         usage}
   {
   }
+  ~VertexBuffer() noexcept override = default;
+
+  VertexBuffer(VertexBuffer const&) noexcept = delete;
+  VertexBuffer(VertexBuffer&&) noexcept = default;
+
+  VertexBuffer& operator=(VertexBuffer const&) noexcept = delete;
+  VertexBuffer& operator=(VertexBuffer&&) noexcept = default;
 
   void setLayout(BufferLayout const& layout) const noexcept
   {
@@ -120,7 +139,7 @@ struct VertexBuffer : public Buffer<Vertex> {
     this->unbind();
   }
 
-  void draw(GLenum topology = GL_TRIANGLES) const noexcept
+  void draw(GLenum topology) const noexcept override
   {
     glDrawArrays(topology, 0, static_cast<GLsizei>(this->count));
   }

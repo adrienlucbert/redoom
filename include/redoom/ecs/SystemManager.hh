@@ -2,10 +2,10 @@
 
 #include <algorithm>
 #include <cassert>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <type_traits>
-#include <unordered_map>
 
 #include <Utils/UniqueTypeId.hh>
 #include <redoom/ecs/ComponentManager.hh>
@@ -15,6 +15,10 @@
 
 namespace redoom::ecs
 {
+struct SystemPriority {
+  unsigned int priority;
+};
+
 class SystemManager
 {
 public:
@@ -27,13 +31,33 @@ public:
   SystemManager& operator=(SystemManager&& rhs) noexcept = default;
 
   template <typename T, typename... Args>
-  void make(Args&&... args) noexcept
+  void make(SystemPriority priority, Args&&... args) noexcept
   {
     static_assert(
         std::is_base_of_v<System<T>, T>, "T must inherit from System<T>");
     auto lock = std::lock_guard{*this->mutex};
-    this->systems.emplace(
-        T::getTypeId(), std::make_unique<T>(std::forward<Args>(args)...));
+    auto data = SystemData{
+        T::getTypeId(), std::make_unique<T>(std::forward<Args>(args)...)};
+    this->systems.emplace(priority.priority, std::move(data));
+  }
+
+  template <typename T, typename... Args>
+  void make(Args&&... args) noexcept
+  {
+    this->make<T>(SystemPriority{0}, std::forward<Args>(args)...);
+  }
+
+  template <typename T>
+  void setPriority(SystemPriority priority) noexcept
+  {
+    static_assert(
+        std::is_base_of_v<System<T>, T>, "T must inherit from System<T>");
+    auto system_it = this->find<T>();
+    if (system_it != this->systems.end()) {
+      auto data = std::move(this->systems.extract(system_it));
+      auto lock = std::lock_guard{*this->mutex};
+      this->systems.emplace(priority, std::move(data));
+    }
   }
 
   template <typename T>
@@ -41,26 +65,40 @@ public:
   {
     static_assert(
         std::is_base_of_v<System<T>, T>, "T must inherit from System<T>");
-    auto lock = std::lock_guard{*this->mutex};
-    auto const& system_it = this->systems.find(T::getTypeId());
-    if (system_it != this->systems.end())
+    auto const& system_it = this->find<T>();
+    if (system_it != this->systems.end()) {
+      auto lock = std::lock_guard{*this->mutex};
       this->systems.erase(system_it);
-    else
+    } else
       assert("Exactly one element should be released" == nullptr);
   }
 
   template <typename T>
   [[nodiscard]] bool has() const noexcept
   {
-    static_assert(
-        std::is_base_of_v<System<T>, T>, "T must inherit from System<T>");
-    return this->systems.contains(T::getTypeId());
+    return this->find<T>() != this->systems.end();
   }
 
   void update(UpdateContext& context) noexcept;
 
 private:
+  struct SystemData {
+    Utils::type_id type_id;
+    std::unique_ptr<SystemBase> system;
+  };
+
+  template <typename T>
+  auto find() const noexcept
+  {
+    static_assert(
+        std::is_base_of_v<System<T>, T>, "T must inherit from System<T>");
+    auto lock = std::lock_guard{*this->mutex};
+    return std::find_if(this->systems.begin(),
+        this->systems.end(),
+        [](auto const& pair) { return pair.second.type_id == T::getTypeId(); });
+  }
+
   mutable std::unique_ptr<std::mutex> mutex{std::make_unique<std::mutex>()};
-  std::unordered_map<Utils::type_id, std::unique_ptr<SystemBase>> systems;
+  std::multimap<int, SystemData> systems;
 };
 } // namespace redoom::ecs

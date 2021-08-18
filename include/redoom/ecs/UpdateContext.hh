@@ -9,7 +9,7 @@
 namespace redoom::ecs
 {
 struct UpdateContext {
-  UpdateContext(long pelapsed_time,
+  UpdateContext(double pelapsed_time,
       ComponentManager& pcomponent_manager,
       EntityManager& pentity_manager) noexcept;
   UpdateContext(UpdateContext const&) noexcept = delete;
@@ -21,7 +21,7 @@ struct UpdateContext {
 
   void removeEntity(Entity entity) noexcept;
 
-  long elapsed_time;
+  double elapsed_time;
   ComponentManager& component_manager;
   EntityManager& entity_manager;
 
