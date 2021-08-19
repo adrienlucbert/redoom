@@ -238,6 +238,7 @@
 #include <redoom/ecs/components/TransformComponent.hh>
 #include <redoom/ecs/systems/BehaviourSystem.hh>
 #include <redoom/ecs/systems/CameraSystem.hh>
+#include <redoom/ecs/systems/EventSystem.hh>
 #include <redoom/ecs/systems/MeshSystem.hh>
 #include <redoom/graphics/ShaderLibrary.hh>
 #include <redoom/graphics/Texture.hh>
@@ -252,6 +253,7 @@ using redoom::ecs::components::MeshComponent;
 using redoom::ecs::components::TransformComponent;
 using redoom::ecs::systems::BehaviourSystem;
 using redoom::ecs::systems::CameraSystem;
+using redoom::ecs::systems::EventSystem;
 using redoom::ecs::systems::MeshSystem;
 using redoom::graphics::ShaderLibrary;
 using redoom::graphics::Texture2D;
@@ -302,8 +304,9 @@ std::unique_ptr<Application> createApplication(ApplicationArguments args)
   registry.attachComponent<TransformComponent>(donut,
       TransformComponent(
           {0.0, 0.0, -5.0}, glm::radians(25.0f), {1.0f, 1.0f, 0.0f}));
-  registry.attachSystem<BehaviourSystem>(SystemPriority{0});
-  registry.attachSystem<CameraSystem>(SystemPriority{0});
+  registry.attachSystem<EventSystem>(SystemPriority{0});
+  registry.attachSystem<BehaviourSystem>(SystemPriority{1});
+  registry.attachSystem<CameraSystem>(SystemPriority{1});
   registry.attachSystem<MeshSystem>(SystemPriority{1000});
 
   return app;

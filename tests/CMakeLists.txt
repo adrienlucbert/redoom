@@ -8,13 +8,15 @@ set(
   src/tests_Component.cpp
   src/tests_ComponentManager.cpp
   src/tests_EntityManager.cpp
-  src/tests_SystemManager.cpp
   src/tests_Registry.cpp
+  src/tests_SystemManager.cpp
+  utils/mock/systems.cpp
+  utils/mock/Window.cpp
 )
 
 # Binary
 add_executable(tests-redoom ${SRCS})
-target_include_directories(tests-redoom PRIVATE .)
+target_include_directories(tests-redoom PRIVATE utils)
 target_link_libraries(tests-redoom redoom-core Catch2)
 set_property(TARGET tests-redoom PROPERTY CXX_STANDARD 20)
 set_property(TARGET tests-redoom PROPERTY CXX_STANDARD_REQUIRED ON)

@@ -2,19 +2,10 @@
 
 #include <thread>
 
-#include <redoom/ecs/Component.hh>
+#include <mock/components.hh>
 #include <redoom/ecs/ComponentManager.hh>
 
-using redoom::ecs::Component;
 using redoom::ecs::ComponentManager;
-
-class DummyComponent1 final : public Component<DummyComponent1>
-{
-};
-
-class DummyComponent2 final : public Component<DummyComponent2>
-{
-};
 
 TEST_CASE("[ComponentManager] Basic tests", "[ECS][Component]")
 {
@@ -22,11 +13,11 @@ TEST_CASE("[ComponentManager] Basic tests", "[ECS][Component]")
 
   SECTION("Each component instance has a unique id")
   {
-    auto& component1 = component_manager.make<DummyComponent1>(0);
-    auto& component2 = component_manager.make<DummyComponent2>(0);
+    auto& component1 = component_manager.make<mock::TestComponent1>(0);
+    auto& component2 = component_manager.make<mock::TestComponent2>(0);
     CHECK(component1.getTypeId() != component2.getTypeId());
-    component_manager.release<DummyComponent1>(0);
-    component_manager.release<DummyComponent2>(0);
+    component_manager.release<mock::TestComponent1>(0);
+    component_manager.release<mock::TestComponent2>(0);
   }
 }
 
@@ -38,12 +29,12 @@ TEST_CASE("[ComponentManager] Thread safety tests",
   SECTION("Components can be created and released from different threads")
   {
     auto t1 = std::thread([&]() {
-      auto& component = component_manager.make<DummyComponent1>(0);
-      component_manager.release<DummyComponent1>(0);
+      auto& component = component_manager.make<mock::TestComponent1>(0);
+      component_manager.release<mock::TestComponent1>(0);
     });
     auto t2 = std::thread([&]() {
-      auto& component = component_manager.make<DummyComponent2>(0);
-      component_manager.release<DummyComponent2>(0);
+      auto& component = component_manager.make<mock::TestComponent2>(0);
+      component_manager.release<mock::TestComponent2>(0);
     });
     t1.join();
     t2.join();

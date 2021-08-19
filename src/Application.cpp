@@ -28,7 +28,7 @@ void Application::run() noexcept
     renderer::Renderer::getAPI().setClearColor({0.2f, 0.3f, 0.3f, 1.0f});
     renderer::Renderer::getAPI().clear();
 
-    this->registry.update(elapsed_time);
+    this->registry.update(*this->window, elapsed_time);
 
     this->window->onUpdate();
   }

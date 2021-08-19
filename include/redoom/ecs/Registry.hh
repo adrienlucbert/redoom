@@ -4,6 +4,7 @@
 #include <redoom/ecs/EntityManager.hh>
 #include <redoom/ecs/SystemManager.hh>
 #include <redoom/ecs/components/BehaviourComponent.hh>
+#include <redoom/renderer/Window.hh>
 
 namespace redoom::ecs
 {
@@ -65,7 +66,7 @@ public:
     return this->system_manager.has<T>();
   }
 
-  void update(double elapsed_time) noexcept;
+  void update(renderer::Window& window, double elapsed_time) noexcept;
 
 private:
   ComponentManager component_manager;

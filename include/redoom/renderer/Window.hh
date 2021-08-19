@@ -4,6 +4,7 @@
 #include <string_view>
 
 #include <Utils/Expected.hh>
+#include <redoom/events/Event.hh>
 
 namespace redoom::renderer
 {
@@ -29,6 +30,8 @@ public:
   [[nodiscard]] virtual void* getNativeWindow() const noexcept = 0;
 
   virtual void setCursorMode(CursorMode mode) noexcept = 0;
+
+  [[nodiscard]] virtual bool pollEvent(events::Event& buffer) noexcept = 0;
 
   virtual void onUpdate() noexcept = 0;
 

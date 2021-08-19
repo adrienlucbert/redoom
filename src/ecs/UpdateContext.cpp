@@ -4,15 +4,18 @@ namespace redoom::ecs
 {
 UpdateContext::UpdateContext(double pelapsed_time,
     ComponentManager& pcomponent_manager,
-    EntityManager& pentity_manager) noexcept
+    EntityManager& pentity_manager,
+    renderer::Window& pwindow) noexcept
   : elapsed_time{pelapsed_time}
   , component_manager{pcomponent_manager}
   , entity_manager{pentity_manager}
+  , window{pwindow}
 {
 }
 
 UpdateContext::~UpdateContext() noexcept
 {
+  auto lock = std::lock_guard{this->mutex};
   while (!this->entity_delete_queue.empty()) {
     auto entity = this->entity_delete_queue.front();
     this->entity_delete_queue.pop();

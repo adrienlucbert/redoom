@@ -68,6 +68,14 @@ void OpenGLWindow::setCursorMode(CursorMode mode) noexcept
   glfwSetInputMode(this->window, GLFW_CURSOR, opengl_modes.at(mode));
 }
 
+bool OpenGLWindow::pollEvent(events::Event& buffer) noexcept
+{
+  if (this->events.empty())
+    return false;
+  buffer = this->events.pop();
+  return true;
+}
+
 void OpenGLWindow::onUpdate() noexcept
 {
   glfwPollEvents();
@@ -124,42 +132,60 @@ OpenGLWindow::OpenGLWindow(GLFWwindow* pwindow,
   this->setVSync(true);
   this->setCursorMode(CursorMode::Normal);
 
+  glfwSetWindowUserPointer(this->window, &this->events);
+
   glfwSetWindowSizeCallback(
-      this->window, [](GLFWwindow* /*window*/, int w, int h) {
+      this->window, [](GLFWwindow* native_window, int w, int h) {
+        auto* event_queue = static_cast<events::EventQueue*>(
+            glfwGetWindowUserPointer(native_window));
+        event_queue->push(events::WindowResizeEvent{w, h});
+
         renderer::Renderer::getAPI().setViewport({0, 0, w, h});
       });
 
-  glfwSetWindowCloseCallback(this->window, [](GLFWwindow* /*window*/) {
-    // TODO(alucbert):
+  glfwSetWindowCloseCallback(this->window, [](GLFWwindow* native_window) {
+    auto* event_queue = static_cast<events::EventQueue*>(
+        glfwGetWindowUserPointer(native_window));
+    event_queue->push(events::WindowCloseEvent{});
   });
 
   glfwSetKeyCallback(this->window,
-      [](GLFWwindow* /*window*/,
-          int /*key*/,
-          int /*scancode*/,
-          int /*action*/,
-          int /*mods*/) {
-        // TODO(alucbert):
+      [](GLFWwindow* native_window,
+          int key,
+          int scancode,
+          int action,
+          int mods) {
+        auto* event_queue = static_cast<events::EventQueue*>(
+            glfwGetWindowUserPointer(native_window));
+        event_queue->push(events::KeyEvent{key, scancode, action, mods});
       });
 
   glfwSetCharCallback(
-      this->window, [](GLFWwindow* /*window*/, unsigned int /*keycode*/) {
-        // TODO(alucbert):
+      this->window, [](GLFWwindow* native_window, unsigned int keycode) {
+        auto* event_queue = static_cast<events::EventQueue*>(
+            glfwGetWindowUserPointer(native_window));
+        event_queue->push(events::CharEvent{keycode});
       });
 
   glfwSetMouseButtonCallback(this->window,
-      [](GLFWwindow* /*window*/, int /*button*/, int /*action*/, int /*mods*/) {
-        // TODO(alucbert):
+      [](GLFWwindow* native_window, int button, int action, int mods) {
+        auto* event_queue = static_cast<events::EventQueue*>(
+            glfwGetWindowUserPointer(native_window));
+        event_queue->push(events::MouseButtonEvent{button, action, mods});
       });
 
   glfwSetScrollCallback(this->window,
-      [](GLFWwindow* /*window*/, double /*x_offset*/, double /*y_offset*/) {
-        // TODO(alucbert):
+      [](GLFWwindow* native_window, double x_offset, double y_offset) {
+        auto* event_queue = static_cast<events::EventQueue*>(
+            glfwGetWindowUserPointer(native_window));
+        event_queue->push(events::ScrollEvent{x_offset, y_offset});
       });
 
-  glfwSetCursorPosCallback(this->window,
-      [](GLFWwindow* /*window*/, double /*x_pos*/, double /*y_pos*/) {
-        // TODO(alucbert):
+  glfwSetCursorPosCallback(
+      this->window, [](GLFWwindow* native_window, double x_pos, double y_pos) {
+        auto* event_queue = static_cast<events::EventQueue*>(
+            glfwGetWindowUserPointer(native_window));
+        event_queue->push(events::MouseMoveEvent{x_pos, y_pos});
       });
 }
 } // namespace redoom::platform::OpenGL

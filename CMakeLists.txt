@@ -104,6 +104,7 @@ endif()
 add_library(
   redoom-core STATIC
   src/Application.cpp
+  src/ecs/Behaviour.cpp
   src/ecs/components/BehaviourComponent.cpp
   src/ecs/EntityManager.cpp
   src/ecs/Registry.cpp
@@ -111,8 +112,10 @@ add_library(
   src/ecs/SystemManager.cpp
   src/ecs/systems/BehaviourSystem.cpp
   src/ecs/systems/CameraSystem.cpp
+  src/ecs/systems/EventSystem.cpp
   src/ecs/systems/MeshSystem.cpp
   src/ecs/UpdateContext.cpp
+  src/events/EventQueue.cpp
   src/graphics/BufferLayout.cpp
   src/graphics/Camera.cpp
   src/graphics/Program.cpp
