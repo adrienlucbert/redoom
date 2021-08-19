@@ -2,6 +2,7 @@
 
 #include <Utils/UniqueTypeId.hh>
 #include <redoom/ecs/ComponentBase.hh>
+#include <redoom/ecs/Entity.hh>
 
 namespace redoom::ecs
 {

@@ -105,7 +105,9 @@ add_library(
   redoom-core STATIC
   src/Application.cpp
   src/ecs/Behaviour.cpp
+  src/ecs/ComponentBase.cpp
   src/ecs/components/BehaviourComponent.cpp
+  src/ecs/Context.cpp
   src/ecs/EntityManager.cpp
   src/ecs/Registry.cpp
   src/ecs/SystemBase.cpp

@@ -31,7 +31,7 @@ TEST_CASE(
   auto component_manager = ComponentManager{};
   auto entity_manager = EntityManager{};
   auto window = mock::TestWindow{};
-  auto context = UpdateContext{0, component_manager, entity_manager, window};
+  auto context = UpdateContext{component_manager, entity_manager, 0, window};
 
   SECTION("Systems can be created and released from different threads")
   {

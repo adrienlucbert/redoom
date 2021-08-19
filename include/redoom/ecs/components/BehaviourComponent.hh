@@ -39,6 +39,9 @@ public:
     }
   }
 
+  void onInit(Entity entity, Context& context) noexcept override;
+  void onDestroy(Entity entit, Context& contexty) noexcept override;
+
 private:
   std::unique_ptr<Behaviour> behaviour;
 };

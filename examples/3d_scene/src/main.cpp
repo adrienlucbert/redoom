@@ -232,6 +232,7 @@
 #include <redoom/Application.hh>
 #include <redoom/EntryPoint.hh>
 #include <redoom/ecs/Registry.hh>
+#include <redoom/ecs/behaviours/CameraBehaviour.hh>
 #include <redoom/ecs/components/BehaviourComponent.hh>
 #include <redoom/ecs/components/CameraComponent.hh>
 #include <redoom/ecs/components/MeshComponent.hh>
@@ -248,6 +249,7 @@
 #include <behaviours/FPSCounterBehaviour.hh>
 
 using redoom::ecs::SystemPriority;
+using redoom::ecs::behaviours::CameraBehaviour;
 using redoom::ecs::components::CameraComponent;
 using redoom::ecs::components::MeshComponent;
 using redoom::ecs::components::TransformComponent;
@@ -298,6 +300,7 @@ std::unique_ptr<Application> createApplication(ApplicationArguments args)
   auto camera = registry.makeEntity();
   registry.attachComponent<CameraComponent>(
       camera, graphics::Camera(glm::vec3{0.0f, 0.0f, 3.0f}));
+  registry.attachComponent<CameraBehaviour>(camera);
   auto donut = registry.makeEntity();
   registry.attachComponent<DonutBehaviour>(donut);
   registry.attachComponent<MeshComponent>(donut, mesh);

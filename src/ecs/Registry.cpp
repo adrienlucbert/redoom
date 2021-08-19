@@ -1,5 +1,6 @@
 #include <redoom/ecs/Registry.hh>
 
+#include <redoom/ecs/Context.hh>
 #include <redoom/ecs/UpdateContext.hh>
 
 namespace redoom::ecs
@@ -21,8 +22,19 @@ bool Registry::hasEntity(Entity entity) const noexcept
 
 void Registry::update(renderer::Window& window, double elapsed_time) noexcept
 {
-  auto context = UpdateContext{
-      elapsed_time, this->component_manager, this->entity_manager, window};
+  auto context = this->getUpdateContext(window, elapsed_time);
   this->system_manager.update(context);
+}
+
+Context Registry::getContext() noexcept
+{
+  return Context{this->component_manager, this->entity_manager};
+}
+
+UpdateContext Registry::getUpdateContext(
+    renderer::Window& window, double elapsed_time) noexcept
+{
+  return UpdateContext{
+      this->component_manager, this->entity_manager, elapsed_time, window};
 }
 } // namespace redoom::ecs

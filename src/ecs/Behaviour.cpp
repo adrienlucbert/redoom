@@ -2,6 +2,14 @@
 
 namespace redoom::ecs
 {
+void Behaviour::onInit(Entity /*entity*/, Context& /*context*/) noexcept
+{
+}
+
+void Behaviour::onDestroy(Entity /*entity*/, Context& /*context*/) noexcept
+{
+}
+
 void Behaviour::onUpdate(Entity /*entity*/, UpdateContext& /*context*/) noexcept
 {
 }

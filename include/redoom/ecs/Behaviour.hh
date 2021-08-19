@@ -1,5 +1,6 @@
 #pragma once
 
+#include <redoom/ecs/Context.hh>
 #include <redoom/ecs/Entity.hh>
 #include <redoom/ecs/UpdateContext.hh>
 #include <redoom/events/Event.hh>
@@ -16,6 +17,9 @@ public:
 
   Behaviour& operator=(Behaviour const& rhs) noexcept = delete;
   Behaviour& operator=(Behaviour&& rhs) noexcept = default;
+
+  virtual void onInit(Entity entity, Context& context) noexcept;
+  virtual void onDestroy(Entity entity, Context& context) noexcept;
 
   virtual void onUpdate(Entity entity, UpdateContext& context) noexcept;
 
