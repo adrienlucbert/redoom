@@ -291,6 +291,7 @@ std::unique_ptr<Application> createApplication(ApplicationArguments args)
   auto textures = std::vector<Texture2D>{};
   textures.push_back(std::move(tex));
 
+  // NOLINTNEXTLINE
   auto mesh = std::shared_ptr<Torus>(
       new Torus{1.0f, 0.5f, 100, 100, {1.0f, 1.0f, 1.0f}, std::move(textures)});
 

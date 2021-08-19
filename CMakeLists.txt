@@ -118,6 +118,7 @@ add_library(
   src/ecs/systems/MeshSystem.cpp
   src/ecs/UpdateContext.cpp
   src/events/EventQueue.cpp
+  src/events/Key.cpp
   src/graphics/BufferLayout.cpp
   src/graphics/Camera.cpp
   src/graphics/Program.cpp

@@ -130,7 +130,8 @@ OpenGLWindow::OpenGLWindow(GLFWwindow* pwindow,
   , has_vsync{false}
 {
   this->setVSync(true);
-  this->setCursorMode(CursorMode::Normal);
+  this->setCursorMode(CursorMode::Disabled);
+  this->events.push(events::WindowResizeEvent{this->width, this->height});
 
   glfwSetWindowUserPointer(this->window, &this->events);
 
@@ -157,7 +158,10 @@ OpenGLWindow::OpenGLWindow(GLFWwindow* pwindow,
           int mods) {
         auto* event_queue = static_cast<events::EventQueue*>(
             glfwGetWindowUserPointer(native_window));
-        event_queue->push(events::KeyEvent{key, scancode, action, mods});
+        event_queue->push(events::KeyEvent{static_cast<events::Key>(key),
+            scancode,
+            static_cast<events::Action>(action),
+            static_cast<events::Mod>(mods)});
       });
 
   glfwSetCharCallback(
@@ -171,7 +175,10 @@ OpenGLWindow::OpenGLWindow(GLFWwindow* pwindow,
       [](GLFWwindow* native_window, int button, int action, int mods) {
         auto* event_queue = static_cast<events::EventQueue*>(
             glfwGetWindowUserPointer(native_window));
-        event_queue->push(events::MouseButtonEvent{button, action, mods});
+        event_queue->push(
+            events::MouseButtonEvent{static_cast<events::Mouse>(button),
+                static_cast<events::Action>(action),
+                static_cast<events::Mod>(mods)});
       });
 
   glfwSetScrollCallback(this->window,

@@ -14,7 +14,9 @@ void CameraSystem::update(UpdateContext& context) noexcept
       [&count](auto /*entity*/, auto const& component) {
         if (++count > 1)
           assert("More than one camera is not allowed" == nullptr);
-        renderer::Renderer::setViewProjectionMatrix(component.camera.getView());
+        renderer::Renderer::setViewMatrix(component.camera.getView());
+        renderer::Renderer::setProjectionMatrix(
+            component.camera.getProjection());
       });
 }
 } // namespace redoom::ecs::systems

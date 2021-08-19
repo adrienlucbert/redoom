@@ -1,25 +1,17 @@
 #include <redoom/graphics/Camera.hh>
 
+#include <iostream>
+
 namespace redoom::graphics
 {
-Camera::Camera(
-    glm::vec3 pposition, glm::vec3 pup, float pyaw, float ppitch) noexcept
+Camera::Camera(glm::vec3 pposition) noexcept
   : position{pposition}
-  , front{glm::vec3{0.0f, 0.0f, -1.0f}}
-  , up{pup}
-  , right{}
-  , world_up{pup}
-  , yaw{pyaw}
-  , pitch{ppitch}
-  , speed{0.1f}
-  , sensitivity{0.3f}
-  , fov{45.0f}
 {
   this->updateView();
   this->updateProjection();
 }
 
-glm::vec3 Camera::getPosition() const noexcept
+glm::vec3 const& Camera::getPosition() const noexcept
 {
   return this->position;
 }
@@ -27,45 +19,40 @@ glm::vec3 Camera::getPosition() const noexcept
 void Camera::setPosition(glm::vec3 pposition) noexcept
 {
   this->position = pposition;
+  this->updateView();
 }
 
-glm::vec3 Camera::getFront() const noexcept
+glm::vec3 const& Camera::getFront() const noexcept
 {
-  if (this->needs_update)
-    this->update();
   return this->front;
 }
 
 void Camera::setFront(glm::vec3 pfront) noexcept
 {
   this->front = pfront;
-  this->needs_update = true;
+  this->updateView();
 }
 
-glm::vec3 Camera::getUp() const noexcept
+glm::vec3 const& Camera::getUp() const noexcept
 {
-  if (this->needs_update)
-    this->update();
   return this->up;
 }
 
 void Camera::setUp(glm::vec3 pup) noexcept
 {
   this->up = pup;
-  this->needs_update = true;
+  this->updateView();
 }
 
-glm::vec3 Camera::getRight() const noexcept
+glm::vec3 const& Camera::getRight() const noexcept
 {
-  if (this->needs_update)
-    this->update();
   return this->right;
 }
 
 void Camera::setRight(glm::vec3 pright) noexcept
 {
   this->right = pright;
-  this->needs_update = true;
+  this->updateView();
 }
 
 float Camera::getYaw() const noexcept
@@ -76,7 +63,7 @@ float Camera::getYaw() const noexcept
 void Camera::setYaw(float pyaw) noexcept
 {
   this->yaw = pyaw;
-  this->needs_update = true;
+  this->updateView();
 }
 
 float Camera::getPitch() const noexcept
@@ -87,7 +74,7 @@ float Camera::getPitch() const noexcept
 void Camera::setPitch(float ppitch) noexcept
 {
   this->pitch = ppitch;
-  this->needs_update = true;
+  this->updateView();
 }
 
 float Camera::getSpeed() const noexcept
@@ -118,16 +105,36 @@ float Camera::getFov() const noexcept
 void Camera::setFov(float pfov) noexcept
 {
   this->fov = pfov;
+  this->updateProjection();
 }
 
-glm::mat4 Camera::getView() const noexcept
+void Camera::setViewportSize(int width, int height) noexcept
 {
-  if (this->needs_update)
-    this->update();
-  return glm::lookAt(this->position, this->position + this->front, this->up);
+  assert(width > 0 && height > 0);
+  this->aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
+  this->updateProjection();
 }
 
-void Camera::update() const noexcept
+glm::mat4 const& Camera::getView() const noexcept
+{
+  return this->view;
+}
+
+glm::mat4 const& Camera::getProjection() const noexcept
+{
+  return this->projection;
+}
+
+void Camera::updateProjection() noexcept
+{
+  if (this->projection_type == ProjectionType::Perspective) {
+    this->projection =
+        glm::perspective(this->fov, this->aspect_ratio, 0.1f, 100.0f);
+  } else
+    assert("Orthographic projection is not yet supported" == nullptr);
+}
+
+void Camera::updateView() noexcept
 {
   this->front = glm::normalize(glm::vec3{
       std::cos(glm::radians(this->yaw)) * std::cos(glm::radians(this->pitch)),
@@ -135,6 +142,7 @@ void Camera::update() const noexcept
       std::sin(glm::radians(this->yaw)) * std::cos(glm::radians(this->pitch))});
   this->right = glm::normalize(glm::cross(this->front, this->world_up));
   this->up = glm::normalize(glm::cross(this->right, this->front));
-  this->needs_update = false;
+  this->view =
+      glm::lookAt(this->position, this->position + this->front, this->up);
 }
 } // namespace redoom::graphics

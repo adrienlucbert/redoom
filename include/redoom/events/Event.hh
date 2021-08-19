@@ -2,6 +2,8 @@
 
 #include <variant>
 
+#include <redoom/events/Key.hh>
+
 namespace redoom::events
 {
 struct WindowResizeEvent {
@@ -13,10 +15,10 @@ struct WindowCloseEvent {
 };
 
 struct KeyEvent {
-  int key;
+  Key key;
   int scancode;
-  int action;
-  int mods;
+  Action action;
+  Mod mods;
 };
 
 struct CharEvent {
@@ -24,9 +26,9 @@ struct CharEvent {
 };
 
 struct MouseButtonEvent {
-  int button;
-  int action;
-  int mods;
+  Mouse button;
+  Action action;
+  Mod mods;
 };
 
 struct MouseMoveEvent {

@@ -13,14 +13,14 @@
 #include <redoom/ecs/components/TransformComponent.hh>
 
 struct DonutBehaviour : public redoom::ecs::Behaviour {
-  void onUpdate(redoom::ecs::Entity entity,
-      redoom::ecs::UpdateContext& context) noexcept override
+  void onUpdate(redoom::ecs::Entity /*entity*/,
+      redoom::ecs::UpdateContext& /*context*/) noexcept override
   {
-    auto transform_opt =
-        context.component_manager
-            .get<redoom::ecs::components::TransformComponent>(entity);
-    auto& transform = *transform_opt;
-    transform.angle += static_cast<float>(context.elapsed_time * 5);
+    // auto transform_opt =
+    //     context.component_manager
+    //         .get<redoom::ecs::components::TransformComponent>(entity);
+    // auto& transform = *transform_opt;
+    // transform.angle += static_cast<float>(context.elapsed_time * 5);
   }
 
   void onWindowResize(redoom::ecs::Entity /*entity*/,
@@ -41,11 +41,11 @@ struct DonutBehaviour : public redoom::ecs::Behaviour {
       redoom::events::KeyEvent& event) noexcept override
   {
     auto const* action = [&event]() {
-      if (event.action == GLFW_PRESS)
+      if (event.action == redoom::events::Action::PRESS)
         return "pressed";
-      else if (event.action == GLFW_REPEAT)
+      else if (event.action == redoom::events::Action::REPEAT)
         return "repeated";
-      else if (event.action == GLFW_RELEASE)
+      else if (event.action == redoom::events::Action::RELEASE)
         return "released";
       else
         return "<unknown action>";
@@ -64,11 +64,11 @@ struct DonutBehaviour : public redoom::ecs::Behaviour {
       redoom::events::MouseButtonEvent& event) noexcept override
   {
     auto const* action = [&event]() {
-      if (event.action == GLFW_PRESS)
+      if (event.action == redoom::events::Action::PRESS)
         return "pressed";
-      else if (event.action == GLFW_REPEAT)
+      else if (event.action == redoom::events::Action::REPEAT)
         return "repeated";
-      else if (event.action == GLFW_RELEASE)
+      else if (event.action == redoom::events::Action::RELEASE)
         return "released";
       else
         return "<unknown action>";
