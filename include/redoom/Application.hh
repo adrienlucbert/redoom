@@ -3,6 +3,7 @@
 #include <string_view>
 
 #include <Utils/Expected.hh>
+#include <Utils/Singleton.hh>
 #include <redoom/ecs/Registry.hh>
 #include <redoom/renderer/Renderer.hh>
 #include <redoom/renderer/RendererContext.hh>
@@ -23,15 +24,15 @@ struct ApplicationArguments {
   }
 };
 
-class Application
+class Application : public Utils::Singleton<Application>
 {
 public:
   Application(Application const& b) noexcept = delete;
-  Application(Application&& b) noexcept = default;
-  ~Application() noexcept = default;
+  Application(Application&& b) noexcept = delete;
+  ~Application() noexcept override = default;
 
   Application& operator=(Application const& rhs) noexcept = delete;
-  Application& operator=(Application&& rhs) noexcept = default;
+  Application& operator=(Application&& rhs) noexcept = delete;
 
   [[nodiscard]] bool isReady() const noexcept;
   void run() noexcept;
@@ -43,8 +44,7 @@ public:
   ApplicationArguments args;
 
 protected:
-  explicit Application(
-      std::string_view title, ApplicationArguments args) noexcept;
+  Application(std::string_view title, ApplicationArguments args) noexcept;
 
   double previous_time{0.0};
   std::unique_ptr<renderer::Window> window;

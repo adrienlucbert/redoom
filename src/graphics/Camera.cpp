@@ -15,6 +15,8 @@ Camera::Camera(
   , sensitivity{0.3f}
   , fov{45.0f}
 {
+  this->updateView();
+  this->updateProjection();
 }
 
 glm::vec3 Camera::getPosition() const noexcept
