@@ -138,6 +138,7 @@ add_library(
   src/renderer/RendererContext.cpp
   src/renderer/Renderer.cpp
   src/renderer/Window.cpp
+  src/Scene.cpp
 )
 target_compile_options(redoom-core PRIVATE ${WARNING_FLAGS})
 target_include_directories(redoom-core PUBLIC include)

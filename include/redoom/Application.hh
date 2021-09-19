@@ -4,6 +4,7 @@
 
 #include <Utils/Expected.hh>
 #include <Utils/Singleton.hh>
+#include <redoom/Scene.hh>
 #include <redoom/ecs/Registry.hh>
 #include <redoom/renderer/Renderer.hh>
 #include <redoom/renderer/RendererContext.hh>
@@ -37,7 +38,9 @@ public:
   [[nodiscard]] bool isReady() const noexcept;
   void run() noexcept;
 
-  [[nodiscard]] ecs::Registry& getRegistry() noexcept;
+  Scene& makeScene(std::string_view name, bool set_current = true) noexcept;
+  [[nodiscard]] Scene& getCurrentScene() noexcept;
+  void setCurrentScene(std::string const& name) noexcept;
 
   [[nodiscard]] renderer::Window& getWindow() noexcept;
 
@@ -48,7 +51,8 @@ protected:
 
   double previous_time{0.0};
   std::unique_ptr<renderer::Window> window;
-  ecs::Registry registry{};
+  std::shared_ptr<Scene> current_scene;
+  std::unordered_map<std::string, std::shared_ptr<Scene>> scenes;
 };
 
 std::unique_ptr<Application> createApplication(ApplicationArguments args);

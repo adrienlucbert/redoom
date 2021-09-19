@@ -28,15 +28,33 @@ void Application::run() noexcept
     renderer::Renderer::getAPI().setClearColor({0.2f, 0.3f, 0.3f, 1.0f});
     renderer::Renderer::getAPI().clear();
 
-    this->registry.update(*this->window, elapsed_time);
+    this->getCurrentScene().getRegistry().update(*this->window, elapsed_time);
 
     this->window->onUpdate();
   }
 }
 
-ecs::Registry& Application::getRegistry() noexcept
+Scene& Application::makeScene(std::string_view name, bool set_current) noexcept
 {
-  return this->registry;
+  auto [it, success] =
+      this->scenes.emplace(name, std::make_shared<Scene>(name));
+  assert(success);
+  if (set_current)
+    this->current_scene = it->second;
+  return *it->second;
+}
+
+Scene& Application::getCurrentScene() noexcept
+{
+  assert(this->current_scene != nullptr && "No current scene set");
+  return *this->current_scene;
+}
+
+void Application::setCurrentScene(std::string const& name) noexcept
+{
+  auto it = this->scenes.find(name);
+  assert(it != this->scenes.end() && "No scene by this name");
+  this->current_scene = it->second;
 }
 
 renderer::Window& Application::getWindow() noexcept
