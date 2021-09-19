@@ -26,6 +26,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y ninja-build
+          sudo apt-get install -y clang-tidy
           sudo apt-get install -y --no-install-recommends libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxext-dev libxfixes-dev libgl1-mesa-dev
 
       - name: "Build with ThreadSanitizer"
@@ -42,6 +43,6 @@ jobs:
 
       - name: "Build with clang-tidy"
         run: |
-          mkdir -p build && cd build
+          cd build
           cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release -DUSE_CLANG_TIDY=on -DREDOOM_CLANG_TIDY_FLAGS='--warnings-as-errors=*' -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DREDOOM_BUILD_TESTS=off
-          make
+          ninja

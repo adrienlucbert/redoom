@@ -6,6 +6,8 @@
 #include <cstring>
 #include <functional>
 #include <list>
+#include <memory>
+#include <mutex>
 #include <stack>
 #include <type_traits>
 
@@ -48,12 +50,13 @@ private:
           "Type T must be constructible with Args.");
       auto const index = this->claimIndex();
       auto* dest = this->getObjectPtr(index);
-      return  std::construct_at(dest, std::forward<Args>(args)...);
+      return std::construct_at(dest, std::forward<Args>(args)...);
     }
 
     void release(T* ptr) noexcept
     {
-      auto index = this->getObjectId(ptr);
+      auto const index = this->getObjectId(ptr);
+      auto lock = std::lock_guard{*this->mutex};
       this->available.push(index);
     }
 
@@ -78,6 +81,7 @@ private:
   private:
     [[nodiscard]] std::size_t claimIndex() noexcept
     {
+      auto lock = std::lock_guard{*this->mutex};
       auto const index = this->available.top();
       this->available.pop();
       return index;
@@ -102,6 +106,7 @@ private:
     std::size_t chunk_size;
     std::vector<std::byte> buffer;
     std::stack<std::size_t> available;
+    mutable std::unique_ptr<std::mutex> mutex{std::make_unique<std::mutex>()};
   };
 
 public:
@@ -115,6 +120,7 @@ public:
 
   Chunk& grow() noexcept
   {
+    auto lock = std::lock_guard{*this->mutex};
     auto const size = this->chunks.empty() ? 1 : this->chunks.back().size() * 2;
     return this->chunks.emplace_back(size);
   }
@@ -122,9 +128,12 @@ public:
   template <typename... Args>
   [[nodiscard]] T* get(Args&&... args)
   {
-    for (auto it = this->chunks.rbegin(); it != this->chunks.rend(); ++it)
-      if (!it->isFull())
-        return it->get(std::forward<Args>(args)...);
+    {
+      auto lock = std::lock_guard{*this->mutex};
+      for (auto it = this->chunks.rbegin(); it != this->chunks.rend(); ++it)
+        if (!it->isFull())
+          return it->get(std::forward<Args>(args)...);
+    }
     auto& new_chunk = this->grow();
     return new_chunk.get(std::forward<Args>(args)...);
   }
@@ -135,15 +144,19 @@ public:
 
     // NOTE: This surprisingly proves to perform better than a binary search
     // using std::lower_bound(rbegin, rend, value, std::greater)
+    auto lock = std::lock_guard{*this->mutex};
     for (auto it = this->chunks.rbegin(); it != this->chunks.rend(); ++it) {
       if (it->contains(type_ptr)) {
         it->release(type_ptr);
         return;
       }
     }
+    assert("Could not release pointer, it does not belong to the ObjectPool"
+           == nullptr);
   }
 
 private:
   std::list<Chunk> chunks;
+  mutable std::unique_ptr<std::mutex> mutex{std::make_unique<std::mutex>()};
 };
 } // namespace redoom::memory

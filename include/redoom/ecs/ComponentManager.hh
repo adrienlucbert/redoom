@@ -93,7 +93,6 @@ public:
         "T must inherit from ComponentBase");
     auto lock = std::lock_guard{*this->mutex};
     auto const& list_it = this->components_lists.find(T::getTypeId());
-
     if (list_it == this->components_lists.end())
       return tl::nullopt;
     auto& list = this->components_lists.at(T::getTypeId());
