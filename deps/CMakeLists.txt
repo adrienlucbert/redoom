@@ -4,6 +4,14 @@ add_subdirectory(fmt)
 add_subdirectory(spdlog)
 add_subdirectory(tl)
 
+# yaml-cpp
+set(YAML_CPP_BUILD_CONTRIB off)
+set(YAML_CPP_BUILD_TOOLS off)
+set(YAML_BUILD_SHARED_LIBS off)
+set(YAML_CPP_BUILD_TESTS off)
+set(YAML_CPP_INSTALL off)
+add_subdirectory(yaml-cpp)
+
 # Catch2
 if(REDOOM_BUILD_TESTS)
   set(OLD_CMAKE_CXX_STANDARD ${CMAKE_CXX_STANDARD})

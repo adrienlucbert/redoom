@@ -60,3 +60,37 @@ index 5bfdcb2..9932675 100644
  	target_link_libraries(${GLEW_TARGET} ${LIBRARIES})
  	set_target_properties(${GLEW_TARGET} PROPERTIES VERSION ${GLEW_VERSION})
  endforeach()
+
+Submodule deps/yaml-cpp contains modified content
+diff --git a/deps/yaml-cpp/CMakeLists.txt b/deps/yaml-cpp/CMakeLists.txt
+index b230b9e..7432cce 100644
+--- a/deps/yaml-cpp/CMakeLists.txt
++++ b/deps/yaml-cpp/CMakeLists.txt
+@@ -1,6 +1,8 @@
+ # 3.5 is actually available almost everywhere, but this a good minimum
+ cmake_minimum_required(VERSION 3.4)
+ 
++cmake_policy(SET CMP0077 NEW)
++
+ # enable MSVC_RUNTIME_LIBRARY target property
+ # see https://cmake.org/cmake/help/latest/policy/CMP0091.html
+ if(POLICY CMP0091)
+@@ -79,7 +81,7 @@ set_property(TARGET yaml-cpp
+     CXX_STANDARD_REQUIRED ON)
+ 
+ target_include_directories(yaml-cpp
+-  PUBLIC
++SYSTEM PUBLIC
+     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+   PRIVATE
+@@ -93,9 +95,6 @@ endif()
+ 
+ target_compile_options(yaml-cpp
+   PRIVATE
+-    $<${not-msvc}:-Wall -Wextra -Wshadow -Weffc++ -Wno-long-long>
+-    $<${not-msvc}:-pedantic -pedantic-errors>
+-
+     $<$<AND:${backport-msvc-runtime},${msvc-rt-mtd-static}>:-MTd>
+     $<$<AND:${backport-msvc-runtime},${msvc-rt-mt-static}>:-MT>
+     $<$<AND:${backport-msvc-runtime},${msvc-rt-mtd-dll}>:-MDd>

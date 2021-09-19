@@ -153,6 +153,7 @@ target_link_libraries(
   glew
   glm
   stb
+  yaml-cpp
 )
 
 add_executable(

@@ -25,3 +25,6 @@
 [submodule "deps/glew"]
 	path = deps/glew
 	url = git://github.com/Perlmint/glew-cmake
+[submodule "deps/yaml-cpp"]
+	path = deps/yaml-cpp
+	url = git://github.com/jbeder/yaml-cpp
