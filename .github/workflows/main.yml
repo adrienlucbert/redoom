@@ -44,5 +44,5 @@ jobs:
       - name: "Build with clang-tidy"
         run: |
           cd build
-          cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release -DUSE_CLANG_TIDY=on -DREDOOM_CLANG_TIDY_FLAGS='--warnings-as-errors=*' -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DREDOOM_BUILD_TESTS=off
+          cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release -DUSE_CLANG_TIDY=on -DREDOOM_CLANG_TIDY_FLAGS='--warnings-as-errors=*' -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DREDOOM_BUILD_TESTS=off -DREDOOM_BUILD_BENCHMARKS=off
           ninja

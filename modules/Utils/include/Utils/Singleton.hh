@@ -37,13 +37,16 @@ public:
   [[nodiscard]] static T& get() noexcept
   {
     if (Singleton<T>::instance == nullptr) {
-      if constexpr (!std::is_default_constructible_v<T>)
+      if constexpr (!std::is_default_constructible_v<T>) {
         assert("Singleton cannot be default-constructed. Use `create` method."
                == nullptr);
-      else
+        std::abort();
+      } else {
         return Singleton<T>::create();
-    } else
+      }
+    } else {
       return *Singleton<T>::instance;
+    }
   }
 
 protected:

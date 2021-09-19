@@ -1,6 +1,7 @@
 #include <redoom/platform/OpenGL/OpenGLWindow.hh>
 
 #include <cassert>
+#include <cstdlib>
 #include <iostream>
 #include <unordered_map>
 
@@ -18,7 +19,7 @@ namespace detail
 [[noreturn]] static void GLFWErrorCallback(int error, char const* description)
 {
   std::cerr << fmt::format("GLFW Error ({}): {}", error, description) << '\n';
-  assert(false);
+  std::abort();
 }
 } // namespace detail
 
@@ -129,8 +130,11 @@ OpenGLWindow::OpenGLWindow(GLFWwindow* pwindow,
   , context{std::move(pcontext)}
   , has_vsync{false}
 {
-  this->setVSync(true);
-  this->setCursorMode(CursorMode::Disabled);
+  // Set OpenGL properties without calling OpenGLWindow virtual methods
+  // See clang-analyzer-optin.cplusplus.VirtualCall
+  glfwSwapInterval(1);
+  glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
   this->events.push(events::WindowResizeEvent{this->width, this->height});
 
   glfwSetWindowUserPointer(this->window, &this->events);

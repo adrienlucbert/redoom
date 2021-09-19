@@ -1,4 +1,7 @@
+#include <cstdlib>
 #include <redoom/ecs/systems/MeshSystem.hh>
+
+#include <iostream>
 
 #include <redoom/ecs/components/MeshComponent.hh>
 #include <redoom/ecs/components/TransformComponent.hh>
@@ -19,8 +22,8 @@ void MeshSystem::update(UpdateContext& context) noexcept
         auto transform_opt =
             context.component_manager.get<components::TransformComponent>(
                 entity);
-        auto& transform = *transform_opt;
         if (transform_opt) {
+          auto& transform = *transform_opt;
           model = glm::translate(model, transform.position);
           model = glm::scale(model, transform.scale);
           model = glm::rotate(model, transform.angle, transform.rotation);
