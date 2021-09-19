@@ -5,18 +5,36 @@
 
 namespace redoom::ecs
 {
+namespace detail
+{
 template <typename T>
 class System : public SystemBase, public Utils::UniqueTypeId<T>
 {
 public:
-  System(System const& b) noexcept = delete;
-  System(System&& b) noexcept = default;
-  ~System() noexcept override = default;
+  explicit System(bool pis_multithreaded) noexcept
+    : SystemBase{pis_multithreaded}
+  {
+  }
+};
+} // namespace detail
 
-  System& operator=(System const& rhs) noexcept = delete;
-  System& operator=(System&& rhs) noexcept = default;
-
+template <typename T>
+class MultithreadedSystem : public detail::System<T>
+{
 protected:
-  System() noexcept = default;
+  MultithreadedSystem() noexcept
+    : detail::System<T>(true)
+  {
+  }
+};
+
+template <typename T>
+class MonothreadedSystem : public detail::System<T>
+{
+protected:
+  MonothreadedSystem() noexcept
+    : detail::System<T>(false)
+  {
+  }
 };
 } // namespace redoom::ecs

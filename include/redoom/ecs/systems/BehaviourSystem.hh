@@ -2,7 +2,7 @@
 
 namespace redoom::ecs::systems
 {
-struct BehaviourSystem : public System<BehaviourSystem> {
+struct BehaviourSystem : public MonothreadedSystem<BehaviourSystem> {
   void update(UpdateContext& context) noexcept override;
 };
 } // namespace redoom::ecs::systems

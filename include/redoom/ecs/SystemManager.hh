@@ -7,6 +7,7 @@
 #include <mutex>
 #include <type_traits>
 
+#include <Utils/ThreadPool.hh>
 #include <Utils/UniqueTypeId.hh>
 #include <redoom/ecs/ComponentManager.hh>
 #include <redoom/ecs/System.hh>
@@ -33,12 +34,13 @@ public:
   template <typename T, typename... Args>
   void make(SystemPriority priority, Args&&... args) noexcept
   {
-    static_assert(
-        std::is_base_of_v<System<T>, T>, "T must inherit from System<T>");
+    static_assert(std::is_base_of_v<detail::System<T>, T>,
+        "T must inherit from System<T>");
     auto lock = std::lock_guard{*this->mutex};
     auto data = SystemData{
         T::getTypeId(), std::make_unique<T>(std::forward<Args>(args)...)};
     this->systems.emplace(priority.priority, std::move(data));
+    this->thread_pool.reserve(this->systems.size());
   }
 
   template <typename T, typename... Args>
@@ -50,8 +52,8 @@ public:
   template <typename T>
   void setPriority(SystemPriority priority) noexcept
   {
-    static_assert(
-        std::is_base_of_v<System<T>, T>, "T must inherit from System<T>");
+    static_assert(std::is_base_of_v<detail::System<T>, T>,
+        "T must inherit from System<T>");
     auto system_it = this->find<T>();
     if (system_it != this->systems.end()) {
       auto data = std::move(this->systems.extract(system_it));
@@ -63,8 +65,8 @@ public:
   template <typename T>
   void release() noexcept
   {
-    static_assert(
-        std::is_base_of_v<System<T>, T>, "T must inherit from System<T>");
+    static_assert(std::is_base_of_v<detail::System<T>, T>,
+        "T must inherit from System<T>");
     auto const& system_it = this->find<T>();
     if (system_it != this->systems.end()) {
       auto lock = std::lock_guard{*this->mutex};
@@ -90,8 +92,8 @@ private:
   template <typename T>
   auto find() const noexcept
   {
-    static_assert(
-        std::is_base_of_v<System<T>, T>, "T must inherit from System<T>");
+    static_assert(std::is_base_of_v<detail::System<T>, T>,
+        "T must inherit from System<T>");
     auto lock = std::lock_guard{*this->mutex};
     return std::find_if(this->systems.begin(),
         this->systems.end(),
@@ -99,6 +101,7 @@ private:
   }
 
   mutable std::unique_ptr<std::mutex> mutex{std::make_unique<std::mutex>()};
+  Utils::ThreadPool thread_pool;
   std::multimap<int, SystemData> systems;
 };
 } // namespace redoom::ecs

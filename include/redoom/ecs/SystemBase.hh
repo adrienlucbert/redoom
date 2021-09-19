@@ -16,7 +16,9 @@ public:
 
   virtual void update(UpdateContext& /*unused*/) noexcept;
 
+  bool is_multithreaded;
+
 protected:
-  SystemBase() noexcept = default;
+  explicit SystemBase(bool pis_multithreaded) noexcept;
 };
 } // namespace redoom::ecs

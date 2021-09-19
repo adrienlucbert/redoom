@@ -1,7 +1,5 @@
 #pragma once
 
-#include <iostream>
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <fmt/format.h>
@@ -26,7 +24,6 @@ struct CameraBehaviour : public redoom::ecs::Behaviour {
   void onUpdate(Entity /*entity*/, UpdateContext& context) noexcept override
   {
     auto camera_pos = this->component->camera.getPosition();
-    std::cout << context.elapsed_time << '\n';
     auto const camera_speed = this->component->camera.getSpeed()
                             * static_cast<float>(context.elapsed_time * 1000);
     auto const camera_front = this->component->camera.getFront();

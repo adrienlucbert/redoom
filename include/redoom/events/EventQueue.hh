@@ -20,7 +20,7 @@ public:
   EventQueue& operator=(EventQueue&& rhs) noexcept = default;
 
   void push(Event event) noexcept;
-  Event const& pop() noexcept;
+  Event pop() noexcept;
 
   [[nodiscard]] bool empty() const noexcept;
 

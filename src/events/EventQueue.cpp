@@ -8,10 +8,10 @@ void EventQueue::push(Event event) noexcept
   this->queue.push(event);
 }
 
-Event const& EventQueue::pop() noexcept
+Event EventQueue::pop() noexcept
 {
   auto lock = std::unique_lock{*this->mutex};
-  auto const& event = this->queue.front();
+  auto event = this->queue.front();
   this->queue.pop();
   return event;
 }

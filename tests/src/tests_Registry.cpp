@@ -13,7 +13,6 @@
 
 using redoom::ecs::Entity;
 using redoom::ecs::Registry;
-using redoom::ecs::System;
 using redoom::ecs::UpdateContext;
 
 TEST_CASE("[Registry] Basic tests", "[ECS][Registry]")

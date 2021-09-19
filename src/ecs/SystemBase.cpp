@@ -2,6 +2,11 @@
 
 namespace redoom::ecs
 {
+SystemBase::SystemBase(bool pis_multithreaded) noexcept
+  : is_multithreaded{pis_multithreaded}
+{
+}
+
 void SystemBase::update(UpdateContext& /*unused*/) noexcept
 {
 }
