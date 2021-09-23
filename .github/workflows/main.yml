@@ -36,7 +36,9 @@ jobs:
           ninja
 
       - name: "Run tests"
-        run: ./build/bin/tests-redoom
+        run: |
+          ./build/bin/tests-redoom
+          ./build/bin/redoom-utils-tests
 
       - name: "Run thread-safety tests"
         run: ./build/bin/tests-redoom "[Thread]"

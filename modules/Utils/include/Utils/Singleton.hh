@@ -2,9 +2,10 @@
 
 #include <cassert>
 #include <cstdlib>
-#include <iostream>
 #include <memory>
 #include <type_traits>
+
+#include <Utils/traits.hpp>
 
 namespace redoom::Utils
 {
@@ -22,11 +23,13 @@ public:
   template <typename... Args>
   static T& create(Args&&... args) noexcept
   {
-    static_assert(std::is_constructible_v<T, Args...>);
-    if (Singleton<T>::instance != nullptr)
-      assert("Singleton cannot be instanciated more than once at a time."
-             == nullptr);
-    Singleton<T>::instance = new T{std::forward<Args>(args)...}; // NOLINT
+    static_assert(
+        Utils::is_constructible_v<T,
+            Args...> && "T must be constructible with the given arguments");
+    assert(Singleton<T>::instance == nullptr
+           && "T cannot be instanciated more than once");
+    Singleton<T>::instance = static_cast<T*>(
+        new detail::Derived<T>{std::forward<Args>(args)...}); // NOLINT
     std::atexit([]() {
       delete Singleton<T>::instance; // NOLINT
       Singleton<T>::instance = nullptr;
@@ -37,9 +40,9 @@ public:
   [[nodiscard]] static T& get() noexcept
   {
     if (Singleton<T>::instance == nullptr) {
-      if constexpr (!std::is_default_constructible_v<T>) {
-        assert("Singleton cannot be default-constructed. Use `create` method."
-               == nullptr);
+      if constexpr (!Utils::is_default_constructible_v<T>) {
+        assert(
+            "T cannot be default-constructed. Use `create` method." == nullptr);
         std::abort();
       } else {
         return Singleton<T>::create();

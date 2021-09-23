@@ -13,3 +13,7 @@ target_link_libraries(redoom-utils tl)
 target_compile_options(redoom-utils PRIVATE ${WARNING_FLAGS})
 set_property(TARGET redoom-utils PROPERTY CXX_STANDARD 20)
 set_property(TARGET redoom-utils PROPERTY CXX_STANDARD_REQUIRED ON)
+
+if(REDOOM_BUILD_TESTS)
+  add_subdirectory(tests)
+endif()
