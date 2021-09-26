@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include <redoom/ecs/Entity.hh>
 
 namespace redoom::ecs
@@ -16,8 +18,7 @@ public:
   ComponentBase& operator=(ComponentBase const& rhs) noexcept = default;
   ComponentBase& operator=(ComponentBase&& rhs) noexcept = default;
 
-  virtual void onInit(Entity entity, Context& /*context*/) noexcept;
-  virtual void onDestroy(Entity entity, Context& /*context*/) noexcept;
+  [[nodiscard]] virtual std::string const& getType() const noexcept = 0;
 
 protected:
   ComponentBase() noexcept = default;

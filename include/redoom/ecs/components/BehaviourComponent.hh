@@ -4,6 +4,7 @@
 #include <type_traits>
 
 #include <Utils/Expected.hh>
+#include <redoom/ComponentSerializer.hh>
 #include <redoom/ecs/Behaviour.hh>
 #include <redoom/ecs/Component.hh>
 
@@ -39,8 +40,20 @@ public:
     }
   }
 
-  void onInit(Entity entity, Context& context) noexcept override;
-  void onDestroy(Entity entit, Context& contexty) noexcept override;
+  void init(Entity entity, Context& context) const noexcept
+  {
+    this->get()->get().onInit(entity, context);
+  }
+
+  [[nodiscard]] std::string const& getType() const noexcept override;
+
+  struct Serializer : public ComponentSerializer {
+    void serialize(YAML::Emitter& out,
+        ecs::ComponentBase const* component) const noexcept override;
+    [[nodiscard]] Expected<> deserialize(YAML::Node const& node,
+        Scene& scene,
+        Entity entity) const noexcept override;
+  };
 
 private:
   std::unique_ptr<Behaviour> behaviour;

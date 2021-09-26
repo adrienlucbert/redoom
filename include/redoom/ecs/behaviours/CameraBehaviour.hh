@@ -12,6 +12,12 @@
 namespace redoom::ecs::behaviours
 {
 struct CameraBehaviour : public redoom::ecs::Behaviour {
+  [[nodiscard]] std::string const& getType() const noexcept override
+  {
+    static auto const type = std::string{"CameraBehaviour"};
+    return type;
+  }
+
   void onInit(Entity entity, Context& context) noexcept override
   {
     auto exp =

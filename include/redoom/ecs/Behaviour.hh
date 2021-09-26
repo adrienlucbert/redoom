@@ -18,6 +18,8 @@ public:
   Behaviour& operator=(Behaviour const& rhs) noexcept = delete;
   Behaviour& operator=(Behaviour&& rhs) noexcept = default;
 
+  [[nodiscard]] virtual std::string const& getType() const noexcept = 0;
+
   virtual void onInit(Entity entity, Context& context) noexcept;
   virtual void onDestroy(Entity entity, Context& context) noexcept;
 

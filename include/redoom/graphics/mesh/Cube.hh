@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 
 #include <GL/glew.h>
@@ -11,54 +13,55 @@ namespace redoom::graphics::mesh
 class Cube : public Mesh
 {
 public:
-  explicit Cube(glm::vec3 color = {1.0f, 1.0f, 1.0f},
+  explicit Cube(float width,
+      glm::vec3 color = {1.0f, 1.0f, 1.0f},
       std::vector<Texture2D> ptextures = {}) noexcept
     // source:
     // https://github.com/JoeyDeVries/Cell/blob/master/cell/mesh/sphere.cpp
     // clang-format off
     : Mesh{
         std::vector{
-          Vertex{{-0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}, color, {0.0f, 0.0f}},
-          Vertex{{0.5f, 0.5f, -0.5f},   { 0.0f,  0.0f, -1.0f}, color, {1.0f, 1.0f}},
-          Vertex{{0.5f, -0.5f, -0.5f},  { 0.0f,  0.0f, -1.0f}, color, {1.0f, 0.0f}},
-          Vertex{{0.5f, 0.5f, -0.5f},   { 0.0f,  0.0f, -1.0f}, color, {1.0f, 1.0f}},
-          Vertex{{-0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}, color, {0.0f, 0.0f}},
-          Vertex{{-0.5f, 0.5f, -0.5f},  { 0.0f,  0.0f, -1.0f}, color, {0.0f, 1.0f}},
+          Vertex{{-width / 2, -width / 2, -width / 2}, { 0.0f,  0.0f, -width}, color, {0.0f, 0.0f}},
+          Vertex{{width / 2, width / 2, -width / 2},   { 0.0f,  0.0f, -width}, color, {1.0f, 1.0f}},
+          Vertex{{width / 2, -width / 2, -width / 2},  { 0.0f,  0.0f, -width}, color, {1.0f, 0.0f}},
+          Vertex{{width / 2, width / 2, -width / 2},   { 0.0f,  0.0f, -width}, color, {1.0f, 1.0f}},
+          Vertex{{-width / 2, -width / 2, -width / 2}, { 0.0f,  0.0f, -width}, color, {0.0f, 0.0f}},
+          Vertex{{-width / 2, width / 2, -width / 2},  { 0.0f,  0.0f, -width}, color, {0.0f, 1.0f}},
 
-          Vertex{{-0.5f, -0.5f, 0.5f},  { 0.0f,  0.0f,  1.0f}, color, {0.0f, 0.0f}},
-          Vertex{{0.5f, -0.5f, 0.5f},   { 0.0f,  0.0f,  1.0f}, color, {1.0f, 0.0f}},
-          Vertex{{0.5f, 0.5f, 0.5f},    { 0.0f,  0.0f,  1.0f}, color, {1.0f, 1.0f}},
-          Vertex{{0.5f, 0.5f, 0.5f},    { 0.0f,  0.0f,  1.0f}, color, {1.0f, 1.0f}},
-          Vertex{{-0.5f, 0.5f, 0.5f},   { 0.0f,  0.0f,  1.0f}, color, {0.0f, 1.0f}},
-          Vertex{{-0.5f, -0.5f, 0.5f},  { 0.0f,  0.0f,  1.0f}, color, {0.0f, 0.0f}},
+          Vertex{{-width / 2, -width / 2, width / 2},  { 0.0f,  0.0f,  width}, color, {0.0f, 0.0f}},
+          Vertex{{width / 2, -width / 2, width / 2},   { 0.0f,  0.0f,  width}, color, {1.0f, 0.0f}},
+          Vertex{{width / 2, width / 2, width / 2},    { 0.0f,  0.0f,  width}, color, {1.0f, 1.0f}},
+          Vertex{{width / 2, width / 2, width / 2},    { 0.0f,  0.0f,  width}, color, {1.0f, 1.0f}},
+          Vertex{{-width / 2, width / 2, width / 2},   { 0.0f,  0.0f,  width}, color, {0.0f, 1.0f}},
+          Vertex{{-width / 2, -width / 2, width / 2},  { 0.0f,  0.0f,  width}, color, {0.0f, 0.0f}},
 
-          Vertex{{-0.5f, 0.5f, 0.5f},   {-1.0f,  0.0f,  0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{-0.5f, 0.5f, -0.5f},  {-1.0f,  0.0f,  0.0f}, color, {1.0f, 1.0f}},
-          Vertex{{-0.5f, -0.5f, -0.5f}, {-1.0f,  0.0f,  0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{-0.5f, -0.5f, -0.5f}, {-1.0f,  0.0f,  0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{-0.5f, -0.5f, 0.5f},  {-1.0f,  0.0f,  0.0f}, color, {0.0f, 0.0f}},
-          Vertex{{-0.5f, 0.5f, 0.5f},   {-1.0f,  0.0f,  0.0f}, color, {1.0f, 0.0f}},
+          Vertex{{-width / 2, width / 2, width / 2},   {-width,  0.0f,  0.0f}, color, {1.0f, 0.0f}},
+          Vertex{{-width / 2, width / 2, -width / 2},  {-width,  0.0f,  0.0f}, color, {1.0f, 1.0f}},
+          Vertex{{-width / 2, -width / 2, -width / 2}, {-width,  0.0f,  0.0f}, color, {0.0f, 1.0f}},
+          Vertex{{-width / 2, -width / 2, -width / 2}, {-width,  0.0f,  0.0f}, color, {0.0f, 1.0f}},
+          Vertex{{-width / 2, -width / 2, width / 2},  {-width,  0.0f,  0.0f}, color, {0.0f, 0.0f}},
+          Vertex{{-width / 2, width / 2, width / 2},   {-width,  0.0f,  0.0f}, color, {1.0f, 0.0f}},
 
-          Vertex{{0.5f, 0.5f, 0.5f},    { 1.0f,  0.0f,  0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{0.5f, -0.5f, -0.5f},  { 1.0f,  0.0f,  0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{0.5f, 0.5f, -0.5f},   { 1.0f,  0.0f,  0.0f}, color, {1.0f, 1.0f}},
-          Vertex{{0.5f, -0.5f, -0.5f},  { 1.0f,  0.0f,  0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{0.5f, 0.5f, 0.5f},    { 1.0f,  0.0f,  0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{0.5f, -0.5f, 0.5f},   { 1.0f,  0.0f,  0.0f}, color, {0.0f, 0.0f}},
+          Vertex{{width / 2, width / 2, width / 2},    { width,  0.0f,  0.0f}, color, {1.0f, 0.0f}},
+          Vertex{{width / 2, -width / 2, -width / 2},  { width,  0.0f,  0.0f}, color, {0.0f, 1.0f}},
+          Vertex{{width / 2, width / 2, -width / 2},   { width,  0.0f,  0.0f}, color, {1.0f, 1.0f}},
+          Vertex{{width / 2, -width / 2, -width / 2},  { width,  0.0f,  0.0f}, color, {0.0f, 1.0f}},
+          Vertex{{width / 2, width / 2, width / 2},    { width,  0.0f,  0.0f}, color, {1.0f, 0.0f}},
+          Vertex{{width / 2, -width / 2, width / 2},   { width,  0.0f,  0.0f}, color, {0.0f, 0.0f}},
 
-          Vertex{{-0.5f, -0.5f, -0.5f}, { 0.0f, -1.0f,  0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{0.5f, -0.5f, -0.5f},  { 0.0f, -1.0f,  0.0f}, color, {1.0f, 1.0f}},
-          Vertex{{0.5f, -0.5f, 0.5f},   { 0.0f, -1.0f,  0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{0.5f, -0.5f, 0.5f},   { 0.0f, -1.0f,  0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{-0.5f, -0.5f, 0.5f},  { 0.0f, -1.0f,  0.0f}, color, {0.0f, 0.0f}},
-          Vertex{{-0.5f, -0.5f, -0.5f}, { 0.0f, -1.0f,  0.0f}, color, {0.0f, 1.0f}},
+          Vertex{{-width / 2, -width / 2, -width / 2}, { 0.0f, -width,  0.0f}, color, {0.0f, 1.0f}},
+          Vertex{{width / 2, -width / 2, -width / 2},  { 0.0f, -width,  0.0f}, color, {1.0f, 1.0f}},
+          Vertex{{width / 2, -width / 2, width / 2},   { 0.0f, -width,  0.0f}, color, {1.0f, 0.0f}},
+          Vertex{{width / 2, -width / 2, width / 2},   { 0.0f, -width,  0.0f}, color, {1.0f, 0.0f}},
+          Vertex{{-width / 2, -width / 2, width / 2},  { 0.0f, -width,  0.0f}, color, {0.0f, 0.0f}},
+          Vertex{{-width / 2, -width / 2, -width / 2}, { 0.0f, -width,  0.0f}, color, {0.0f, 1.0f}},
 
-          Vertex{{-0.5f, 0.5f, -0.5f},  { 0.0f,  1.0f,  0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{0.5f, 0.5f, 0.5f},    { 0.0f,  1.0f,  0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{0.5f, 0.5f, -0.5f},   { 0.0f,  1.0f,  0.0f}, color, {1.0f, 1.0f}},
-          Vertex{{0.5f, 0.5f, 0.5f},    { 0.0f,  1.0f,  0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{-0.5f, 0.5f, -0.5f},  { 0.0f,  1.0f,  0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{-0.5f, 0.5f, 0.5f},   { 0.0f,  1.0f,  0.0f}, color, {0.0f, 0.0f}},
+          Vertex{{-width / 2, width / 2, -width / 2},  { 0.0f,  width,  0.0f}, color, {0.0f, 1.0f}},
+          Vertex{{width / 2, width / 2, width / 2},    { 0.0f,  width,  0.0f}, color, {1.0f, 0.0f}},
+          Vertex{{width / 2, width / 2, -width / 2},   { 0.0f,  width,  0.0f}, color, {1.0f, 1.0f}},
+          Vertex{{width / 2, width / 2, width / 2},    { 0.0f,  width,  0.0f}, color, {1.0f, 0.0f}},
+          Vertex{{-width / 2, width / 2, -width / 2},  { 0.0f,  width,  0.0f}, color, {0.0f, 1.0f}},
+          Vertex{{-width / 2, width / 2, width / 2},   { 0.0f,  width,  0.0f}, color, {0.0f, 0.0f}},
         },
         std::vector<GLuint>{},
         std::move(ptextures),

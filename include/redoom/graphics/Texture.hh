@@ -21,6 +21,8 @@ public:
 
   [[nodiscard]] static Expected<Texture2D> fromFile(
       std::filesystem::path const& path) noexcept;
+  [[nodiscard]] static Expected<Texture2D> fromData(
+      unsigned char const* data, int width, int height, int pchannels) noexcept;
 
   [[nodiscard]] unsigned int getId() const noexcept;
   [[nodiscard]] int getWidth() const noexcept;
@@ -33,9 +35,11 @@ public:
   void bind() const noexcept;
   void unbind() const noexcept;
 
+  static Expected<Texture2D> getPlaceholder() noexcept;
+
 private:
   explicit Texture2D(
-      unsigned int pid, int pwidth, int pheight, int pchannels) noexcept;
+      unsigned int pid, int pwidth, int pheight, int channels) noexcept;
 
   unsigned int id;
   mutable GLint unit;

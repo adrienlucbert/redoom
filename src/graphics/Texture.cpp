@@ -1,7 +1,5 @@
 #include <redoom/graphics/Texture.hh>
 
-#include <iostream>
-
 #include <fmt/core.h>
 #include <stb/stb_image.h>
 
@@ -44,8 +42,8 @@ Texture2D& Texture2D::operator=(Texture2D&& rhs) noexcept
   return *this;
 }
 
-Expected<Texture2D> Texture2D::fromFile(
-    std::filesystem::path const& path) noexcept
+Expected<Texture2D> Texture2D::fromData(
+    unsigned char const* data, int width, int height, int channels) noexcept
 {
   unsigned int id; // NOLINT
   glGenTextures(1, &id);
@@ -57,6 +55,32 @@ Expected<Texture2D> Texture2D::fromFile(
   glTexParameteri(
       GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  GLenum format; // NOLINT
+  if (channels == 3)
+    format = GL_RGB;
+  else if (channels == 4)
+    format = GL_RGBA;
+  else {
+    return make_formatted_unexpected(
+        "Unsupported channels count: {}", channels);
+  }
+  glTexImage2D(GL_TEXTURE_2D,
+      0,
+      static_cast<GLint>(format),
+      width,
+      height,
+      0,
+      format,
+      GL_UNSIGNED_BYTE,
+      data);
+  glGenerateMipmap(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, 0);
+  return Texture2D{id, width, height, channels};
+}
+
+Expected<Texture2D> Texture2D::fromFile(
+    std::filesystem::path const& path) noexcept
+{
   int width;    // NOLINT
   int height;   // NOLINT
   int channels; // NOLINT
@@ -65,29 +89,10 @@ Expected<Texture2D> Texture2D::fromFile(
   if (data == nullptr)
     return tl::make_unexpected("Failed to load texture");
   else {
-    GLenum format; // NOLINT
-    if (channels == 3)
-      format = GL_RGB;
-    else if (channels == 4)
-      format = GL_RGBA;
-    else {
-      return make_formatted_unexpected(
-          "Unsupported channels count: {}", channels);
-    }
-    glTexImage2D(GL_TEXTURE_2D,
-        0,
-        static_cast<GLint>(format),
-        width,
-        height,
-        0,
-        format,
-        GL_UNSIGNED_BYTE,
-        data);
-    glGenerateMipmap(GL_TEXTURE_2D);
+    auto texture = Texture2D::fromData(data, width, height, channels);
     stbi_image_free(data);
+    return texture;
   }
-  glBindTexture(GL_TEXTURE_2D, 0);
-  return Texture2D{id, width, height, channels};
 }
 
 unsigned int Texture2D::getId() const noexcept
@@ -128,5 +133,11 @@ void Texture2D::bind() const noexcept
 void Texture2D::unbind() const noexcept // NOLINT
 {
   glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+Expected<Texture2D> Texture2D::getPlaceholder() noexcept
+{
+  unsigned char const data[] = {255, 255, 255, 255}; // NOLINT
+  return Texture2D::fromData(data, 1, 1, 4);
 }
 } // namespace redoom::graphics

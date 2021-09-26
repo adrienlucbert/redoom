@@ -34,7 +34,7 @@ void VertexArray::bind() const noexcept
   glBindVertexArray(this->id);
 }
 
-void VertexArray::unbind() noexcept // NOLINT
+void VertexArray::unbind() const noexcept // NOLINT
 {
   glBindVertexArray(0);
 }

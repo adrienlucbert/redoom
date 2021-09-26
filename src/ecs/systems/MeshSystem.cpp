@@ -1,8 +1,6 @@
 #include <cstdlib>
 #include <redoom/ecs/systems/MeshSystem.hh>
 
-#include <iostream>
-
 #include <redoom/ecs/components/MeshComponent.hh>
 #include <redoom/ecs/components/TransformComponent.hh>
 #include <redoom/graphics/ShaderLibrary.hh>

@@ -18,7 +18,7 @@ public:
   VertexArray& operator=(VertexArray&& rhs) noexcept;
 
   void bind() const noexcept;
-  void unbind() noexcept;
+  void unbind() const noexcept;
 
 private:
   unsigned int id;

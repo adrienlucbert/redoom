@@ -39,6 +39,8 @@ public:
   void run() noexcept;
 
   Scene& makeScene(std::string_view name, bool set_current = true) noexcept;
+  Expected<std::reference_wrapper<Scene>> loadScene(
+      std::string_view filepath, bool set_current = true) noexcept;
   [[nodiscard]] Scene& getCurrentScene() noexcept;
   void setCurrentScene(std::string const& name) noexcept;
 

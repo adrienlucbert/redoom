@@ -1,0 +1,14 @@
+Scene: default
+Entities:
+  - BehaviourComponent:
+      CameraBehaviour
+    CameraComponent:
+      Camera:
+        {}
+  - TransformComponent:
+      position: [0, 0, 0]
+      angle: 1.57079637
+      rotation: [1, 0, 0]
+      scale: [1, 1, 1]
+    MeshComponent:
+      {}

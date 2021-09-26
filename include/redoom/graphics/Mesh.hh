@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include <GL/glew.h>
 #include <fmt/format.h>
 
@@ -27,6 +29,14 @@ public:
     , vbo{this->vertices, BufferUsage::STATIC}
     , ebo{this->indices, BufferUsage::STATIC}
   {
+    if (this->textures.empty()) {
+      auto exp = Texture2D::getPlaceholder();
+      if (!exp)
+        std::cerr << "Warning: Could not generate texture placeholder" << '\n';
+      else
+        this->textures.push_back(std::move(*exp));
+    }
+
     this->vao.bind();
     this->vbo.bind();
     this->ebo.bind();
@@ -62,6 +72,10 @@ public:
       this->ebo.draw(this->topology);
     else
       this->vbo.draw(this->topology);
+
+    for (const auto& texture : this->textures)
+      texture.unbind();
+    this->vao.unbind();
   }
 
 private:

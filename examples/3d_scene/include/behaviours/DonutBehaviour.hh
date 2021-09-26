@@ -13,6 +13,12 @@
 #include <redoom/ecs/components/TransformComponent.hh>
 
 struct DonutBehaviour : public redoom::ecs::Behaviour {
+  [[nodiscard]] std::string const& getType() const noexcept override
+  {
+    static auto const type = std::string{"DonutBehaviour"};
+    return type;
+  }
+
   void onUpdate(redoom::ecs::Entity /*entity*/,
       redoom::ecs::UpdateContext& /*context*/) noexcept override
   {

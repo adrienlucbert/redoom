@@ -6,6 +6,12 @@ struct FPSCounterBehaviour : public redoom::ecs::Behaviour {
   double elapsed_time{0.0};
   long elapsed_frames{0};
 
+  [[nodiscard]] std::string const& getType() const noexcept override
+  {
+    static auto const type = std::string{"FPSCounterBehaviour"};
+    return type;
+  }
+
   void onUpdate(redoom::ecs::Entity /*entity*/,
       redoom::ecs::UpdateContext& context) noexcept override
   {

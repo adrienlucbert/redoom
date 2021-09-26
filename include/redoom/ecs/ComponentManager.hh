@@ -103,6 +103,20 @@ public:
       return static_cast<T&>(*component_it->second);
   }
 
+  std::vector<std::reference_wrapper<ComponentBase const>> getComponents(
+      Entity entity) const noexcept
+  {
+    auto components =
+        std::vector<std::reference_wrapper<ComponentBase const>>{};
+    for (auto const& pair : this->components_lists) {
+      auto const& list = pair.second;
+      auto const& component_it = list.find(entity);
+      if (component_it != list.end())
+        components.emplace_back(std::ref(*component_it->second));
+    }
+    return components;
+  }
+
 private:
   template <typename T>
   std::unordered_map<Entity, typename Allocator<ComponentBase>::ptr_t>&

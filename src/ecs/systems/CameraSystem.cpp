@@ -12,8 +12,8 @@ void CameraSystem::update(UpdateContext& context) noexcept
   auto count = 0u;
   context.component_manager.apply<components::CameraComponent>(
       [&count](auto /*entity*/, auto const& component) {
-        if (++count > 1)
-          assert("More than one camera is not allowed" == nullptr);
+        ++count;
+        assert(count <= 1 && "More than one camera is not allowed");
         renderer::Renderer::setViewMatrix(component.camera.getView());
         renderer::Renderer::setProjectionMatrix(
             component.camera.getProjection());

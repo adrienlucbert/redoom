@@ -1,3 +1,5 @@
+#pragma once
+
 #include <numbers>
 #include <utility>
 #include <vector>

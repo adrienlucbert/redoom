@@ -1,5 +1,9 @@
 #include <redoom/Scene.hh>
 
+#include <yaml-cpp/yaml.h>
+
+#include <redoom/SceneSerializer.hh>
+
 namespace redoom
 {
 Scene::Scene(std::string_view pname) noexcept
@@ -15,5 +19,20 @@ std::string const& Scene::getName() const noexcept
 ecs::Registry& Scene::getRegistry() noexcept
 {
   return this->registry;
+}
+
+ecs::Registry const& Scene::getRegistry() const noexcept
+{
+  return this->registry;
+}
+
+void Scene::serialize(std::string_view filepath) const noexcept
+{
+  SceneSerializer::get().serialize(filepath, *this);
+}
+
+void Scene::setName(std::string_view pname) noexcept
+{
+  this->name = pname;
 }
 } // namespace redoom

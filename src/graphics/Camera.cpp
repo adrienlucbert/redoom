@@ -1,7 +1,5 @@
 #include <redoom/graphics/Camera.hh>
 
-#include <iostream>
-
 namespace redoom::graphics
 {
 Camera::Camera(glm::vec3 pposition) noexcept

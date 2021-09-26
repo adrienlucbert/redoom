@@ -1,5 +1,8 @@
 #include <redoom/ecs/components/BehaviourComponent.hh>
 
+#include <redoom/Scene.hh>
+#include <redoom/ecs/behaviours/CameraBehaviour.hh>
+
 namespace redoom::ecs::components
 {
 BehaviourComponent::BehaviourComponent(
@@ -8,13 +11,22 @@ BehaviourComponent::BehaviourComponent(
 {
 }
 
-void BehaviourComponent::onInit(Entity entity, Context& context) noexcept
+std::string const& BehaviourComponent::getType() const noexcept
 {
-  this->get()->get().onInit(entity, context);
+  static auto const type = std::string{"BehaviourComponent"};
+  return type;
 }
 
-void BehaviourComponent::onDestroy(Entity entity, Context& context) noexcept
+void BehaviourComponent::Serializer::serialize(
+    YAML::Emitter& out, ecs::ComponentBase const* component) const noexcept
 {
-  this->get()->get().onDestroy(entity, context);
+  auto const* bc = dynamic_cast<BehaviourComponent const*>(component);
+  out << bc->behaviour->getType();
+}
+[[nodiscard]] Expected<> BehaviourComponent::Serializer::deserialize(
+    YAML::Node const& /*node*/, Scene& scene, Entity entity) const noexcept
+{
+  scene.getRegistry().attachComponent<behaviours::CameraBehaviour>(entity);
+  return {};
 }
 } // namespace redoom::ecs::components

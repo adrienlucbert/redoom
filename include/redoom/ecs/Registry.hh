@@ -26,28 +26,19 @@ public:
   template <typename C, typename... Args>
   void attachComponent(Entity entity, Args&&... args) noexcept
   {
-    auto context = this->getContext();
-    if constexpr (std::is_base_of_v<Behaviour, C>) {
-      auto& component =
-          this->component_manager.make<components::BehaviourComponent>(
-              entity, std::make_unique<C>(std::forward<Args>(args)...));
-      component.onInit(entity, context);
-    } else {
-      auto& component =
-          this->component_manager.make<C>(entity, std::forward<Args>(args)...);
-      component.onInit(entity, context);
-    }
+    if constexpr (std::is_base_of_v<Behaviour, C>)
+      this->component_manager.make<components::BehaviourComponent>(
+          entity, std::make_unique<C>(std::forward<Args>(args)...));
+    else
+      this->component_manager.make<C>(entity, std::forward<Args>(args)...);
   }
 
   template <typename C>
   void detachComponent(Entity entity) noexcept
   {
     auto opt = this->component_manager.get<C>(entity);
-    if (opt) {
-      auto context = this->getContext();
-      opt->onDestroy(entity, context);
+    if (opt)
       this->component_manager.release<C>(entity);
-    }
   }
   template <typename C>
   [[nodiscard]] bool hasComponent(Entity entity) const noexcept
@@ -76,9 +67,23 @@ public:
     return this->system_manager.has<T>();
   }
 
+  void init() noexcept;
+
   void update(renderer::Window& window, double elapsed_time) noexcept;
 
+  std::vector<Entity> const& getEntities() const noexcept
+  {
+    return this->entity_manager.getEntities();
+  }
+
+  std::vector<std::reference_wrapper<const ComponentBase>> getComponents(
+      Entity entity) const noexcept
+  {
+    return this->component_manager.getComponents(entity);
+  }
+
 private:
+  bool is_init{false};
   [[nodiscard]] Context getContext() noexcept;
   [[nodiscard]] UpdateContext getUpdateContext(
       renderer::Window& window, double elapsed_time) noexcept;

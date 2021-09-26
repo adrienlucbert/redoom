@@ -1,3 +1,5 @@
+#pragma once
+
 #include <redoom/ecs/System.hh>
 
 namespace redoom::ecs::systems

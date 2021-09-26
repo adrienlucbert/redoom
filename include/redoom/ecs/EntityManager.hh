@@ -23,6 +23,8 @@ public:
   void release(Entity entity) noexcept;
   [[nodiscard]] bool has(Entity entity) const noexcept;
 
+  [[nodiscard]] std::vector<Entity> const& getEntities() const noexcept;
+
 private:
   mutable std::unique_ptr<std::mutex> mutex{std::make_unique<std::mutex>()};
   std::vector<Entity> entities;

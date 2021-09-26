@@ -108,8 +108,8 @@ endif()
 add_library(
   redoom-core STATIC
   src/Application.cpp
+  src/ComponentSerializer.cpp
   src/ecs/Behaviour.cpp
-  src/ecs/ComponentBase.cpp
   src/ecs/components/BehaviourComponent.cpp
   src/ecs/Context.cpp
   src/ecs/EntityManager.cpp
@@ -139,6 +139,7 @@ add_library(
   src/renderer/Renderer.cpp
   src/renderer/Window.cpp
   src/Scene.cpp
+  src/SceneSerializer.cpp
 )
 target_compile_options(redoom-core PRIVATE ${WARNING_FLAGS})
 target_include_directories(redoom-core PUBLIC include)

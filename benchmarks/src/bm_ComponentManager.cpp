@@ -7,6 +7,11 @@
 auto constexpr iterations_count = 2 << 12;
 
 struct DummyComponent : public redoom::ecs::Component<DummyComponent> {
+  [[nodiscard]] std::string const& getType() const noexcept override
+  {
+    static auto const type = std::string{"DummyComponent"};
+    return type;
+  }
 };
 
 using T = DummyComponent;

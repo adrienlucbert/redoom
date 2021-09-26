@@ -20,8 +20,18 @@ bool Registry::hasEntity(Entity entity) const noexcept
   return this->entity_manager.has(entity);
 }
 
+void Registry::init() noexcept
+{
+  auto context = this->getContext();
+  context.component_manager.apply<components::BehaviourComponent>(
+      [&](auto entity, auto& component) { component.init(entity, context); });
+  this->is_init = true;
+}
+
 void Registry::update(renderer::Window& window, double elapsed_time) noexcept
 {
+  if (!this->is_init)
+    this->init();
   auto context = this->getUpdateContext(window, elapsed_time);
   this->system_manager.update(context);
 }

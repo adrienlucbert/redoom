@@ -6,6 +6,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include <redoom/SceneSerializer.hh>
 #include <redoom/renderer/Renderer.hh>
 #include <redoom/renderer/Window.hh>
 
@@ -39,6 +40,20 @@ Scene& Application::makeScene(std::string_view name, bool set_current) noexcept
   auto [it, success] =
       this->scenes.emplace(name, std::make_shared<Scene>(name));
   assert(success);
+  if (set_current)
+    this->current_scene = it->second;
+  return *it->second;
+}
+
+Expected<std::reference_wrapper<Scene>> Application::loadScene(
+    std::string_view filepath, bool set_current) noexcept
+{
+  auto scene = std::make_shared<Scene>("default");
+  auto exp = SceneSerializer::get().deserialize(*scene, filepath);
+  RETURN_IF_UNEXPECTED(exp);
+  auto [it, success] = this->scenes.emplace(scene->getName(), std::move(scene));
+  if (!success)
+    return tl::make_unexpected("Could not append scene to the application");
   if (set_current)
     this->current_scene = it->second;
   return *it->second;

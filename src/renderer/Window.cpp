@@ -1,7 +1,6 @@
 #include <redoom/renderer/Window.hh>
 
 #include <cassert>
-#include <iostream>
 
 #include <redoom/platform/OpenGL/OpenGLWindow.hh>
 #include <redoom/renderer/RendererAPI.hh>

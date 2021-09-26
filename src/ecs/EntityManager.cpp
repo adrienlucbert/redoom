@@ -35,4 +35,9 @@ bool EntityManager::has(Entity entity) const noexcept
   return std::binary_search(
       this->entities.begin(), this->entities.end(), entity);
 }
+
+std::vector<Entity> const& EntityManager::getEntities() const noexcept
+{
+  return this->entities;
+}
 } // namespace redoom::ecs
