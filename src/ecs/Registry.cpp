@@ -2,6 +2,7 @@
 
 #include <redoom/ecs/Context.hh>
 #include <redoom/ecs/UpdateContext.hh>
+#include <redoom/ecs/components/BehaviourComponent.hh>
 
 namespace redoom::ecs
 {

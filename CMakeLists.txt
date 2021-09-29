@@ -41,6 +41,7 @@ set(
   -Wno-c++20-compat
   -Wno-signed-enum-bitfield
   -Wno-weak-vtables
+  -Wno-return-type-c-linkage
 )
 
 if(${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 13.0.0)
@@ -106,7 +107,7 @@ if(USE_CLANG_TIDY)
 endif()
 
 add_library(
-  redoom-core STATIC
+  redoom-core SHARED
   src/Application.cpp
   src/ComponentSerializer.cpp
   src/ecs/Behaviour.cpp
@@ -164,6 +165,7 @@ add_executable(
 target_link_libraries(
   redoom
   redoom-core
+  dl
 )
 target_link_options(redoom PRIVATE -rdynamic)
 target_compile_options(redoom PRIVATE ${WARNING_FLAGS})
@@ -179,3 +181,5 @@ endif()
 if(REDOOM_BUILD_EXAMPLES)
   add_subdirectory(examples)
 endif()
+
+add_subdirectory(libs)

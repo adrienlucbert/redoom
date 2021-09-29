@@ -16,7 +16,7 @@ public:
   {
     auto* sym = dlsym(this->handle.get(), symbol.data());
     if (sym == nullptr)
-      return make_formatted_unexpected("Symbol {} not found", symbol);
+      return make_formatted_unexpected("{}: symbol not found", symbol);
     return (reinterpret_cast<SymT>(sym)); // NOLINT
   }
 
@@ -24,7 +24,7 @@ public:
   {
     auto* handle = dlopen(filepath.data(), RTLD_LAZY);
     if (handle == nullptr) {
-      return tl::make_unexpected("could not open library");
+      return make_formatted_unexpected("{}: could not open library", filepath);
     }
     return {DLLoader{handle}};
   }

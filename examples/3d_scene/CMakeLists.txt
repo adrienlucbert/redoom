@@ -9,3 +9,5 @@ target_link_libraries(
 target_compile_options(${EXAMPLE_NAME} PRIVATE ${WARNING_FLAGS})
 set_property(TARGET ${EXAMPLE_NAME} PROPERTY CXX_STANDARD 20)
 set_property(TARGET ${EXAMPLE_NAME} PROPERTY CXX_STANDARD_REQUIRED ON)
+
+add_subdirectory(behaviours)

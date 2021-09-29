@@ -1,13 +1,15 @@
 cmake_policy(SET CMP0077 NEW)
 
+set(BUILD_SHARED_LIBS on)
 add_subdirectory(fmt)
+
 add_subdirectory(spdlog)
 add_subdirectory(tl)
 
 # yaml-cpp
 set(YAML_CPP_BUILD_CONTRIB off)
 set(YAML_CPP_BUILD_TOOLS off)
-set(YAML_BUILD_SHARED_LIBS off)
+set(YAML_BUILD_SHARED_LIBS on)
 set(YAML_CPP_BUILD_TESTS off)
 set(YAML_CPP_INSTALL off)
 add_subdirectory(yaml-cpp)
@@ -36,9 +38,9 @@ add_subdirectory(stb)
 add_subdirectory(glfw EXCLUDE_FROM_ALL)
 
 # glew
-add_definitions(-DGLEW_STATIC)
+add_definitions(-DGLEW_SHARED)
 add_subdirectory(glew EXCLUDE_FROM_ALL)
-add_library(glew ALIAS libglew_static)
+add_library(glew ALIAS libglew_shared)
 
 # glm
 add_subdirectory(glm EXCLUDE_FROM_ALL)

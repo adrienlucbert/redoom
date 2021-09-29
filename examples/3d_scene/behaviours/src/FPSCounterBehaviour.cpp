@@ -1,8 +1,14 @@
+#include <behaviours/extern.hh>
+
 #include <iostream>
 
 #include <redoom/ecs/Behaviour.hh>
 
-struct FPSCounterBehaviour : public redoom::ecs::Behaviour {
+using redoom::ecs::Behaviour;
+using redoom::ecs::Entity;
+using redoom::ecs::UpdateContext;
+
+struct FPSCounterBehaviour : public Behaviour {
   double elapsed_time{0.0};
   long elapsed_frames{0};
 
@@ -12,8 +18,7 @@ struct FPSCounterBehaviour : public redoom::ecs::Behaviour {
     return type;
   }
 
-  void onUpdate(redoom::ecs::Entity /*entity*/,
-      redoom::ecs::UpdateContext& context) noexcept override
+  void onUpdate(Entity /*entity*/, UpdateContext& context) noexcept override
   {
     this->elapsed_time += context.elapsed_time;
     ++this->elapsed_frames;
@@ -26,3 +31,8 @@ struct FPSCounterBehaviour : public redoom::ecs::Behaviour {
     }
   }
 };
+
+std::unique_ptr<Behaviour> make() noexcept
+{
+  return std::make_unique<FPSCounterBehaviour>();
+}

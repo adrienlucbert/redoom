@@ -3,7 +3,6 @@
 #include <redoom/ecs/ComponentManager.hh>
 #include <redoom/ecs/EntityManager.hh>
 #include <redoom/ecs/SystemManager.hh>
-#include <redoom/ecs/components/BehaviourComponent.hh>
 #include <redoom/renderer/Window.hh>
 
 namespace redoom::ecs
@@ -26,11 +25,7 @@ public:
   template <typename C, typename... Args>
   void attachComponent(Entity entity, Args&&... args) noexcept
   {
-    if constexpr (std::is_base_of_v<Behaviour, C>)
-      this->component_manager.make<components::BehaviourComponent>(
-          entity, std::make_unique<C>(std::forward<Args>(args)...));
-    else
-      this->component_manager.make<C>(entity, std::forward<Args>(args)...);
+    this->component_manager.make<C>(entity, std::forward<Args>(args)...);
   }
 
   template <typename C>
@@ -83,11 +78,11 @@ public:
   }
 
 private:
-  bool is_init{false};
   [[nodiscard]] Context getContext() noexcept;
   [[nodiscard]] UpdateContext getUpdateContext(
       renderer::Window& window, double elapsed_time) noexcept;
 
+  bool is_init{false};
   ComponentManager component_manager;
   EntityManager entity_manager;
   SystemManager system_manager;
