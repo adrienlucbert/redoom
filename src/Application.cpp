@@ -6,9 +6,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include <redoom/SceneSerializer.hh>
 #include <redoom/renderer/Renderer.hh>
 #include <redoom/renderer/Window.hh>
+#include <redoom/serializer/SceneSerializer.hh>
 
 namespace redoom
 {

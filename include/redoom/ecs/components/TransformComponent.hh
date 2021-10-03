@@ -3,9 +3,10 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <Utils/Expected.hh>
-#include <redoom/ComponentSerializer.hh>
 #include <redoom/Scene.hh>
 #include <redoom/ecs/Component.hh>
+#include <redoom/serializer/ComponentSerializer.hh>
+#include <redoom/serializer/common.hh>
 
 namespace redoom::ecs::components
 {
@@ -33,8 +34,8 @@ struct TransformComponent : public Component<TransformComponent> {
   glm::vec3 scale{1.0f, 1.0f, 1.0f};
 
   struct Serializer : public ComponentSerializer {
-    void serialize(YAML::Emitter& out,
-        ecs::ComponentBase const* component) const noexcept override
+    void serialize(
+        YAML::Emitter& out, ecs::ComponentBase const* component) const override
     {
       auto const* tc = dynamic_cast<TransformComponent const*>(component);
       out << YAML::Key << "position" << YAML::Value << tc->position;
@@ -42,9 +43,8 @@ struct TransformComponent : public Component<TransformComponent> {
       out << YAML::Key << "rotation" << YAML::Value << tc->rotation;
       out << YAML::Key << "scale" << YAML::Value << tc->scale;
     }
-    [[nodiscard]] Expected<> deserialize(YAML::Node const& node,
-        Scene& scene,
-        Entity entity) const noexcept override
+    [[nodiscard]] Expected<> deserialize(
+        YAML::Node const& node, Scene& scene, Entity entity) const override
     {
       auto pposition = node["position"].as<glm::vec3>();
       auto pangle = node["angle"].as<float>();

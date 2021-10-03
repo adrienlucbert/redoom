@@ -20,14 +20,14 @@ std::string const& BehaviourComponent::getType() const noexcept
 }
 
 void BehaviourComponent::Serializer::serialize(
-    YAML::Emitter& out, ecs::ComponentBase const* component) const noexcept
+    YAML::Emitter& out, ecs::ComponentBase const* component) const
 {
   auto const* bc = dynamic_cast<BehaviourComponent const*>(component);
   out << bc->behaviour->getType();
 }
 
 [[nodiscard]] Expected<> BehaviourComponent::Serializer::deserialize(
-    YAML::Node const& node, Scene& scene, Entity entity) const noexcept
+    YAML::Node const& node, Scene& scene, Entity entity) const
 {
   static auto factories =
       std::unordered_map<std::string, Utils::Factory<Behaviour>>{};

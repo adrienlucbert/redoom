@@ -1,4 +1,4 @@
-#include <redoom/SceneSerializer.hh>
+#include <redoom/serializer/SceneSerializer.hh>
 
 #include <fstream>
 #include <iostream>

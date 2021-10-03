@@ -1,5 +1,7 @@
 #include <redoom/graphics/Camera.hh>
 
+#include <redoom/serializer/common.hh>
+
 namespace redoom::graphics
 {
 Camera::Camera(glm::vec3 pposition) noexcept
@@ -145,3 +147,47 @@ void Camera::updateView() noexcept
       glm::lookAt(this->position, this->position + this->front, this->up);
 }
 } // namespace redoom::graphics
+
+namespace YAML
+{
+using redoom::graphics::Camera;
+
+YAML::Emitter& operator<<(YAML::Emitter& out, const Camera& c)
+{
+  out << YAML::BeginMap;
+  out << YAML::Key << "position" << YAML::Value << c.getPosition();
+  out << YAML::Key << "yaw" << YAML::Value << c.getYaw();
+  out << YAML::Key << "pitch" << YAML::Value << c.getPitch();
+  out << YAML::Key << "speed" << YAML::Value << c.getSpeed();
+  out << YAML::Key << "sensitivity" << YAML::Value << c.getSensitivity();
+  out << YAML::Key << "fov" << YAML::Value << c.getFov();
+  out << YAML::EndMap;
+  return out;
+}
+
+Node convert<Camera>::encode(const Camera& rhs)
+{
+  Node node;
+  node["position"] = rhs.getPosition();
+  node["yaw"] = rhs.getYaw();
+  node["pitch"] = rhs.getPitch();
+  node["speed"] = rhs.getSpeed();
+  node["sensitivity"] = rhs.getSensitivity();
+  node["fov"] = rhs.getFov();
+  return node;
+}
+
+bool convert<Camera>::decode(const Node& node, Camera& rhs)
+{
+  if (!node.IsMap() || node.size() != 6)
+    return false;
+
+  rhs.setPosition(node["position"].as<glm::vec3>());
+  rhs.setYaw(node["yaw"].as<float>());
+  rhs.setPitch(node["pitch"].as<float>());
+  rhs.setSpeed(node["speed"].as<float>());
+  rhs.setSensitivity(node["sensitivity"].as<float>());
+  rhs.setFov(node["fov"].as<float>());
+  return true;
+}
+} // namespace YAML

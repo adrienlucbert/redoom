@@ -1,4 +1,4 @@
-#include <redoom/ComponentSerializer.hh>
+#include <redoom/serializer/common.hh>
 
 namespace YAML
 {

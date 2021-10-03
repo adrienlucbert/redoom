@@ -2,7 +2,7 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include <redoom/SceneSerializer.hh>
+#include <redoom/serializer/SceneSerializer.hh>
 
 namespace redoom
 {

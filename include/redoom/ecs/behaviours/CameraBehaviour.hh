@@ -20,11 +20,11 @@ struct CameraBehaviour : public redoom::ecs::Behaviour {
 
   void onInit(Entity entity, Context& context) noexcept override
   {
-    auto exp =
+    auto opt =
         context.component_manager.get<components::CameraComponent>(entity);
-    if (!exp)
+    if (!opt)
       assert("No camera component found" == nullptr);
-    this->component = std::addressof(*exp);
+    this->component = std::addressof(*opt);
   }
 
   void onUpdate(Entity /*entity*/, UpdateContext& context) noexcept override

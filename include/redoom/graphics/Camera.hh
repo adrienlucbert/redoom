@@ -1,7 +1,7 @@
 #pragma once
 
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <yaml-cpp/yaml.h>
 
 namespace redoom::graphics
 {
@@ -64,3 +64,15 @@ private:
   glm::mat4 projection{1.0f};
 };
 } // namespace redoom::graphics
+
+namespace YAML
+{
+YAML::Emitter& operator<<(
+    YAML::Emitter& out, const redoom::graphics::Camera& c);
+
+template <>
+struct convert<redoom::graphics::Camera> {
+  static Node encode(const redoom::graphics::Camera& rhs);
+  static bool decode(const Node& node, redoom::graphics::Camera& rhs);
+};
+} // namespace YAML

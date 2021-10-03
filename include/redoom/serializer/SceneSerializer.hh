@@ -7,7 +7,7 @@
 
 #include <Utils/Expected.hh>
 #include <Utils/Singleton.hh>
-#include <redoom/ComponentSerializer.hh>
+#include <redoom/serializer/ComponentSerializer.hh>
 
 namespace redoom
 {

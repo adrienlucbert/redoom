@@ -1,9 +1,9 @@
 #pragma once
 
-#include <redoom/ComponentSerializer.hh>
 #include <redoom/Scene.hh>
 #include <redoom/ecs/Component.hh>
 #include <redoom/graphics/Camera.hh>
+#include <redoom/serializer/ComponentSerializer.hh>
 
 namespace redoom::ecs::components
 {
@@ -22,19 +22,17 @@ struct CameraComponent : public Component<CameraComponent> {
   graphics::Camera camera;
 
   struct Serializer : public ComponentSerializer {
-    void serialize(YAML::Emitter& out,
-        ecs::ComponentBase const* /*component*/) const noexcept override
+    void serialize(
+        YAML::Emitter& out, ecs::ComponentBase const* component) const override
     {
-      out << YAML::Key << "Camera" << YAML::Value << YAML::BeginMap;
-      // TODO(alucbert): dump camera
-      out << YAML::EndMap;
+      auto const* cc = dynamic_cast<CameraComponent const*>(component);
+      out << YAML::Key << "camera" << YAML::Value << cc->camera;
     }
-    [[nodiscard]] Expected<> deserialize(YAML::Node const& /*node*/,
-        Scene& scene,
-        Entity entity) const noexcept override
+    [[nodiscard]] Expected<> deserialize(
+        YAML::Node const& node, Scene& scene, Entity entity) const override
     {
       scene.getRegistry().attachComponent<CameraComponent>(
-          entity, graphics::Camera{glm::vec3{0.0f, 2.0f, 5.0f}});
+          entity, node["camera"].as<graphics::Camera>());
       return {};
     }
   };

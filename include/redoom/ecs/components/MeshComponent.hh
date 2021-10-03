@@ -2,11 +2,11 @@
 
 #include <memory>
 
-#include <redoom/ComponentSerializer.hh>
 #include <redoom/Scene.hh>
 #include <redoom/ecs/Component.hh>
 #include <redoom/graphics/Mesh.hh>
 #include <redoom/graphics/mesh/Quad.hh>
+#include <redoom/serializer/ComponentSerializer.hh>
 
 namespace redoom::ecs::components
 {
@@ -28,15 +28,16 @@ struct MeshComponent : public Component<MeshComponent> {
 
   struct Serializer : public ComponentSerializer {
     void serialize(YAML::Emitter& /*out*/,
-        ecs::ComponentBase const* /*component*/) const noexcept override
+        ecs::ComponentBase const* /*component*/) const override
     {
+      // TODO(alucbert): serialize meshes
       // auto const* mc = dynamic_cast<MeshComponent const*>(component);
     }
 
-    [[nodiscard]] Expected<> deserialize(YAML::Node const& /*node*/,
-        Scene& scene,
-        Entity entity) const noexcept override
+    [[nodiscard]] Expected<> deserialize(
+        YAML::Node const& /*node*/, Scene& scene, Entity entity) const override
     {
+      // TODO(alucbert): deserialize meshes
       auto quad_mesh = std::shared_ptr<Quad>(new Quad{10.0f, 10.0f}); // NOLINT
       scene.getRegistry().attachComponent<MeshComponent>(entity, quad_mesh);
       return {};

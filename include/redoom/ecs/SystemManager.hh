@@ -40,7 +40,9 @@ public:
     auto data = SystemData{
         T::getTypeId(), std::make_unique<T>(std::forward<Args>(args)...)};
     this->systems.emplace(priority.priority, std::move(data));
-    this->thread_pool.reserve(this->systems.size());
+    if constexpr (std::is_base_of_v<MultithreadedSystem<T>, T>) {
+      this->thread_pool.reserve(this->thread_pool.size() + 1);
+    }
   }
 
   template <typename T, typename... Args>

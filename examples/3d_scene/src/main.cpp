@@ -1,6 +1,5 @@
 #include <redoom/Application.hh>
 #include <redoom/EntryPoint.hh>
-#include <redoom/SceneSerializer.hh>
 #include <redoom/ecs/Registry.hh>
 #include <redoom/ecs/behaviours/CameraBehaviour.hh>
 #include <redoom/ecs/components/BehaviourComponent.hh>
@@ -13,6 +12,7 @@
 #include <redoom/ecs/systems/MeshSystem.hh>
 #include <redoom/graphics/ShaderLibrary.hh>
 #include <redoom/graphics/mesh/Quad.hh>
+#include <redoom/serializer/SceneSerializer.hh>
 
 using redoom::SceneSerializer;
 using redoom::ecs::SystemPriority;
@@ -79,8 +79,8 @@ std::unique_ptr<Application> createApplication(ApplicationArguments args)
   //     TransformComponent(
   //         {0.0, 0.0, 0.0}, glm::radians(90.0f), {1.0f, 0.0f, 0.0f}));
 
-  // scene.serialize(fmt::format("../examples/3d_scene/scenes/{}.redoom",
-  // "default"));
+  // scene.serialize(
+  //     fmt::format("../examples/3d_scene/scenes/{}.redoom", "default"));
 
   registry.attachSystem<EventSystem>(SystemPriority{0});
   registry.attachSystem<BehaviourSystem>(SystemPriority{1});
