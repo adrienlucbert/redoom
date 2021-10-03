@@ -38,10 +38,12 @@ jobs:
       - name: "Run tests"
         run: |
           ./build/bin/tests-redoom
-          ./build/bin/redoom-utils-tests
+          ./build/bin/tests-redoom-utils
 
       - name: "Run thread-safety tests"
-        run: ./build/bin/tests-redoom "[Thread]"
+        run: |
+          ./build/bin/tests-redoom "[Thread]"
+          ./build/bin/tests-redoom-utils "[Thread]"
 
       - name: "Build with clang-tidy"
         run: |

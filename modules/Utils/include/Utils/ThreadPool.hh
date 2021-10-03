@@ -15,7 +15,7 @@ namespace redoom::Utils
 class ThreadPool
 {
 public:
-  using Task = std::function<void()>;
+  using Task = std::packaged_task<void()>;
 
   ThreadPool() noexcept = default;
   explicit ThreadPool(unsigned int size) noexcept
@@ -46,14 +46,14 @@ public:
 
     if (this->workers.empty())
       assert("Cannot enqueue task on empty ThreadPool" == nullptr);
-    auto task = std::make_shared<std::packaged_task<return_type()>>(
-        std::bind(std::forward<Callable>(f), std::forward<Args>(args)...));
-    auto res = task->get_future();
+    auto task = std::packaged_task<return_type()>{
+        [&f, &args...]() { f(std::forward<Args>(args)...); }};
+    auto res = task.get_future();
     {
       auto lock = std::unique_lock{*this->mutex};
       if (this->is_stopping)
         assert("Cannot enqueue task on stopped ThreadPool" == nullptr);
-      this->tasks.emplace([task] { (*task)(); });
+      this->tasks.emplace(std::move(task));
     }
     this->cv->notify_one();
     return res;

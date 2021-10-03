@@ -17,7 +17,7 @@ TEST_CASE("[SystemManager] Basic tests", "[ECS][System]")
 {
   auto system_manager = SystemManager{};
 
-  SECTION("?")
+  SECTION("Systems can be created using the SystemManager")
   {
     system_manager.make<mock::TestSystem1>();
     system_manager.make<mock::TestSystem2>();
@@ -37,16 +37,6 @@ TEST_CASE(
   {
     auto t1 = std::thread{[&]() { system_manager.make<mock::TestSystem1>(); }};
     auto t2 = std::thread{[&]() { system_manager.make<mock::TestSystem2>(); }};
-    t1.join();
-    t2.join();
-  }
-
-  SECTION("Systems can be updated from different threads")
-  {
-    system_manager.make<mock::TestSystem1>();
-    system_manager.make<mock::TestSystem2>();
-    auto t1 = std::thread{[&]() { system_manager.update(context); }};
-    auto t2 = std::thread{[&]() { system_manager.update(context); }};
     t1.join();
     t2.join();
   }
