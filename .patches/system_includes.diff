@@ -94,3 +94,29 @@ index b230b9e..7432cce 100644
      $<$<AND:${backport-msvc-runtime},${msvc-rt-mtd-static}>:-MTd>
      $<$<AND:${backport-msvc-runtime},${msvc-rt-mt-static}>:-MT>
      $<$<AND:${backport-msvc-runtime},${msvc-rt-mtd-dll}>:-MDd>
+Submodule deps/assimp contains modified content
+diff --git a/deps/assimp/CMakeLists.txt b/deps/assimp/CMakeLists.txt
+index dcafb649f..4c60fe18a 100644
+--- a/deps/assimp/CMakeLists.txt
++++ b/deps/assimp/CMakeLists.txt
+@@ -315,6 +315,7 @@ IF (ASSIMP_UBSAN)
+   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined -fno-sanitize-recover=all")
+   SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=undefined -fno-sanitize-recover=all")
+ ENDIF()
++string(REPLACE "-Wall" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+ 
+ INCLUDE (FindPkgMacros)
+ INCLUDE (PrecompiledHeader)
+diff --git a/deps/assimp/code/CMakeLists.txt b/deps/assimp/code/CMakeLists.txt
+index 55538d965..456f72b5b 100644
+--- a/deps/assimp/code/CMakeLists.txt
++++ b/deps/assimp/code/CMakeLists.txt
+@@ -1105,7 +1105,7 @@ ENDIF (ASSIMP_BUILD_NONFREE_C4D_IMPORTER)
+ ADD_LIBRARY( assimp ${assimp_src} )
+ ADD_LIBRARY(assimp::assimp ALIAS assimp)
+ 
+-TARGET_INCLUDE_DIRECTORIES ( assimp PUBLIC
++TARGET_INCLUDE_DIRECTORIES ( assimp SYSTEM PUBLIC
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>
+   $<INSTALL_INTERFACE:include>

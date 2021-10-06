@@ -156,6 +156,7 @@ target_link_libraries(
   glm
   stb
   yaml-cpp
+  assimp
 )
 
 add_executable(

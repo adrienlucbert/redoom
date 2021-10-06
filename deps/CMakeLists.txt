@@ -1,9 +1,16 @@
-cmake_policy(SET CMP0077 NEW)
+# disable cmake warnings for dependencies
+set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS 1 CACHE INTERNAL "No dev warnings")
+# honor normal variables in options
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
+# fmt
 set(BUILD_SHARED_LIBS on)
 add_subdirectory(fmt)
 
+# spdlog
 add_subdirectory(spdlog)
+
+# tl
 add_subdirectory(tl)
 
 # yaml-cpp
@@ -33,6 +40,14 @@ endif()
 
 # stb
 add_subdirectory(stb)
+
+# assimp
+set(ASSIMP_BUILD_ASSIMP_TOOLS off)
+set(ASSIMP_BUILD_TESTS off)
+if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")
+  set(INJECT_DEBUG_POSTFIX off)
+endif()
+add_subdirectory(assimp)
 
 # glfw
 add_subdirectory(glfw EXCLUDE_FROM_ALL)

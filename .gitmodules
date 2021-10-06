@@ -28,3 +28,6 @@
 [submodule "deps/yaml-cpp"]
 	path = deps/yaml-cpp
 	url = git://github.com/jbeder/yaml-cpp
+[submodule "deps/assimp"]
+	path = deps/assimp
+	url = git://github.com/assimp/assimp
