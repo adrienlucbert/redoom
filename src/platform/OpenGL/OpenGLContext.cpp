@@ -18,7 +18,11 @@ Expected<std::unique_ptr<renderer::RendererContext>> OpenGLContext::create(
   if (err != GLEW_OK)
     return make_formatted_unexpected(
         "Failed to create renderer context: {}", glewGetErrorString(err));
-  return std::unique_ptr<OpenGLContext>{new OpenGLContext{pnative_window}};
+  try {
+    return std::unique_ptr<OpenGLContext>{new OpenGLContext{pnative_window}};
+  } catch (std::exception const& e) {
+    return tl::unexpected(e.what());
+  }
 }
 
 OpenGLContext::OpenGLContext(GLFWwindow* pnative_window) noexcept

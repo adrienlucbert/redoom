@@ -39,5 +39,7 @@ Checks: '
   -*namespace-comments,
   -readability-else-after-return,
   -readability-uppercase-literal-suffix,
+  -altera-id-dependent-backward-branch,
+  -bugprone-easily-swappable-parameters
 '
 ---

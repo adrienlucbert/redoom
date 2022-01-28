@@ -116,8 +116,12 @@ Expected<std::unique_ptr<renderer::Window>> OpenGLWindow::create(
 
   glEnable(GL_DEPTH_TEST);
 
-  return std::unique_ptr<OpenGLWindow>(
-      new OpenGLWindow{pwindow, std::move(pcontext), pwidth, pheight});
+  try {
+    return std::unique_ptr<OpenGLWindow>(
+        new OpenGLWindow{pwindow, std::move(pcontext), pwidth, pheight});
+  } catch (std::exception const& e) {
+    return tl::unexpected(e.what());
+  }
 }
 
 OpenGLWindow::OpenGLWindow(GLFWwindow* pwindow,
@@ -165,7 +169,7 @@ OpenGLWindow::OpenGLWindow(GLFWwindow* pwindow,
         event_queue->push(events::KeyEvent{static_cast<events::Key>(key),
             scancode,
             static_cast<events::Action>(action),
-            static_cast<events::Mod>(mods)});
+            mods});
       });
 
   glfwSetCharCallback(
@@ -182,7 +186,7 @@ OpenGLWindow::OpenGLWindow(GLFWwindow* pwindow,
         event_queue->push(
             events::MouseButtonEvent{static_cast<events::Mouse>(button),
                 static_cast<events::Action>(action),
-                static_cast<events::Mod>(mods)});
+                mods});
       });
 
   glfwSetScrollCallback(this->window,

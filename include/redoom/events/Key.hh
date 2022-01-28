@@ -6,6 +6,7 @@
 namespace redoom::events
 {
 enum class Action : int {
+  UNKNOWN = -1,
   RELEASE = GLFW_RELEASE,
   PRESS = GLFW_PRESS,
   REPEAT = GLFW_REPEAT
@@ -137,6 +138,8 @@ enum class Key : int {
 };
 
 enum class Mod : int {
+  UNKNOWN = -1,
+  NONE = 0,
   SHIFT = GLFW_MOD_SHIFT,
   CONTROL = GLFW_MOD_CONTROL,
   ALT = GLFW_MOD_ALT,
@@ -146,6 +149,7 @@ enum class Mod : int {
 };
 
 enum class Mouse : int {
+  UNKNOWN = -1,
   BUTTON_1 = GLFW_MOUSE_BUTTON_1,
   BUTTON_2 = GLFW_MOUSE_BUTTON_2,
   BUTTON_3 = GLFW_MOUSE_BUTTON_3,

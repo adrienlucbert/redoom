@@ -14,6 +14,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: "Install system packages"
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ninja-build
+          sudo apt-get install -y clang-tidy-12
+          sudo apt-get install -y --no-install-recommends libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxext-dev libxfixes-dev libgl1-mesa-dev
+          sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-12 100
+          clang++ --version
+          clang-tidy --version
+
       - uses: actions/checkout@v2
         with:
           submodules: recursive
@@ -22,31 +32,21 @@ jobs:
         run: |
           git apply .patches/system_includes.diff
 
-      - name: "Install system packages"
+      - name: "Build with ThreadSanitizer and clang-tidy"
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y ninja-build
-          sudo apt-get install -y clang-tidy
-          sudo apt-get install -y --no-install-recommends libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxext-dev libxfixes-dev libgl1-mesa-dev
-
-      - name: "Build with ThreadSanitizer"
-        run: |
-          mkdir build && cd build
-          cmake .. -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_BUILD_TYPE=tsan -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+          mkdir -p build && cd build
+          pwd
+          ls
+          cmake .. -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_BUILD_TYPE=tsan -DUSE_CLANG_TIDY=on -DREDOOM_CLANG_TIDY_FLAGS='--warnings-as-errors=*' -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DREDOOM_BUILD_TESTS=on -DREDOOM_BUILD_BENCHMARKS=off
           ninja
 
       - name: "Run tests"
         run: |
-          ./build/bin/tests-redoom
-          ./build/bin/tests-redoom-utils
+          ./build/bin/tests/tests-redoom
+          ./build/bin/tests/tests-redoom-utils
 
       - name: "Run thread-safety tests"
         run: |
-          ./build/bin/tests-redoom "[Thread]"
-          ./build/bin/tests-redoom-utils "[Thread]"
+          ./build/bin/tests/tests-redoom "[Thread]"
+          ./build/bin/tests/tests-redoom-utils "[Thread]"
 
-      - name: "Build with clang-tidy"
-        run: |
-          cd build
-          cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release -DUSE_CLANG_TIDY=on -DREDOOM_CLANG_TIDY_FLAGS='--warnings-as-errors=*' -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DREDOOM_BUILD_TESTS=off -DREDOOM_BUILD_BENCHMARKS=off
-          ninja

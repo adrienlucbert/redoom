@@ -5,11 +5,14 @@
 #include <redoom/ecs/components/BehaviourComponent.hh>
 #include <redoom/ecs/components/CameraComponent.hh>
 #include <redoom/ecs/components/MeshComponent.hh>
+#include <redoom/ecs/components/ModelComponent.hh>
 #include <redoom/ecs/components/TransformComponent.hh>
 #include <redoom/ecs/systems/BehaviourSystem.hh>
 #include <redoom/ecs/systems/CameraSystem.hh>
 #include <redoom/ecs/systems/EventSystem.hh>
 #include <redoom/ecs/systems/MeshSystem.hh>
+#include <redoom/ecs/systems/ModelSystem.hh>
+#include <redoom/graphics/Model.hh>
 #include <redoom/graphics/ShaderLibrary.hh>
 #include <redoom/graphics/mesh/Quad.hh>
 #include <redoom/serializer/SceneSerializer.hh>
@@ -18,11 +21,13 @@ using redoom::SceneSerializer;
 using redoom::ecs::SystemPriority;
 using redoom::ecs::components::CameraComponent;
 using redoom::ecs::components::MeshComponent;
+using redoom::ecs::components::ModelComponent;
 using redoom::ecs::components::TransformComponent;
 using redoom::ecs::systems::BehaviourSystem;
 using redoom::ecs::systems::CameraSystem;
 using redoom::ecs::systems::EventSystem;
 using redoom::ecs::systems::MeshSystem;
+using redoom::ecs::systems::ModelSystem;
 using redoom::graphics::ShaderLibrary;
 
 namespace redoom
@@ -46,15 +51,16 @@ std::unique_ptr<Application> createApplication(ApplicationArguments args)
       std::make_unique<ecs::components::BehaviourComponent::Serializer>());
   SceneSerializer::get().registerComponentFactory(
       "MeshComponent", std::make_unique<MeshComponent::Serializer>());
+  SceneSerializer::get().registerComponentFactory(
+      "ModelComponent", std::make_unique<ModelComponent::Serializer>());
 
   auto scene_exp = app->loadScene(
-      fmt::format("../examples/3d_scene/scenes/{}.redoom", "default"));
+      fmt::format("../examples/3d_scene/scenes/{}.yaml", "default"));
   if (!scene_exp) {
     std::cerr << scene_exp.error() << '\n';
     std::abort();
   }
   auto& scene = scene_exp->get();
-  // auto& scene = app->makeScene("default");
   auto& registry = scene.getRegistry();
 
   auto shader_library_exp = ShaderLibrary::addShader("default",
@@ -65,27 +71,11 @@ std::unique_ptr<Application> createApplication(ApplicationArguments args)
     std::abort();
   }
 
-  // // NOLINTNEXTLINE
-  // auto plane_mesh = std::shared_ptr<Quad>(new Quad{10.0f, 10.0f});
-  //
-  // auto camera = registry.makeEntity();
-  // registry.attachComponent<CameraComponent>(
-  //     camera, graphics::Camera(glm::vec3{0.0f, 2.0f, 5.0f}));
-  // registry.attachComponent<CameraBehaviour>(camera);
-  //
-  // auto floor = registry.makeEntity();
-  // registry.attachComponent<MeshComponent>(floor, plane_mesh);
-  // registry.attachComponent<TransformComponent>(floor,
-  //     TransformComponent(
-  //         {0.0, 0.0, 0.0}, glm::radians(90.0f), {1.0f, 0.0f, 0.0f}));
-
-  // scene.serialize(
-  //     fmt::format("../examples/3d_scene/scenes/{}.redoom", "default"));
-
   registry.attachSystem<EventSystem>(SystemPriority{0});
   registry.attachSystem<BehaviourSystem>(SystemPriority{1});
   registry.attachSystem<CameraSystem>(SystemPriority{1});
   registry.attachSystem<MeshSystem>(SystemPriority{1000});
+  registry.attachSystem<ModelSystem>(SystemPriority{1000});
   return app;
 }
 } // namespace redoom

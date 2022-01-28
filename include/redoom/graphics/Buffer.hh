@@ -126,13 +126,13 @@ struct VertexBuffer : public Buffer<Vertex> {
     auto offset = 0u;
     this->bind();
     for (auto const& element : layout) {
+      glEnableVertexAttribArray(index);
       glVertexAttribPointer(index,
           static_cast<GLint>(element.components_count),
           element.gl_type,
           element.normalized ? GL_TRUE : GL_FALSE,
           static_cast<GLint>(layout.stride),
           reinterpret_cast<void*>(offset)); // NOLINT
-      glEnableVertexAttribArray(index);
       offset += element.size;
       ++index;
     }

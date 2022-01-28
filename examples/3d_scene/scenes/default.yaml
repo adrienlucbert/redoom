@@ -1,0 +1,24 @@
+Scene: default
+Entities:
+  - BehaviourComponent:
+      CameraBehaviour
+    CameraComponent:
+      camera:
+        position: [-0.509162366, -0.0212053936, 2.04661727]
+        yaw: -47.399601
+        pitch: 7.29998684
+        speed: 0.000999999815
+        sensitivity: 0.300000012
+        fov: 0.785398185
+  - TransformComponent:
+      position: [0, 0, 1.5]
+      angle: 0
+      rotation: [1, 0, 0]
+      scale: [0.100000001, 0.100000001, 0.100000001]
+    ModelComponent:
+      path: ../assets/backpack/backpack.obj
+      flip_uvs: true
+  - BehaviourComponent:
+      FPSCounterBehaviour
+  - BehaviourComponent:
+      KeyboardBehaviour

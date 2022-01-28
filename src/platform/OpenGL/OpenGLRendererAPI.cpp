@@ -24,6 +24,10 @@ void OpenGLRendererAPI::clear() noexcept
 Expected<std::unique_ptr<renderer::RendererAPI>>
 OpenGLRendererAPI::create() noexcept
 {
-  return std::unique_ptr<OpenGLRendererAPI>(new OpenGLRendererAPI{});
+  try {
+    return std::unique_ptr<OpenGLRendererAPI>(new OpenGLRendererAPI{});
+  } catch (std::exception const& e) {
+    return tl::unexpected(e.what());
+  }
 }
 } // namespace redoom::platform::OpenGL

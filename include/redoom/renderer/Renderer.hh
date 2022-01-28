@@ -3,6 +3,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <redoom/graphics/Mesh.hh>
+#include <redoom/graphics/Model.hh>
 #include <redoom/graphics/Program.hh>
 #include <redoom/renderer/RendererAPI.hh>
 
@@ -21,6 +22,9 @@ public:
 
   static void draw(graphics::Program& program,
       graphics::Mesh& mesh,
+      const glm::mat4& model) noexcept;
+  static void draw(graphics::Program& program,
+      graphics::Model& mod,
       const glm::mat4& model) noexcept;
 
 private:

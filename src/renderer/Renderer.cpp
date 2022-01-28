@@ -55,4 +55,19 @@ void Renderer::draw(graphics::Program& program,
   program.setUniformMatrix4("model", 1, GL_FALSE, glm::value_ptr(model));
   mesh.draw(program);
 }
+
+void Renderer::draw(graphics::Program& program,
+    graphics::Model& mod,
+    const glm::mat4& model) noexcept
+{
+  program.use();
+  program.setUniformMatrix4("projection",
+      1,
+      GL_FALSE,
+      glm::value_ptr(Renderer::getProjectionMatrix()));
+  program.setUniformMatrix4(
+      "view", 1, GL_FALSE, glm::value_ptr(Renderer::getViewMatrix()));
+  program.setUniformMatrix4("model", 1, GL_FALSE, glm::value_ptr(model));
+  mod.draw(program);
+}
 } // namespace redoom::renderer

@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.6)
 project(redoom)
 
+set(CMAKE_DEBUG_POSTFIX "" CACHE STRING "Debug Postfix for lib, samples and tools")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin/)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake-modules")
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib/)
@@ -120,15 +121,18 @@ add_library(
   src/ecs/systems/CameraSystem.cpp
   src/ecs/systems/EventSystem.cpp
   src/ecs/systems/MeshSystem.cpp
+  src/ecs/systems/ModelSystem.cpp
   src/ecs/UpdateContext.cpp
   src/events/EventQueue.cpp
   src/events/Key.cpp
   src/graphics/BufferLayout.cpp
   src/graphics/Camera.cpp
+  src/graphics/Model.cpp
   src/graphics/Program.cpp
   src/graphics/Shader.cpp
   src/graphics/ShaderLibrary.cpp
   src/graphics/Texture.cpp
+  src/graphics/TextureLibrary.cpp
   src/graphics/VertexArray.cpp
   src/platform/OpenGL/OpenGLContext.cpp
   src/platform/OpenGL/OpenGLRendererAPI.cpp

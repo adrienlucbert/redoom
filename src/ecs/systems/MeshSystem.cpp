@@ -1,4 +1,3 @@
-#include <cstdlib>
 #include <redoom/ecs/systems/MeshSystem.hh>
 
 #include <redoom/ecs/components/MeshComponent.hh>
