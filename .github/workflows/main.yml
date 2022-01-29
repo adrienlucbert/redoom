@@ -8,19 +8,25 @@ on:
 
   workflow_dispatch:
 
+env:
+  CLCACHE_VERSION: v1
+  CLCACHE_MAX_SIZE: 500M
+  DEFAULT_BUILD_DIRECTORY: build
+  RELEASE_BUILD_DIRECTORY: build-release
+  TIDY_BUILD_DIRECTORY: build-tidy
+
 jobs:
   build-and-test:
     name: Compile, run tests and thread sanitizer
     runs-on: ubuntu-latest
 
     steps:
-      - name: "Install system packages"
+      - name: Install system packages
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y ninja-build
-          sudo apt-get install -y clang-tidy-12
-          sudo apt-get install -y --no-install-recommends libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxext-dev libxfixes-dev libgl1-mesa-dev
+          sudo apt-get install -y ninja-build clang-tidy-12 ccache
           sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-12 100
+          sudo apt-get install -y --no-install-recommends libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxext-dev libxfixes-dev libgl1-mesa-dev
           clang++ --version
           clang-tidy --version
 
@@ -28,25 +34,84 @@ jobs:
         with:
           submodules: recursive
 
-      - name: "Apply patches"
+      - name: Apply patches
         run: |
           git apply .patches/system_includes.diff
 
-      - name: "Build with ThreadSanitizer and clang-tidy"
-        run: |
-          mkdir -p build && cd build
-          pwd
-          ls
-          cmake .. -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_BUILD_TYPE=tsan -DUSE_CLANG_TIDY=on -DREDOOM_CLANG_TIDY_FLAGS='--warnings-as-errors=*' -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DREDOOM_BUILD_TESTS=on -DREDOOM_BUILD_BENCHMARKS=off
-          ninja
+      - name: Cache dependencies and build caches
+        uses: actions/cache@v2
+        with:
+          path: |
+            .ccache
+            .ctcache
+            ctcache
+          key: clcache-${{ env.CLCACHE_VERSION }}-${{ github.run_id }}
+          restore-keys: clcache-${{ env.CLCACHE_VERSION }}
 
-      - name: "Run tests"
+      - name: Configure compiler cache (ccache)
+        run: |
+          ccache --set-config=cache_dir=$GITHUB_WORKSPACE/.ccache
+          ccache --set-config=max_size=$CLCACHE_MAX_SIZE
+          ccache --set-config=compression=true
+          ccache --show-config
+
+      - name: Configure linter cache (ctcache)
+        run: |
+          mkdir -p ctcache/bin && cd ctcache/bin
+          [ -f clang-tidy ] || wget https://raw.githubusercontent.com/matus-chochlik/ctcache/main/clang-tidy && chmod +x clang-tidy
+          [ -f clang-tidy-cache ] || wget https://raw.githubusercontent.com/matus-chochlik/ctcache/main/clang-tidy-cache && chmod +x clang-tidy-cache
+          echo "PATH=$GITHUB_WORKSPACE/ctcache/bin:$PATH" >> $GITHUB_ENV
+          echo "CTCACHE_DIR=$GITHUB_WORKSPACE/.ctcache" >> $GITHUB_ENV
+
+      - name: Build project for debug (with tsan)
+        env:
+          BUILD_FOLDER: ${{ env.DEFAULT_BUILD_DIRECTORY }}
+          BUILD_TYPE: tsan
+          CMAKE_OPTIONS: -DREDOOM_BUILD_TESTS=on -DREDOOM_BUILD_BENCHMARKS=on -DUSE_CLANG_TIDY=off
+        run: |
+          mkdir -p ${BUILD_FOLDER} && cd ${BUILD_FOLDER}
+          cmake .. -GNinja -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PROGRAM_PATH=/usr/lib/ccache ${CMAKE_OPTIONS}
+          time ninja
+
+      - name: Build project for release
+        if: ${{ github.ref_name == github.event.repository.default_branch }}
+        env:
+          BUILD_FOLDER: ${{ env.RELEASE_BUILD_DIRECTORY }}
+          BUILD_TYPE: Release
+          CMAKE_OPTIONS: -DREDOOM_BUILD_TESTS=off -DREDOOM_BUILD_BENCHMARKS=off -DUSE_CLANG_TIDY=off -DREDOOM_WARNING_FLAGS=-Werror
+        run: |
+          mkdir -p ${BUILD_FOLDER} && cd ${BUILD_FOLDER}
+          cmake .. -GNinja -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PROGRAM_PATH=/usr/lib/ccache ${CMAKE_OPTIONS}
+          time ninja
+
+      - name: Run tests
         run: |
           ./build/bin/tests/tests-redoom
           ./build/bin/tests/tests-redoom-utils
 
-      - name: "Run thread-safety tests"
+      - name: Run thread-safety tests
         run: |
           ./build/bin/tests/tests-redoom "[Thread]"
           ./build/bin/tests/tests-redoom-utils "[Thread]"
 
+      - name: Build project with clang-tidy
+        env:
+          BUILD_FOLDER: ${{ env.TIDY_BUILD_DIRECTORY }}
+          BUILD_TYPE: Debug
+          CMAKE_OPTIONS: -DREDOOM_BUILD_TESTS=off -DREDOOM_BUILD_BENCHMARKS=off -DUSE_CLANG_TIDY=on -DREDOOM_CLANG_TIDY_FLAGS='--warnings-as-errors=*'
+        run: |
+          mkdir -p ${BUILD_FOLDER} && cd ${BUILD_FOLDER}
+          cmake .. -GNinja -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PROGRAM_PATH=/usr/lib/ccache ${CMAKE_OPTIONS}
+          time ninja
+
+      - name: Save build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-artifacts-${{ github.run_id }}
+          path: |
+            ${{ env.DEFAULT_BUILD_DIRECTORY }}/bin
+            ${{ env.DEFAULT_BUILD_DIRECTORY }}/lib/*.so
+            ${{ env.RELEASE_BUILD_DIRECTORY }}/bin
+            ${{ env.RELEASE_BUILD_DIRECTORY }}/lib/*.so
+            ${{ env.TIDY_BUILD_DIRECTORY }}/bin
+            ${{ env.TIDY_BUILD_DIRECTORY }}/lib/*.so
