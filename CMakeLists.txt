@@ -127,6 +127,7 @@ add_library(
   src/events/Key.cpp
   src/graphics/BufferLayout.cpp
   src/graphics/Camera.cpp
+  src/graphics/Mesh.cpp
   src/graphics/Model.cpp
   src/graphics/Program.cpp
   src/graphics/Shader.cpp
@@ -134,6 +135,13 @@ add_library(
   src/graphics/Texture.cpp
   src/graphics/TextureLibrary.cpp
   src/graphics/VertexArray.cpp
+  src/physics/Body.cpp
+  src/physics/BoundingBox.cpp
+  src/physics/Fixture.cpp
+  src/physics/Shape.cpp
+  src/physics/shapes/Cuboid.cpp
+  src/physics/shapes/Sphere.cpp
+  src/physics/World.cpp
   src/platform/OpenGL/OpenGLContext.cpp
   src/platform/OpenGL/OpenGLRendererAPI.cpp
   src/platform/OpenGL/OpenGLWindow.cpp

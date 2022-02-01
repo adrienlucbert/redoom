@@ -115,13 +115,17 @@ known bugs or performance issues I want to fix.
     <td title="planned">📅</td>
   </tr>
 
-  <th rowspan=4>Game physics</th>
+  <th rowspan=5>Game physics</th>
   <tr>
     <td>Gravity and movement forces</td>
     <td title="planned">📅</td>
   </tr>
   <tr>
-    <td>Hitboxes and collision detection</td>
+    <td>Hitboxes and debug wireframe visualization</td>
+    <td title="in progress">🚧</td>
+  </tr>
+  <tr>
+    <td>Collision detection</td>
     <td title="planned">📅</td>
   </tr>
   <tr>

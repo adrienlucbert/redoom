@@ -1,10 +1,12 @@
-#include <assimp/postprocess.h>
 #include <redoom/graphics/Model.hh>
 
+#include <map>
+
 #include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <tl/expected.hpp>
 
 #include <redoom/graphics/Vertex.hh>
-#include <tl/expected.hpp>
 
 namespace redoom::graphics
 {
@@ -61,6 +63,7 @@ Expected<Mesh> Model::parseMesh(aiMesh* mesh,
   // parse vertices
   for (auto i = 0u; i < mesh->mNumVertices; ++i) {
     auto vertex = Vertex{};
+
     vertex.position.x = mesh->mVertices[i].x; // NOLINT
     vertex.position.y = mesh->mVertices[i].y; // NOLINT
     vertex.position.z = mesh->mVertices[i].z; // NOLINT

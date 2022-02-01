@@ -4,69 +4,19 @@
 
 #include <GL/glew.h>
 
-#include <redoom/graphics/Mesh.hh>
 #include <redoom/graphics/Texture.hh>
 #include <redoom/graphics/Vertex.hh>
+#include <redoom/graphics/mesh/Cuboid.hh>
 
 namespace redoom::graphics::mesh
 {
-class Cube : public Mesh
+class Cube : public Cuboid
 {
 public:
   explicit Cube(float width,
       glm::vec3 color = {1.0f, 1.0f, 1.0f},
       std::vector<Texture2D> ptextures = {}) noexcept
-    // source:
-    // https://github.com/JoeyDeVries/Cell/blob/master/cell/mesh/sphere.cpp
-    // clang-format off
-    : Mesh{
-        std::vector{
-          Vertex{{-width / 2, -width / 2, -width / 2}, { 0.0f,  0.0f, -width}, color, {0.0f, 0.0f}},
-          Vertex{{width / 2, width / 2, -width / 2},   { 0.0f,  0.0f, -width}, color, {1.0f, 1.0f}},
-          Vertex{{width / 2, -width / 2, -width / 2},  { 0.0f,  0.0f, -width}, color, {1.0f, 0.0f}},
-          Vertex{{width / 2, width / 2, -width / 2},   { 0.0f,  0.0f, -width}, color, {1.0f, 1.0f}},
-          Vertex{{-width / 2, -width / 2, -width / 2}, { 0.0f,  0.0f, -width}, color, {0.0f, 0.0f}},
-          Vertex{{-width / 2, width / 2, -width / 2},  { 0.0f,  0.0f, -width}, color, {0.0f, 1.0f}},
-
-          Vertex{{-width / 2, -width / 2, width / 2},  { 0.0f,  0.0f,  width}, color, {0.0f, 0.0f}},
-          Vertex{{width / 2, -width / 2, width / 2},   { 0.0f,  0.0f,  width}, color, {1.0f, 0.0f}},
-          Vertex{{width / 2, width / 2, width / 2},    { 0.0f,  0.0f,  width}, color, {1.0f, 1.0f}},
-          Vertex{{width / 2, width / 2, width / 2},    { 0.0f,  0.0f,  width}, color, {1.0f, 1.0f}},
-          Vertex{{-width / 2, width / 2, width / 2},   { 0.0f,  0.0f,  width}, color, {0.0f, 1.0f}},
-          Vertex{{-width / 2, -width / 2, width / 2},  { 0.0f,  0.0f,  width}, color, {0.0f, 0.0f}},
-
-          Vertex{{-width / 2, width / 2, width / 2},   {-width,  0.0f,  0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{-width / 2, width / 2, -width / 2},  {-width,  0.0f,  0.0f}, color, {1.0f, 1.0f}},
-          Vertex{{-width / 2, -width / 2, -width / 2}, {-width,  0.0f,  0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{-width / 2, -width / 2, -width / 2}, {-width,  0.0f,  0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{-width / 2, -width / 2, width / 2},  {-width,  0.0f,  0.0f}, color, {0.0f, 0.0f}},
-          Vertex{{-width / 2, width / 2, width / 2},   {-width,  0.0f,  0.0f}, color, {1.0f, 0.0f}},
-
-          Vertex{{width / 2, width / 2, width / 2},    { width,  0.0f,  0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{width / 2, -width / 2, -width / 2},  { width,  0.0f,  0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{width / 2, width / 2, -width / 2},   { width,  0.0f,  0.0f}, color, {1.0f, 1.0f}},
-          Vertex{{width / 2, -width / 2, -width / 2},  { width,  0.0f,  0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{width / 2, width / 2, width / 2},    { width,  0.0f,  0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{width / 2, -width / 2, width / 2},   { width,  0.0f,  0.0f}, color, {0.0f, 0.0f}},
-
-          Vertex{{-width / 2, -width / 2, -width / 2}, { 0.0f, -width,  0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{width / 2, -width / 2, -width / 2},  { 0.0f, -width,  0.0f}, color, {1.0f, 1.0f}},
-          Vertex{{width / 2, -width / 2, width / 2},   { 0.0f, -width,  0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{width / 2, -width / 2, width / 2},   { 0.0f, -width,  0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{-width / 2, -width / 2, width / 2},  { 0.0f, -width,  0.0f}, color, {0.0f, 0.0f}},
-          Vertex{{-width / 2, -width / 2, -width / 2}, { 0.0f, -width,  0.0f}, color, {0.0f, 1.0f}},
-
-          Vertex{{-width / 2, width / 2, -width / 2},  { 0.0f,  width,  0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{width / 2, width / 2, width / 2},    { 0.0f,  width,  0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{width / 2, width / 2, -width / 2},   { 0.0f,  width,  0.0f}, color, {1.0f, 1.0f}},
-          Vertex{{width / 2, width / 2, width / 2},    { 0.0f,  width,  0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{-width / 2, width / 2, -width / 2},  { 0.0f,  width,  0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{-width / 2, width / 2, width / 2},   { 0.0f,  width,  0.0f}, color, {0.0f, 0.0f}},
-        },
-        std::vector<GLuint>{},
-        std::move(ptextures),
-        GL_TRIANGLES
-    } // clang-format on
+    : Cuboid(width, width, width, color, std::move(ptextures))
   {
   }
   Cube(Cube const& b) noexcept = delete;
