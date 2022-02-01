@@ -9,6 +9,8 @@ namespace redoom::platform::OpenGL
 class OpenGLRendererAPI : public renderer::RendererAPI
 {
 public:
+  [[nodiscard]] bool isWireframe() const noexcept override;
+  void setWireframe(bool is_wireframe) noexcept override;
   void setViewport(renderer::RendererViewport viewport) noexcept override;
   void setClearColor(const glm::vec4& color) noexcept override;
   void clear() noexcept override;
@@ -17,5 +19,8 @@ public:
 
 protected:
   OpenGLRendererAPI() noexcept = default;
+
+private:
+  bool is_wireframe{false};
 };
 } // namespace redoom::platform::OpenGL

@@ -11,7 +11,10 @@ class Sphere : public Shape
 {
 public:
   explicit Sphere(float pradius) noexcept
-    : radius{pradius}
+    : Shape("Sphere")
+    , radius{pradius}
+    , mesh{graphics::mesh::Sphere{
+          pradius, 20, 20, {1.0f, 0.0f, 0.0f}, {}, GL_LINE_STRIP}}
   {
   }
   Sphere(Sphere const& b) noexcept = delete;
@@ -25,6 +28,11 @@ public:
   {
     if (this->mesh.has_value())
       this->mesh.value().draw(program);
+  }
+
+  [[nodiscard]] float getRadius() const noexcept
+  {
+    return this->radius;
   }
 
 private:

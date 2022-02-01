@@ -3,11 +3,13 @@
 #include <redoom/ecs/Registry.hh>
 #include <redoom/ecs/behaviours/CameraBehaviour.hh>
 #include <redoom/ecs/components/BehaviourComponent.hh>
+#include <redoom/ecs/components/BodyComponent.hh>
 #include <redoom/ecs/components/CameraComponent.hh>
 #include <redoom/ecs/components/MeshComponent.hh>
 #include <redoom/ecs/components/ModelComponent.hh>
 #include <redoom/ecs/components/TransformComponent.hh>
 #include <redoom/ecs/systems/BehaviourSystem.hh>
+#include <redoom/ecs/systems/BodySystem.hh>
 #include <redoom/ecs/systems/CameraSystem.hh>
 #include <redoom/ecs/systems/EventSystem.hh>
 #include <redoom/ecs/systems/MeshSystem.hh>
@@ -19,11 +21,13 @@
 
 using redoom::SceneSerializer;
 using redoom::ecs::SystemPriority;
+using redoom::ecs::components::BodyComponent;
 using redoom::ecs::components::CameraComponent;
 using redoom::ecs::components::MeshComponent;
 using redoom::ecs::components::ModelComponent;
 using redoom::ecs::components::TransformComponent;
 using redoom::ecs::systems::BehaviourSystem;
+using redoom::ecs::systems::BodySystem;
 using redoom::ecs::systems::CameraSystem;
 using redoom::ecs::systems::EventSystem;
 using redoom::ecs::systems::MeshSystem;
@@ -53,6 +57,8 @@ std::unique_ptr<Application> createApplication(ApplicationArguments args)
       "MeshComponent", std::make_unique<MeshComponent::Serializer>());
   SceneSerializer::get().registerComponentFactory(
       "ModelComponent", std::make_unique<ModelComponent::Serializer>());
+  SceneSerializer::get().registerComponentFactory(
+      "BodyComponent", std::make_unique<BodyComponent::Serializer>());
 
   auto scene_exp = app->loadScene(
       fmt::format("../examples/3d_scene/scenes/{}.yaml", "default"));
@@ -74,6 +80,7 @@ std::unique_ptr<Application> createApplication(ApplicationArguments args)
   registry.attachSystem<EventSystem>(SystemPriority{0});
   registry.attachSystem<BehaviourSystem>(SystemPriority{1});
   registry.attachSystem<CameraSystem>(SystemPriority{1});
+  registry.attachSystem<BodySystem>(SystemPriority{900});
   registry.attachSystem<MeshSystem>(SystemPriority{1000});
   registry.attachSystem<ModelSystem>(SystemPriority{1000});
   return app;

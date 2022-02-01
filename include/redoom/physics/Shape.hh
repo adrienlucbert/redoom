@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string_view>
+
 namespace redoom::graphics
 {
 class Program;
@@ -19,7 +21,12 @@ public:
 
   virtual void draw(graphics::Program& program) const noexcept = 0;
 
+  [[nodiscard]] std::string_view getType() const noexcept;
+
 protected:
-  explicit Shape() noexcept = default;
+  explicit Shape(std::string_view ptype) noexcept;
+
+private:
+  std::string_view type;
 };
 } // namespace redoom::physics

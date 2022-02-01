@@ -15,8 +15,9 @@ class Cube : public Cuboid
 public:
   explicit Cube(float width,
       glm::vec3 color = {1.0f, 1.0f, 1.0f},
-      std::vector<Texture2D> ptextures = {}) noexcept
-    : Cuboid(width, width, width, color, std::move(ptextures))
+      std::vector<Texture2D> ptextures = {},
+      GLenum ptopology = GL_TRIANGLES) noexcept
+    : Cuboid(width, width, width, color, std::move(ptextures), ptopology)
   {
   }
   Cube(Cube const& b) noexcept = delete;

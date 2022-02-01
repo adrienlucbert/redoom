@@ -14,7 +14,8 @@ public:
   explicit Quad(float width,
       float height,
       glm::vec3 color = {1.0f, 1.0f, 1.0f},
-      std::vector<Texture2D> ptextures = {}) noexcept
+      std::vector<Texture2D> ptextures = {},
+      GLenum ptopology = GL_TRIANGLE_STRIP) noexcept
     // source:
     // https://github.com/JoeyDeVries/Cell/blob/master/cell/mesh/quad.cpp
     // clang-format off
@@ -28,7 +29,7 @@ public:
         },
         std::vector<GLuint>{},
         std::move(ptextures),
-        GL_TRIANGLE_STRIP
+        ptopology
     } // clang-format on
   {
   }

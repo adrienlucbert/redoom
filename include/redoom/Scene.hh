@@ -1,6 +1,7 @@
 #pragma once
 
 #include <redoom/ecs/Registry.hh>
+#include <redoom/physics/World.hh>
 
 namespace redoom
 {
@@ -20,6 +21,8 @@ public:
   [[nodiscard]] std::string const& getName() const noexcept;
   [[nodiscard]] ecs::Registry& getRegistry() noexcept;
   [[nodiscard]] ecs::Registry const& getRegistry() const noexcept;
+  [[nodiscard]] physics::World& getWorld() noexcept;
+  [[nodiscard]] physics::World const& getWorld() const noexcept;
 
   void serialize(std::string_view filepath) const noexcept;
 
@@ -30,5 +33,6 @@ private:
 
   std::string name;
   ecs::Registry registry;
+  physics::World world;
 };
 } // namespace redoom

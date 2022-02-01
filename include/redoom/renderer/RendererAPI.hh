@@ -28,6 +28,8 @@ public:
   RendererAPI& operator=(RendererAPI const& rhs) noexcept = default;
   RendererAPI& operator=(RendererAPI&& rhs) noexcept = default;
 
+  [[nodiscard]] virtual bool isWireframe() const noexcept = 0;
+  virtual void setWireframe(bool is_wireframe) noexcept = 0;
   virtual void setViewport(RendererViewport viewport) noexcept = 0;
   virtual void setClearColor(const glm::vec4& color) noexcept = 0;
   virtual void clear() noexcept = 0;

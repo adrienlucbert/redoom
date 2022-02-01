@@ -15,11 +15,18 @@ namespace redoom::graphics::mesh
 class Sphere : public Mesh
 {
 public:
-  Sphere(unsigned int x_segments,
-      unsigned int y_segments,
+  explicit Sphere(float radius,
+      unsigned int x_segment = 20,
+      unsigned int y_segment = 20,
       glm::vec3 color = {1.0f, 1.0f, 1.0f},
-      std::vector<Texture2D> ptextures = {}) noexcept
-    : Mesh{Sphere::create(x_segments, y_segments, color, std::move(ptextures))}
+      std::vector<Texture2D> ptextures = {},
+      GLenum ptopology = GL_TRIANGLES) noexcept
+    : Mesh{Sphere::create(radius,
+        x_segment,
+        y_segment,
+        color,
+        std::move(ptextures),
+        ptopology)}
   {
   }
   Sphere(Sphere const& b) noexcept = delete;
@@ -30,51 +37,70 @@ public:
   Sphere& operator=(Sphere&& rhs) noexcept = default;
 
 private:
-  static Mesh create(unsigned int x_segments,
-      unsigned int y_segments,
+  static Mesh create(float radius,
+      unsigned int x_segment,
+      unsigned int y_segment,
       glm::vec3 color,
-      std::vector<Texture2D> ptextures = {}) noexcept
+      std::vector<Texture2D> ptextures,
+      GLenum ptopology) noexcept
   {
     // source:
-    // https://github.com/JoeyDeVries/Cell/blob/master/cell/mesh/sphere.cpp
+    // http://www.songho.ca/opengl/gl_sphere.html
     auto vertices = std::vector<Vertex>{};
     auto indices = std::vector<GLuint>{};
 
-    for (auto y = 0u; y <= y_segments; ++y) {
-      for (auto x = 0u; x <= x_segments; ++x) {
-        auto x_segment =
-            static_cast<double>(x) / static_cast<double>(x_segments);
-        auto y_segment =
-            static_cast<double>(y) / static_cast<double>(y_segments);
-        auto x_pos = std::cos(x_segment * 2 * std::numbers::pi)
-                   * std::sin(y_segment * std::numbers::pi); // TAU is 2PI
-        auto y_pos = std::cos(y_segment * std::numbers::pi);
-        auto z_pos = std::sin(x_segment * 2 * std::numbers::pi)
-                   * std::sin(y_segment * std::numbers::pi);
+    auto length_inv = 1.0f / radius;
+    auto x_step = 2 * std::numbers::pi / x_segment;
+    auto y_step = std::numbers::pi / x_segment;
 
-        auto pos = glm::vec3(x_pos, y_pos, z_pos);
-        auto normal = glm::vec3(x_pos, y_pos, z_pos);
-        auto uv = glm::vec2(x_segment, y_segment);
-        vertices.push_back({pos, normal, color, uv});
+    for (auto i = 0u; i <= y_segment; ++i) {
+      auto y_angle = std::numbers::pi / 2 - i * y_step;
+      auto xy = radius * static_cast<float>(std::cos(y_angle));
+      auto z = radius * static_cast<float>(std::sin(y_angle));
+
+      for (auto j = 0u; j <= x_segment; ++j) {
+        auto x_angle = j * x_step;
+
+        auto x = xy * static_cast<float>(std::cos(x_angle));
+        auto y = xy * static_cast<float>(std::sin(x_angle));
+        auto pos = glm::vec3{x, y, z};
+
+        auto nx = x * length_inv;
+        auto ny = y * length_inv;
+        auto nz = z * length_inv;
+        auto norm = glm::vec3{nx, ny, nz};
+
+        auto s = static_cast<float>(i) / static_cast<float>(x_segment);
+        auto t = static_cast<float>(j) / static_cast<float>(y_segment);
+        auto uv = glm::vec2{s, t};
+
+        vertices.push_back({pos, norm, color, uv});
       }
     }
 
-    for (auto y = 0u; y < y_segments; ++y) {
-      for (auto x = 0u; x < x_segments; ++x) {
-        indices.push_back((y + 1) * (x_segments + 1) + x);
-        indices.push_back(y * (x_segments + 1) + x);
-        indices.push_back(y * (x_segments + 1) + x + 1);
+    for (auto i = 0u; i < y_segment; ++i) {
+      auto k1 = i * (x_segment + 1);
+      auto k2 = k1 + x_segment + 1;
 
-        indices.push_back((y + 1) * (x_segments + 1) + x);
-        indices.push_back(y * (x_segments + 1) + x + 1);
-        indices.push_back((y + 1) * (x_segments + 1) + x + 1);
+      for (auto j = 0u; j < x_segment; ++j, ++k1, ++k2) {
+        if (i != 0) {
+          indices.push_back(k1);
+          indices.push_back(k2);
+          indices.push_back(k1 + 1);
+        }
+
+        if (i != (y_segment - 1)) {
+          indices.push_back(k1 + 1);
+          indices.push_back(k2);
+          indices.push_back(k2 + 1);
+        }
       }
     }
 
     return Mesh{std::move(vertices),
         std::move(indices),
         std::move(ptextures),
-        GL_TRIANGLES};
+        ptopology};
   }
 };
 } // namespace redoom::graphics::mesh
