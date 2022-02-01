@@ -3,6 +3,11 @@
 #include <concepts>
 #include <iterator>
 
+namespace redoom::graphics
+{
+class Program;
+} // namespace redoom::graphics
+
 namespace redoom::concepts
 {
 // clang-format off
@@ -18,11 +23,17 @@ concept Container = requires(T v)
   { v.size() } -> std::same_as<std::size_t>;
 };
 
-template<typename T, typename ValueType = T>
+template <typename T, typename ValueType = T>
 concept ContiguousContainer = requires(T v)
 {
   requires Container<T, ValueType>;
   { v.data() } -> std::same_as<typename T::value_type*>;
+};
+
+template <typename T>
+concept Drawable = requires(T v, graphics::Program &p)
+{
+  { v.draw(p) } noexcept -> std::same_as<void>;
 };
 
 // clang-format on

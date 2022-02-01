@@ -26,6 +26,16 @@ ecs::Registry const& Scene::getRegistry() const noexcept
   return this->registry;
 }
 
+physics::World& Scene::getWorld() noexcept
+{
+  return this->world;
+}
+
+physics::World const& Scene::getWorld() const noexcept
+{
+  return this->world;
+}
+
 void Scene::serialize(std::string_view filepath) const noexcept
 {
   SceneSerializer::get().serialize(filepath, *this);

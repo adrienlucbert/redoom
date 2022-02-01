@@ -18,7 +18,7 @@ public:
   [[nodiscard]] int getWidth() const noexcept override;
   [[nodiscard]] int getHeight() const noexcept override;
 
-  void setVSync(bool /*enable*/) noexcept override;
+  void setVSync(bool enable) noexcept override;
   [[nodiscard]] bool hasVSync() noexcept override;
 
   [[nodiscard]] void* getNativeWindow() const noexcept override;

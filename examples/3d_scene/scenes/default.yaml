@@ -4,9 +4,9 @@ Entities:
       CameraBehaviour
     CameraComponent:
       camera:
-        position: [-0.509162366, -0.0212053936, 2.04661727]
-        yaw: -47.399601
-        pitch: 7.29998684
+        position: [0.434329271, 0.256192267, 2.03644204]
+        yaw: -483.898224
+        pitch: -18.5000134
         speed: 0.000999999815
         sensitivity: 0.300000012
         fov: 0.785398185
@@ -18,6 +18,23 @@ Entities:
     ModelComponent:
       path: ../assets/backpack/backpack.obj
       flip_uvs: true
+    BodyComponent:
+      type: Static
+      position: [0, 0, 1.5]
+      angle: 0
+      linear_velocity: [0, 0, 0]
+      angular_velocity: 0
+      has_fixed_rotation: true
+      gravity_scale: 0
+      fixtures:
+        - shape:
+            type: Cuboid
+            width: 2.5
+            height: 3
+            length: 1.5
+          friction: 0.200000003
+          restitution: 0
+          density: 0
   - BehaviourComponent:
       FPSCounterBehaviour
   - BehaviourComponent:

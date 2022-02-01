@@ -2,6 +2,7 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+#include <Utils/Concepts.hpp>
 #include <redoom/graphics/Mesh.hh>
 #include <redoom/graphics/Model.hh>
 #include <redoom/graphics/Program.hh>
@@ -20,12 +21,20 @@ public:
   static void setProjectionMatrix(glm::mat4 view) noexcept;
   static glm::mat4 const& getProjectionMatrix() noexcept;
 
-  static void draw(graphics::Program& program,
-      graphics::Mesh& mesh,
-      const glm::mat4& model) noexcept;
-  static void draw(graphics::Program& program,
-      graphics::Model& mod,
-      const glm::mat4& model) noexcept;
+  template <concepts::Drawable T>
+  static void draw(
+      graphics::Program& program, T& drawable, const glm::mat4& model) noexcept
+  {
+    program.use();
+    program.setUniformMatrix4("projection",
+        1,
+        GL_FALSE,
+        glm::value_ptr(Renderer::getProjectionMatrix()));
+    program.setUniformMatrix4(
+        "view", 1, GL_FALSE, glm::value_ptr(Renderer::getViewMatrix()));
+    program.setUniformMatrix4("model", 1, GL_FALSE, glm::value_ptr(model));
+    drawable.draw(program);
+  }
 
 private:
   static std::unique_ptr<RendererAPI> api;   // NOLINT

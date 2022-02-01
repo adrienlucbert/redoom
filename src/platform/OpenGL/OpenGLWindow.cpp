@@ -42,12 +42,13 @@ int OpenGLWindow::getHeight() const noexcept
   return this->height;
 }
 
-void OpenGLWindow::setVSync(bool enable) noexcept
+void OpenGLWindow::setVSync(bool phas_vsync) noexcept
 {
-  if (enable)
+  if (phas_vsync)
     glfwSwapInterval(1);
   else
     glfwSwapInterval(0);
+  this->has_vsync = phas_vsync;
 }
 
 bool OpenGLWindow::hasVSync() noexcept
@@ -132,7 +133,7 @@ OpenGLWindow::OpenGLWindow(GLFWwindow* pwindow,
   , height{pheight}
   , window{pwindow}
   , context{std::move(pcontext)}
-  , has_vsync{false}
+  , has_vsync{true}
 {
   // Set OpenGL properties without calling OpenGLWindow virtual methods
   // See clang-analyzer-optin.cplusplus.VirtualCall

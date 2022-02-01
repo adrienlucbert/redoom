@@ -17,7 +17,8 @@ public:
       float height,
       float depth,
       glm::vec3 color = {1.0f, 1.0f, 1.0f},
-      std::vector<Texture2D> ptextures = {}) noexcept
+      std::vector<Texture2D> ptextures = {},
+      GLenum ptopology = GL_TRIANGLES) noexcept
     // clang-format off
     : Mesh{
         std::vector{
@@ -71,7 +72,7 @@ public:
         },
         std::vector<GLuint>{},
         std::move(ptextures),
-        GL_TRIANGLES
+        ptopology
     } // clang-format on
   {
   }

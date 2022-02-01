@@ -118,6 +118,7 @@ add_library(
   src/ecs/SystemBase.cpp
   src/ecs/SystemManager.cpp
   src/ecs/systems/BehaviourSystem.cpp
+  src/ecs/systems/BodySystem.cpp
   src/ecs/systems/CameraSystem.cpp
   src/ecs/systems/EventSystem.cpp
   src/ecs/systems/MeshSystem.cpp
@@ -139,8 +140,6 @@ add_library(
   src/physics/BoundingBox.cpp
   src/physics/Fixture.cpp
   src/physics/Shape.cpp
-  src/physics/shapes/Cuboid.cpp
-  src/physics/shapes/Sphere.cpp
   src/physics/World.cpp
   src/platform/OpenGL/OpenGLContext.cpp
   src/platform/OpenGL/OpenGLRendererAPI.cpp
