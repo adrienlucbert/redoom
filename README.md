@@ -2,6 +2,7 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 [![C/C++ CI](https://github.com/adrienlucbert/redoom/actions/workflows/main.yml/badge.svg)](https://github.com/adrienlucbert/redoom/actions/workflows/main.yml)
+[![CodeFactor](https://www.codefactor.io/repository/github/adrienlucbert/redoom/badge?s=ab605ed6ac504fc638d3fc42ff109336e4cb4d84)](https://www.codefactor.io/repository/github/adrienlucbert/redoom)
 
 ## 💡 Idea
 
