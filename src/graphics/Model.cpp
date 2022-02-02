@@ -160,4 +160,9 @@ tl::optional<ModelImporterOptions> const& Model::getImporterOptions()
 {
   return this->importer_options;
 }
+
+std::vector<Mesh> const& Model::getMeshes() const noexcept
+{
+  return this->meshes;
+}
 } // namespace redoom::graphics

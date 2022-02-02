@@ -34,6 +34,14 @@ struct KeyboardBehaviour : public Behaviour {
       std::cout << "Setting wireframe mode: " << std::boolalpha
                 << renderer_api.isWireframe() << '\n';
     }
+    // Switch physics debug mode
+    if (event.matches({.key = redoom::events::Key::F3,
+            .action = redoom::events::Action::PRESS})) {
+      auto& world = redoom::Application::get().getCurrentScene().getWorld();
+      world.setDebugDraw(!world.getDebugDraw());
+      std::cout << "Setting physics debug mode: " << std::boolalpha
+                << world.getDebugDraw() << '\n';
+    }
     // Switch VSync
     if (event.matches({.key = redoom::events::Key::GRAVE_ACCENT,
             .action = redoom::events::Action::PRESS})) {

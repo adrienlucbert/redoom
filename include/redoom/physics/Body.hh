@@ -6,6 +6,11 @@
 
 #include <redoom/physics/Fixture.hh>
 
+namespace redoom::graphics
+{
+class Model;
+};
+
 namespace redoom::physics
 {
 class World;
@@ -28,6 +33,8 @@ public:
   Body(World& pworld, unsigned int pid, BodyDefinition def) noexcept;
 
   Fixture& createFixture(FixtureDefinition def) noexcept;
+  Fixture& createFixtureFromMesh(
+      FixtureDefinition def, graphics::Mesh const& mesh) noexcept;
 
   void draw(graphics::Program& program) const noexcept;
 
@@ -43,7 +50,7 @@ public:
   [[nodiscard]] std::vector<Fixture> const& getFixtures() const noexcept;
 
 private:
-  World& world;
+  std::reference_wrapper<World> world;
   unsigned int id;
   BodyType type;
   glm::vec3 position;

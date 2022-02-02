@@ -2,6 +2,7 @@
 
 #include <redoom/Scene.hh>
 #include <redoom/ecs/Component.hh>
+#include <redoom/ecs/components/BodyComponent.hh>
 #include <redoom/graphics/Model.hh>
 #include <redoom/serializer/ComponentSerializer.hh>
 
@@ -46,6 +47,9 @@ struct ModelComponent : public Component<ModelComponent> {
         importer_options.flip_uvs = node["flip_uvs"].as<bool>();
       auto exp = Model::fromFile(std::move(path), importer_options);
       RETURN_IF_UNEXPECTED(exp);
+      // TODO(alucbert): remove this (temporary body creation helper)
+      // scene.getRegistry().attachComponent<BodyComponent>(
+      //     entity, BodyComponent::fromModel(scene.getWorld(), {}, *exp));
       scene.getRegistry().attachComponent<ModelComponent>(
           entity, std::move(*exp));
       return {};

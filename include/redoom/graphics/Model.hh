@@ -35,6 +35,7 @@ public:
       const noexcept;
   [[nodiscard]] tl::optional<ModelImporterOptions> const& getImporterOptions()
       const noexcept;
+  [[nodiscard]] std::vector<Mesh> const& getMeshes() const noexcept;
 
 private:
   explicit Model(std::filesystem::path path,

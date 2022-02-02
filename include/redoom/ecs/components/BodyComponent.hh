@@ -1,5 +1,7 @@
 #pragma once
 
+#include "redoom/graphics/Model.hh"
+#include "redoom/physics/World.hh"
 #include <memory>
 
 #include <glm/gtc/type_ptr.hpp>
@@ -25,9 +27,9 @@ struct BodyComponent : public Component<BodyComponent> {
     return type;
   }
 
-  explicit BodyComponent(physics::BodyDefinition def) noexcept
-    : body{
-        redoom::Application::get().getCurrentScene().getWorld().createBody(def)}
+  explicit BodyComponent(
+      physics::World& world, physics::BodyDefinition def) noexcept
+    : body{world.createBody(def)}
   {
   }
   explicit BodyComponent(physics::Body& pbody) noexcept
@@ -38,13 +40,21 @@ struct BodyComponent : public Component<BodyComponent> {
   BodyComponent(BodyComponent&&) noexcept = default;
   ~BodyComponent() noexcept override
   {
-    this->body.getWorld().deleteBody(this->body);
+    this->body.get().getWorld().deleteBody(this->body);
   }
 
   BodyComponent& operator=(BodyComponent const&) noexcept = delete;
   BodyComponent& operator=(BodyComponent&&) noexcept = delete;
 
-  physics::Body& body;
+  [[nodiscard]] static BodyComponent fromModel(physics::World& world,
+      physics::BodyDefinition def,
+      graphics::Model const& model) noexcept
+  {
+    auto& body = world.createBodyFromModel(def, model);
+    return BodyComponent{body};
+  }
+
+  std::reference_wrapper<physics::Body> body;
 
   struct Serializer : public ComponentSerializer {
     static Expected<std::string_view> BodyTypeToString(
@@ -85,6 +95,7 @@ struct BodyComponent : public Component<BodyComponent> {
       auto exp = Serializer::serializeShape(out, fixture.getShape());
       // TODO(alucbert): RETURN_IF_UNEXPECTED(exp);
       out << YAML::EndMap;
+      out << YAML::Key << "position" << YAML::Value << fixture.getPosition();
       out << YAML::Key << "friction" << YAML::Value << fixture.getFriction();
       out << YAML::Key << "restitution" << YAML::Value
           << fixture.getRestitution();
@@ -121,6 +132,7 @@ struct BodyComponent : public Component<BodyComponent> {
       RETURN_IF_UNEXPECTED(shape_exp);
       auto fixture_def =
           physics::FixtureDefinition{.shape = std::move(shape_exp.value()),
+              .position = node["position"].as<glm::vec3>(),
               .friction = node["friction"].as<float>(),
               .restitution = node["restitution"].as<float>(),
               .density = node["density"].as<float>()};
@@ -154,25 +166,26 @@ struct BodyComponent : public Component<BodyComponent> {
         YAML::Emitter& out, ecs::ComponentBase const* component) const override
     {
       auto const* bc = dynamic_cast<BodyComponent const*>(component);
-      auto type_exp = Serializer::BodyTypeToString(bc->body.getType());
+      auto type_exp = Serializer::BodyTypeToString(bc->body.get().getType());
       if (!type_exp.has_value()) {
         std::cerr << "BodyComponent serialization failed: " << type_exp.error()
                   << '\n';
         return;
       }
       out << YAML::Key << "type" << YAML::Value << type_exp.value().data();
-      out << YAML::Key << "position" << YAML::Value << bc->body.getPosition();
-      out << YAML::Key << "angle" << YAML::Value << bc->body.getAngle();
+      out << YAML::Key << "position" << YAML::Value
+          << bc->body.get().getPosition();
+      out << YAML::Key << "angle" << YAML::Value << bc->body.get().getAngle();
       out << YAML::Key << "linear_velocity" << YAML::Value
-          << bc->body.getLinearVelocity();
+          << bc->body.get().getLinearVelocity();
       out << YAML::Key << "angular_velocity" << YAML::Value
-          << bc->body.getAngularVelocity();
+          << bc->body.get().getAngularVelocity();
       out << YAML::Key << "has_fixed_rotation" << YAML::Value
-          << bc->body.hasFixedRotation();
+          << bc->body.get().hasFixedRotation();
       out << YAML::Key << "gravity_scale" << YAML::Value
-          << bc->body.getGravityScale();
+          << bc->body.get().getGravityScale();
       out << YAML::Key << "fixtures" << YAML::Value << YAML::BeginSeq;
-      for (auto const& fixture : bc->body.getFixtures()) {
+      for (auto const& fixture : bc->body.get().getFixtures()) {
         Serializer::serializeFixture(out, fixture);
       }
       out << YAML::EndSeq;

@@ -4,6 +4,11 @@
 
 #include <redoom/memory/Allocator.hh>
 
+namespace redoom::graphics
+{
+class Model;
+} // namespace redoom::graphics
+
 namespace redoom::physics
 {
 class Body;
@@ -21,6 +26,8 @@ public:
   World& operator=(World&& rhs) noexcept = default;
 
   Body& createBody(BodyDefinition def) noexcept;
+  Body& createBodyFromModel(
+      BodyDefinition def, graphics::Model const& model) noexcept;
   bool deleteBody(Body const& body) noexcept;
   void step(double timestep) noexcept;
 
