@@ -29,6 +29,8 @@ public:
 
   void draw(Program& program) const noexcept;
 
+  [[nodiscard]] std::vector<Vertex> const& getVertices() const noexcept;
+
 private:
   std::vector<Vertex> vertices;
   std::vector<unsigned int> indices;

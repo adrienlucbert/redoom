@@ -118,11 +118,12 @@ add_library(
   src/ecs/SystemBase.cpp
   src/ecs/SystemManager.cpp
   src/ecs/systems/BehaviourSystem.cpp
-  src/ecs/systems/BodySystem.cpp
   src/ecs/systems/CameraSystem.cpp
   src/ecs/systems/EventSystem.cpp
   src/ecs/systems/MeshSystem.cpp
   src/ecs/systems/ModelSystem.cpp
+  src/ecs/systems/PhysicsDebugSystem.cpp
+  src/ecs/systems/PhysicsWorldSystem.cpp
   src/ecs/UpdateContext.cpp
   src/events/EventQueue.cpp
   src/events/Key.cpp
@@ -137,7 +138,6 @@ add_library(
   src/graphics/TextureLibrary.cpp
   src/graphics/VertexArray.cpp
   src/physics/Body.cpp
-  src/physics/BoundingBox.cpp
   src/physics/Fixture.cpp
   src/physics/Shape.cpp
   src/physics/World.cpp

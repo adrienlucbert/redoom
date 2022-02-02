@@ -122,7 +122,7 @@ known bugs or performance issues I want to fix.
   </tr>
   <tr>
     <td>Hitboxes and debug wireframe visualization</td>
-    <td title="in progress">🚧</td>
+    <td title="done">:heavy_check_mark:</td>
   </tr>
   <tr>
     <td>Collision detection</td>

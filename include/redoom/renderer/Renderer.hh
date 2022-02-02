@@ -22,8 +22,26 @@ public:
   static glm::mat4 const& getProjectionMatrix() noexcept;
 
   template <concepts::Drawable T>
-  static void draw(
-      graphics::Program& program, T& drawable, const glm::mat4& model) noexcept
+  static void draw(graphics::Program& program,
+      T const& drawable,
+      const glm::mat4& model) noexcept
+  {
+    Renderer::prepareDraw(program, model);
+    drawable.draw(program);
+  }
+
+  template <concepts::DrawablePtr T>
+  static void draw(graphics::Program& program,
+      T const& drawable,
+      const glm::mat4& model) noexcept
+  {
+    Renderer::prepareDraw(program, model);
+    drawable->draw(program);
+  }
+
+private:
+  static void prepareDraw(
+      graphics::Program& program, const glm::mat4& model) noexcept
   {
     program.use();
     program.setUniformMatrix4("projection",
@@ -33,10 +51,8 @@ public:
     program.setUniformMatrix4(
         "view", 1, GL_FALSE, glm::value_ptr(Renderer::getViewMatrix()));
     program.setUniformMatrix4("model", 1, GL_FALSE, glm::value_ptr(model));
-    drawable.draw(program);
   }
 
-private:
   static std::unique_ptr<RendererAPI> api;   // NOLINT
   static glm::mat4 camera_view_matrix;       // NOLINT
   static glm::mat4 camera_projection_matrix; // NOLINT

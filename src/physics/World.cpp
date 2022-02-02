@@ -1,6 +1,6 @@
-#include "redoom/ecs/Entity.hh"
 #include <redoom/physics/World.hh>
 
+#include <redoom/graphics/Model.hh>
 #include <redoom/physics/Body.hh>
 
 namespace redoom::physics
@@ -11,6 +11,16 @@ Body& World::createBody(BodyDefinition def) noexcept
   auto const body_id = this->last_body_id++;
   this->bodies.emplace(body_id, std::move(body_ptr));
   return *this->bodies.at(body_id);
+}
+
+Body& World::createBodyFromModel(
+    BodyDefinition def, graphics::Model const& model) noexcept
+{
+  auto& body = World::createBody(def);
+  for (auto const& mesh : model.getMeshes()) {
+    body.createFixtureFromMesh({}, mesh);
+  }
+  return body;
 }
 
 bool World::deleteBody(Body const& body) noexcept

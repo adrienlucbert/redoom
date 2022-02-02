@@ -107,4 +107,9 @@ void Mesh::draw(Program& program) const noexcept
     texture.unbind();
   this->vao.unbind();
 }
+
+std::vector<Vertex> const& Mesh::getVertices() const noexcept
+{
+  return this->vertices;
+}
 } // namespace redoom::graphics

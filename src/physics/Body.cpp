@@ -1,5 +1,7 @@
 #include <redoom/physics/Body.hh>
 
+#include <redoom/graphics/Model.hh>
+
 namespace redoom::physics
 {
 Body::Body(World& pworld, unsigned int pid, BodyDefinition def) noexcept
@@ -18,6 +20,13 @@ Body::Body(World& pworld, unsigned int pid, BodyDefinition def) noexcept
 Fixture& Body::createFixture(FixtureDefinition def) noexcept
 {
   this->fixtures.emplace_back(*this, std::move(def));
+  return this->fixtures.back();
+}
+
+Fixture& Body::createFixtureFromMesh(
+    FixtureDefinition def, graphics::Mesh const& mesh) noexcept
+{
+  this->fixtures.push_back(Fixture::fromMesh(*this, std::move(def), mesh));
   return this->fixtures.back();
 }
 

@@ -2,9 +2,11 @@
 Checks: '
   *,
   -abseil-string-find-str-contains,
+  -altera-id-dependent-backward-branch,
   -altera-struct-pack-align,
   -altera-unroll-loops,
   -*braces-around-statements,
+  -bugprone-easily-swappable-parameters
   -cert-env33-c,
   -clang-analyzer-cplusplus.NewDeleteLeaks,
   -clang-diagnostic-unused-macros,
@@ -12,6 +14,7 @@ Checks: '
   -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
   -cppcoreguidelines-pro-bounds-constant-array-index,
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-pro-type-union-access,
   -cppcoreguidelines-pro-type-vararg,
   -fuchsia-default-arguments-calls,
   -fuchsia-default-arguments-declarations,
@@ -39,7 +42,5 @@ Checks: '
   -*namespace-comments,
   -readability-else-after-return,
   -readability-uppercase-literal-suffix,
-  -altera-id-dependent-backward-branch,
-  -bugprone-easily-swappable-parameters
 '
 ---
