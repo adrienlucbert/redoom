@@ -31,6 +31,7 @@ struct CameraBehaviour : public Behaviour {
     if (!opt)
       assert("No camera component found" == nullptr);
     this->component = std::addressof(*opt);
+    this->initial_camera_speed = this->component->camera.getSpeed();
   }
 
   void onUpdate(Entity /*entity*/, UpdateContext& context) noexcept override
@@ -41,6 +42,10 @@ struct CameraBehaviour : public Behaviour {
     auto const camera_front = this->component->camera.getFront();
     auto const camera_up = this->component->camera.getUp();
 
+    if (isKeyPressed(Key::LEFT_SHIFT) || isKeyPressed(Key::RIGHT_SHIFT))
+      this->component->camera.setSpeed(this->initial_camera_speed * 10);
+    else
+      this->component->camera.setSpeed(this->initial_camera_speed);
     if (isKeyPressed(Key::W))
       camera_pos += camera_speed * camera_front;
     if (isKeyPressed(Key::S))
@@ -108,9 +113,10 @@ struct CameraBehaviour : public Behaviour {
 
 private:
   CameraComponent* component{nullptr};
+  float initial_camera_speed{0.0f};
   bool mouse_never_moved{true};
-  float last_mouse_x{0.0};
-  float last_mouse_y{0.0};
+  float last_mouse_x{0.0f};
+  float last_mouse_y{0.0f};
 };
 
 std::unique_ptr<Behaviour> make() noexcept
