@@ -1,7 +1,6 @@
 #include <redoom/Application.hh>
 #include <redoom/EntryPoint.hh>
 #include <redoom/ecs/Registry.hh>
-#include <redoom/ecs/behaviours/CameraBehaviour.hh>
 #include <redoom/ecs/components/BehaviourComponent.hh>
 #include <redoom/ecs/components/BodyComponent.hh>
 #include <redoom/ecs/components/CameraComponent.hh>

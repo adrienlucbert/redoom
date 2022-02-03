@@ -39,61 +39,33 @@ void Mesh::draw(Program& program) const noexcept
   program.use();
   this->vao.bind();
 
-  auto diffuse_id = 1u;
-  auto specular_id = 1u;
-  auto ambient_id = 1u;
-  auto emissive_id = 1u;
-  auto height_id = 1u;
-  auto normals_id = 1u;
-  auto shininess_id = 1u;
-  auto opacity_id = 1u;
-  auto displacement_id = 1u;
-  auto lightmap_id = 1u;
-  auto reflection_id = 1u;
-  auto basecolor_id = 1u;
+  // Texture type: { Texture type label, Texture type count }
+  auto texture_type_data =
+      std::unordered_map<Texture2D::Type, std::pair<std::string, unsigned int>>{
+          {Texture2D::Type::Diffuse, {"texture_diffuse", 1u}},
+          {Texture2D::Type::Specular, {"texture_specular", 1u}},
+          {Texture2D::Type::Ambient, {"texture_ambient", 1u}},
+          {Texture2D::Type::Emissive, {"texture_emissive", 1u}},
+          {Texture2D::Type::Height, {"texture_height", 1u}},
+          {Texture2D::Type::Normals, {"texture_normals", 1u}},
+          {Texture2D::Type::Shininess, {"texture_shininess", 1u}},
+          {Texture2D::Type::Opacity, {"texture_opacity", 1u}},
+          {Texture2D::Type::Displacement, {"texture_displacement", 1u}},
+          {Texture2D::Type::Lightmap, {"texture_lightmap", 1u}},
+          {Texture2D::Type::Reflection, {"texture_reflection", 1u}},
+          {Texture2D::Type::BaseColor, {"texture_base_color", 1u}},
+      };
 
   for (auto i = 0u; i < this->textures.size(); ++i) {
     auto const& texture = this->textures[i];
     auto const unit = static_cast<GLint>(i + 1);
-    auto uniform = std::string{};
-    switch (texture.getType()) {
-      case Texture2D::Type::Diffuse:
-        uniform = fmt::format("texture_diffuse{}", diffuse_id++);
-        break;
-      case Texture2D::Type::Specular:
-        uniform = fmt::format("texture_specular{}", specular_id++);
-        break;
-      case Texture2D::Type::Ambient:
-        uniform = fmt::format("texture_ambient{}", ambient_id++);
-        break;
-      case Texture2D::Type::Emissive:
-        uniform = fmt::format("texture_emissive{}", emissive_id++);
-        break;
-      case Texture2D::Type::Height:
-        uniform = fmt::format("texture_height{}", height_id++);
-        break;
-      case Texture2D::Type::Normals:
-        uniform = fmt::format("texture_normals{}", normals_id++);
-        break;
-      case Texture2D::Type::Shininess:
-        uniform = fmt::format("texture_shininess{}", shininess_id++);
-        break;
-      case Texture2D::Type::Opacity:
-        uniform = fmt::format("texture_opacity{}", opacity_id++);
-        break;
-      case Texture2D::Type::Displacement:
-        uniform = fmt::format("texture_displacement{}", displacement_id++);
-        break;
-      case Texture2D::Type::Lightmap:
-        uniform = fmt::format("texture_lightmap{}", lightmap_id++);
-        break;
-      case Texture2D::Type::Reflection:
-        uniform = fmt::format("texture_reflection{}", reflection_id++);
-        break;
-      case Texture2D::Type::BaseColor:
-        uniform = fmt::format("texture_base_color{}", basecolor_id++);
-        break;
+    auto const& type_data = texture_type_data.find(texture.getType());
+    if (type_data == texture_type_data.end()) {
+      std::cerr << "Couldn't bind texture: unmapped texture type" << '\n';
+      continue;
     }
+    auto uniform = fmt::format(
+        "{}{}", type_data->second.first, type_data->second.second++);
     texture.setUnit(program, uniform, unit);
     texture.bind();
   }
