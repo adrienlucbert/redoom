@@ -4,7 +4,7 @@
 
 namespace redoom::ecs::systems
 {
-struct PhysicsWorldSystem : public MonothreadedSystem<PhysicsWorldSystem> {
+struct PhysicsWorldSystem : public MultithreadedSystem<PhysicsWorldSystem> {
   void update(UpdateContext& context) noexcept override;
 };
 } // namespace redoom::ecs::systems

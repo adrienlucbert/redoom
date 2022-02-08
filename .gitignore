@@ -21,12 +21,10 @@ Debug
 x64
 Release
 *.vcxproj.filters
-*.obj
 *.opensdf
 *.tlog
 *.dll
 *.pdb
-*.obj
 *.lastbuildstate
 *.exp
 *.iobj

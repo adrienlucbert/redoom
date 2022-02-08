@@ -41,6 +41,12 @@ public:
     return this->component_manager.has<C>(entity);
   }
 
+  template <typename C, typename Callable>
+  void apply(Callable f) noexcept
+  {
+    this->component_manager.apply<C>(f);
+  }
+
   template <typename T, typename... Args>
   void attachSystem(Args&&... args) noexcept
   {

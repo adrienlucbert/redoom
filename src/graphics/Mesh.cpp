@@ -1,5 +1,7 @@
 #include <redoom/graphics/Mesh.hh>
 
+#include <iostream>
+
 namespace redoom::graphics
 {
 Mesh::Mesh(std::vector<Vertex> pvertices,
