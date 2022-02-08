@@ -1,9 +1,6 @@
 #pragma once
 
-#include <iostream>
-
 #include <GL/glew.h>
-#include <fmt/format.h>
 
 #include <redoom/graphics/Buffer.hh>
 #include <redoom/graphics/Program.hh>

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "redoom/graphics/Model.hh"
-#include "redoom/physics/World.hh"
+#include <iostream>
 #include <memory>
 
 #include <glm/gtc/type_ptr.hpp>
@@ -11,8 +10,11 @@
 #include <redoom/Application.hh>
 #include <redoom/Scene.hh>
 #include <redoom/ecs/Component.hh>
+#include <redoom/graphics/Mesh.hh>
+#include <redoom/graphics/Model.hh>
 #include <redoom/physics/Body.hh>
 #include <redoom/physics/Fixture.hh>
+#include <redoom/physics/World.hh>
 #include <redoom/physics/shapes/Cuboid.hh>
 #include <redoom/physics/shapes/Sphere.hh>
 #include <redoom/serializer/ComponentSerializer.hh>
@@ -32,16 +34,13 @@ struct BodyComponent : public Component<BodyComponent> {
     : body{world.createBody(def)}
   {
   }
-  explicit BodyComponent(physics::Body& pbody) noexcept
-    : body{pbody}
+  explicit BodyComponent(std::shared_ptr<physics::Body> pbody) noexcept
+    : body{std::move(pbody)}
   {
   }
   BodyComponent(BodyComponent const&) noexcept = delete;
-  BodyComponent(BodyComponent&&) noexcept = default;
-  ~BodyComponent() noexcept override
-  {
-    this->body.get().getWorld().deleteBody(this->body);
-  }
+  BodyComponent(BodyComponent&& rhs) noexcept = default;
+  ~BodyComponent() noexcept override = default;
 
   BodyComponent& operator=(BodyComponent const&) noexcept = delete;
   BodyComponent& operator=(BodyComponent&&) noexcept = delete;
@@ -50,11 +49,19 @@ struct BodyComponent : public Component<BodyComponent> {
       physics::BodyDefinition def,
       graphics::Model const& model) noexcept
   {
-    auto& body = world.createBodyFromModel(def, model);
-    return BodyComponent{body};
+    auto body = world.createBodyFromModel(def, model);
+    return BodyComponent{std::move(body)};
   }
 
-  std::reference_wrapper<physics::Body> body;
+  [[nodiscard]] static BodyComponent fromMesh(physics::World& world,
+      physics::BodyDefinition def,
+      graphics::Mesh const& mesh) noexcept
+  {
+    auto body = world.createBodyFromMesh(def, mesh);
+    return BodyComponent{std::move(body)};
+  }
+
+  std::shared_ptr<physics::Body> body;
 
   struct Serializer : public ComponentSerializer {
     static Expected<std::string_view> BodyTypeToString(
@@ -92,10 +99,11 @@ struct BodyComponent : public Component<BodyComponent> {
     {
       out << YAML::BeginMap;
       out << YAML::Key << "shape" << YAML::Value << YAML::BeginMap;
-      auto exp = Serializer::serializeShape(out, fixture.getShape());
+      auto exp = Serializer::serializeShape(out, *fixture.getShape());
       // TODO(alucbert): RETURN_IF_UNEXPECTED(exp);
       out << YAML::EndMap;
-      out << YAML::Key << "position" << YAML::Value << fixture.getPosition();
+      out << YAML::Key << "local_position" << YAML::Value
+          << fixture.getLocalPosition();
       out << YAML::Key << "friction" << YAML::Value << fixture.getFriction();
       out << YAML::Key << "restitution" << YAML::Value
           << fixture.getRestitution();
@@ -103,18 +111,18 @@ struct BodyComponent : public Component<BodyComponent> {
       out << YAML::EndMap;
     }
 
-    static Expected<> serializeShape(YAML::Emitter& out,
-        std::unique_ptr<physics::Shape> const& shape) noexcept
+    static Expected<> serializeShape(
+        YAML::Emitter& out, physics::Shape const& shape) noexcept
     {
-      auto shape_type = shape->getType();
+      auto shape_type = shape.getType();
       out << YAML::Key << "type" << YAML::Value << shape_type.data();
       if (shape_type == "Cuboid") {
-        auto const& cuboid = dynamic_cast<physics::Cuboid const&>(*shape);
+        auto const& cuboid = dynamic_cast<physics::Cuboid const&>(shape);
         out << YAML::Key << "width" << YAML::Value << cuboid.getWidth();
         out << YAML::Key << "height" << YAML::Value << cuboid.getHeight();
         out << YAML::Key << "length" << YAML::Value << cuboid.getLength();
       } else if (shape_type == "Sphere") {
-        auto const& sphere = dynamic_cast<physics::Sphere const&>(*shape);
+        auto const& sphere = dynamic_cast<physics::Sphere const&>(shape);
         out << YAML::Key << "radius" << YAML::Value << sphere.getRadius();
       } else {
         return make_formatted_unexpected("Unknown shape type: {}", shape_type);
@@ -132,7 +140,7 @@ struct BodyComponent : public Component<BodyComponent> {
       RETURN_IF_UNEXPECTED(shape_exp);
       auto fixture_def =
           physics::FixtureDefinition{.shape = std::move(shape_exp.value()),
-              .position = node["position"].as<glm::vec3>(),
+              .local_position = node["local_position"].as<glm::vec3>(),
               .friction = node["friction"].as<float>(),
               .restitution = node["restitution"].as<float>(),
               .density = node["density"].as<float>()};
@@ -140,7 +148,7 @@ struct BodyComponent : public Component<BodyComponent> {
       return {};
     }
 
-    static Expected<std::unique_ptr<physics::Shape>> deserializeShape(
+    static Expected<std::shared_ptr<physics::Shape>> deserializeShape(
         YAML::Node const& node) noexcept
     {
       auto shape_type = node["type"].as<std::string>();
@@ -151,12 +159,12 @@ struct BodyComponent : public Component<BodyComponent> {
         RETURN_IF_UNEXPECTED(height_exp);
         auto length_exp = YAML::exp_get_value<float>(node, "length");
         RETURN_IF_UNEXPECTED(length_exp);
-        return std::make_unique<physics::Cuboid>(
+        return std::make_shared<physics::Cuboid>(
             width_exp.value(), height_exp.value(), length_exp.value());
       } else if (shape_type == "Sphere") {
         auto radius_exp = YAML::exp_get_value<float>(node, "radius");
         RETURN_IF_UNEXPECTED(radius_exp);
-        return std::make_unique<physics::Sphere>(radius_exp.value());
+        return std::make_shared<physics::Sphere>(radius_exp.value());
       } else {
         return make_formatted_unexpected("Unknown shape type: {}", shape_type);
       }
@@ -166,26 +174,28 @@ struct BodyComponent : public Component<BodyComponent> {
         YAML::Emitter& out, ecs::ComponentBase const* component) const override
     {
       auto const* bc = dynamic_cast<BodyComponent const*>(component);
-      auto type_exp = Serializer::BodyTypeToString(bc->body.get().getType());
+      auto type_exp = Serializer::BodyTypeToString(bc->body->getType());
       if (!type_exp.has_value()) {
         std::cerr << "BodyComponent serialization failed: " << type_exp.error()
                   << '\n';
         return;
       }
       out << YAML::Key << "type" << YAML::Value << type_exp.value().data();
-      out << YAML::Key << "position" << YAML::Value
-          << bc->body.get().getPosition();
-      out << YAML::Key << "angle" << YAML::Value << bc->body.get().getAngle();
+      auto const& body_transform = bc->body->getTransform();
+      out << YAML::Key << "position" << YAML::Value << body_transform.position;
+      out << YAML::Key << "angle" << YAML::Value << body_transform.angle;
+      out << YAML::Key << "rotation" << YAML::Value << body_transform.rotation;
+      out << YAML::Key << "scale" << YAML::Value << body_transform.scale;
       out << YAML::Key << "linear_velocity" << YAML::Value
-          << bc->body.get().getLinearVelocity();
+          << bc->body->getLinearVelocity();
       out << YAML::Key << "angular_velocity" << YAML::Value
-          << bc->body.get().getAngularVelocity();
+          << bc->body->getAngularVelocity();
       out << YAML::Key << "has_fixed_rotation" << YAML::Value
-          << bc->body.get().hasFixedRotation();
+          << bc->body->hasFixedRotation();
       out << YAML::Key << "gravity_scale" << YAML::Value
-          << bc->body.get().getGravityScale();
+          << bc->body->getGravityScale();
       out << YAML::Key << "fixtures" << YAML::Value << YAML::BeginSeq;
-      for (auto const& fixture : bc->body.get().getFixtures()) {
+      for (auto const& fixture : bc->body->getFixtures()) {
         Serializer::serializeFixture(out, fixture);
       }
       out << YAML::EndSeq;
@@ -198,17 +208,19 @@ struct BodyComponent : public Component<BodyComponent> {
           Serializer::stringToBodyType(node["type"].as<std::string>());
       RETURN_IF_UNEXPECTED(type_exp);
       auto body_def = physics::BodyDefinition{.type = type_exp.value(),
-          .position = node["position"].as<glm::vec3>(),
-          .angle = node["angle"].as<float>(),
+          .transform = {.position = node["position"].as<glm::vec3>(),
+              .angle = node["angle"].as<float>(),
+              .rotation = node["rotation"].as<glm::vec3>(),
+              .scale = node["scale"].as<glm::vec3>()},
           .linear_velocity = node["linear_velocity"].as<glm::vec3>(),
           .angular_velocity = node["angular_velocity"].as<float>(),
           .has_fixed_rotation = node["has_fixed_rotation"].as<bool>(),
           .gravity_scale = node["gravity_scale"].as<float>()};
-      auto& pbody = scene.getWorld().createBody(body_def);
+      auto pbody = scene.getWorld().createBody(body_def);
       auto const fixtures = node["fixtures"];
       if (fixtures) {
         for (auto const& fixture_node : fixtures) {
-          Serializer::deserializeFixture(fixture_node, pbody);
+          Serializer::deserializeFixture(fixture_node, *pbody);
         }
       }
       scene.getRegistry().attachComponent<BodyComponent>(

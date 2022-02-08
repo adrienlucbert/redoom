@@ -16,8 +16,8 @@ namespace redoom::physics
 class Body;
 
 struct FixtureDefinition {
-  std::unique_ptr<Shape> shape;
-  glm::vec3 position{0.0f, 0.0f, 0.0f};
+  std::shared_ptr<Shape> shape;
+  glm::vec3 local_position{0.0f, 0.0f, 0.0f};
   float friction{0.2f};
   float restitution{0.0f};
   float density{0.0f};
@@ -37,24 +37,21 @@ public:
   void draw(graphics::Program& program) const noexcept;
 
   [[nodiscard]] Body& getBody() const noexcept;
-  [[nodiscard]] std::unique_ptr<Shape> const& getShape() const noexcept;
-  [[nodiscard]] glm::vec3 const& getPosition() const noexcept;
+  [[nodiscard]] std::shared_ptr<Shape const> getShape() const noexcept;
+  [[nodiscard]] glm::vec3 const& getLocalPosition() const noexcept;
   [[nodiscard]] float getFriction() const noexcept;
   [[nodiscard]] float getRestitution() const noexcept;
   [[nodiscard]] float getDensity() const noexcept;
 
-  [[nodiscard]] static Fixture fromBounds(Body& pbody,
-      FixtureDefinition def,
-      glm::vec2 x_bounds,
-      glm::vec2 y_bounds,
-      glm::vec2 z_bounds) noexcept;
+  [[nodiscard]] static Fixture fromAABB(
+      Body& pbody, FixtureDefinition def, AABB const& aabb) noexcept;
   [[nodiscard]] static Fixture fromMesh(
       Body& pbody, FixtureDefinition def, graphics::Mesh const& mesh) noexcept;
 
 private:
   std::reference_wrapper<Body> body;
-  std::unique_ptr<Shape> shape;
-  glm::vec3 position;
+  std::shared_ptr<Shape> shape;
+  glm::vec3 local_position;
   float friction;
   float restitution;
   float density;

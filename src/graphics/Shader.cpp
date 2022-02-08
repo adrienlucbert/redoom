@@ -4,8 +4,6 @@
 #include <sstream>
 #include <stdexcept>
 
-#include <fmt/format.h>
-
 namespace redoom::graphics
 {
 Shader::Shader(unsigned int pid) noexcept

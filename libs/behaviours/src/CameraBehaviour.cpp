@@ -2,7 +2,6 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <fmt/format.h>
 
 #include <redoom/Application.hh>
 #include <redoom/ecs/components/CameraComponent.hh>

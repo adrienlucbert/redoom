@@ -2,7 +2,6 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <fmt/format.h>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <redoom/ecs/Behaviour.hh>

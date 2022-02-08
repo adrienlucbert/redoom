@@ -13,6 +13,7 @@ public:
   explicit Sphere(float pradius) noexcept
     : Shape("Sphere")
     , radius{pradius}
+    , aabb{this->computeAABB()}
     , mesh{graphics::mesh::Sphere{
           pradius, 20, 20, {1.0f, 0.0f, 0.0f}, {}, GL_LINE_STRIP}}
   {
@@ -35,8 +36,20 @@ public:
     return this->radius;
   }
 
+  [[nodiscard]] AABB const& getAABB() const noexcept override
+  {
+    return this->aabb;
+  }
+
 private:
+  [[nodiscard]] AABB computeAABB() const noexcept
+  {
+    return AABB{{-this->radius, -this->radius, -this->radius},
+        {this->radius, this->radius, this->radius}};
+  }
+
   float radius;
+  AABB aabb;
   tl::optional<graphics::mesh::Sphere> mesh;
 };
 } // namespace redoom::physics

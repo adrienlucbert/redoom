@@ -1,13 +1,11 @@
 #include <redoom/ecs/systems/PhysicsWorldSystem.hh>
 
-#include <redoom/ecs/components/BodyComponent.hh>
-#include <redoom/ecs/components/TransformComponent.hh>
-#include <redoom/graphics/ShaderLibrary.hh>
-#include <redoom/renderer/Renderer.hh>
+#include <redoom/Application.hh>
 
 namespace redoom::ecs::systems
 {
-void PhysicsWorldSystem::update(UpdateContext& /*context*/) noexcept
+void PhysicsWorldSystem::update(UpdateContext& context) noexcept
 {
+  Application::get().getCurrentScene().getWorld().step(context.elapsed_time);
 }
 } // namespace redoom::ecs::systems

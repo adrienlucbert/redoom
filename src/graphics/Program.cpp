@@ -2,8 +2,6 @@
 
 #include <stdexcept>
 
-#include <fmt/format.h>
-
 namespace redoom::graphics
 {
 Program::Program(unsigned int pid) noexcept

@@ -5,21 +5,30 @@
 
 namespace redoom::physics
 {
-Body& World::createBody(BodyDefinition def) noexcept
+std::shared_ptr<Body> World::createBody(BodyDefinition def) noexcept
 {
   auto body_ptr = this->allocator.get(*this, this->last_body_id, def);
   auto const body_id = this->last_body_id++;
-  this->bodies.emplace(body_id, std::move(body_ptr));
-  return *this->bodies.at(body_id);
+  auto [it, success] = this->bodies.emplace(body_id, std::move(body_ptr));
+  return std::shared_ptr<Body>{
+      it->second.get(), [&](Body const* ptr) { this->deleteBody(*ptr); }};
 }
 
-Body& World::createBodyFromModel(
+std::shared_ptr<Body> World::createBodyFromModel(
     BodyDefinition def, graphics::Model const& model) noexcept
 {
-  auto& body = World::createBody(def);
+  auto body = World::createBody(def);
   for (auto const& mesh : model.getMeshes()) {
-    body.createFixtureFromMesh({}, mesh);
+    body->createFixtureFromMesh({}, mesh);
   }
+  return body;
+}
+
+std::shared_ptr<Body> World::createBodyFromMesh(
+    BodyDefinition def, graphics::Mesh const& mesh) noexcept
+{
+  auto body = World::createBody(def);
+  body->createFixtureFromMesh({}, mesh);
   return body;
 }
 

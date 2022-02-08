@@ -1,11 +1,13 @@
 #pragma once
 
+#include <memory>
 #include <unordered_map>
 
 #include <redoom/memory/Allocator.hh>
 
 namespace redoom::graphics
 {
+class Mesh;
 class Model;
 } // namespace redoom::graphics
 
@@ -25,16 +27,19 @@ public:
   World& operator=(World const& rhs) noexcept = delete;
   World& operator=(World&& rhs) noexcept = default;
 
-  Body& createBody(BodyDefinition def) noexcept;
-  Body& createBodyFromModel(
+  std::shared_ptr<Body> createBody(BodyDefinition def) noexcept;
+  std::shared_ptr<Body> createBodyFromModel(
       BodyDefinition def, graphics::Model const& model) noexcept;
-  bool deleteBody(Body const& body) noexcept;
+  std::shared_ptr<Body> createBodyFromMesh(
+      BodyDefinition def, graphics::Mesh const& mesh) noexcept;
   void step(double timestep) noexcept;
 
   [[nodiscard]] bool getDebugDraw() const noexcept;
   void setDebugDraw(bool draw = true) noexcept;
 
 private:
+  bool deleteBody(Body const& body) noexcept;
+
   bool debug_draw{false};
   unsigned int last_body_id{0};
   memory::Allocator<Body> allocator;

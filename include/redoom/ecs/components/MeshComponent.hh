@@ -7,6 +7,7 @@
 #include <redoom/graphics/Mesh.hh>
 #include <redoom/graphics/mesh/Quad.hh>
 #include <redoom/serializer/ComponentSerializer.hh>
+#include <redoom/serializer/common.hh>
 
 namespace redoom::ecs::components
 {
@@ -35,10 +36,14 @@ struct MeshComponent : public Component<MeshComponent> {
     }
 
     [[nodiscard]] Expected<> deserialize(
-        YAML::Node const& /*node*/, Scene& scene, Entity entity) const override
+        YAML::Node const& node, Scene& scene, Entity entity) const override
     {
       // TODO(alucbert): deserialize meshes
-      auto quad_mesh = std::shared_ptr<Quad>(new Quad{10.0f, 10.0f}); // NOLINT
+      auto color = glm::vec3{1.0f, 1.0f, 1.0f};
+      if (node["color"])
+        color = node["color"].as<glm::vec3>();
+      auto quad_mesh =
+          std::shared_ptr<Quad>(new Quad{1.0f, 1.0f, color}); // NOLINT
       scene.getRegistry().attachComponent<MeshComponent>(entity, quad_mesh);
       return {};
     }

@@ -2,11 +2,17 @@
 
 #include <redoom/Application.hh>
 #include <redoom/ecs/Behaviour.hh>
+#include <redoom/ecs/components/BodyComponent.hh>
+#include <redoom/ecs/components/MeshComponent.hh>
+#include <redoom/ecs/components/ModelComponent.hh>
 #include <redoom/events/Event.hh>
 #include <redoom/renderer/Renderer.hh>
 
 using redoom::ecs::Behaviour;
 using redoom::ecs::Entity;
+using redoom::ecs::components::BodyComponent;
+using redoom::ecs::components::MeshComponent;
+using redoom::ecs::components::ModelComponent;
 
 struct KeyboardBehaviour : public Behaviour {
   [[nodiscard]] std::string const& getType() const noexcept override
@@ -37,7 +43,26 @@ struct KeyboardBehaviour : public Behaviour {
     // Switch physics debug mode
     if (event.matches({.key = redoom::events::Key::F3,
             .action = redoom::events::Action::PRESS})) {
+      auto& registry =
+          redoom::Application::get().getCurrentScene().getRegistry();
       auto& world = redoom::Application::get().getCurrentScene().getWorld();
+
+      // Generate missing bodies
+      registry.apply<ModelComponent>(
+          [&](auto entity, ModelComponent& component) {
+            if (!registry.hasComponent<BodyComponent>(entity)) {
+              registry.attachComponent<BodyComponent>(
+                  entity, BodyComponent::fromModel(world, {}, component.model));
+            }
+          });
+
+      registry.apply<MeshComponent>([&](auto entity, MeshComponent& component) {
+        if (!registry.hasComponent<BodyComponent>(entity)) {
+          registry.attachComponent<BodyComponent>(
+              entity, BodyComponent::fromMesh(world, {}, *component.mesh));
+        }
+      });
+
       world.setDebugDraw(!world.getDebugDraw());
       std::cout << "Setting physics debug mode: " << std::boolalpha
                 << world.getDebugDraw() << '\n';

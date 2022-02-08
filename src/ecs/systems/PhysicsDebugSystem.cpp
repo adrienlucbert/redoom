@@ -21,16 +21,44 @@ void PhysicsDebugSystem::update(UpdateContext& context) noexcept
           auto transform_opt =
               context.component_manager.get<components::TransformComponent>(
                   entity);
-          for (auto const& fixture : component.body.get().getFixtures()) {
+          for (auto const& fixture : component.body->getFixtures()) {
             auto model = glm::mat4(1.0f);
             if (transform_opt) {
               auto& transform = *transform_opt;
               model = glm::translate(model,
-                  transform.position + fixture.getPosition() * transform.scale);
+                  transform.position
+                      + fixture.getLocalPosition() * transform.scale);
               model = glm::scale(model, transform.scale);
               model = glm::rotate(model, transform.angle, transform.rotation);
             }
             renderer::Renderer::draw(shader, fixture.getShape(), model);
+          }
+          auto aabb = component.body->getGlobalAABB();
+          if (aabb.has_value()) {
+            auto cuboid = graphics::mesh::Cuboid{
+                aabb->upper_bounds.x - aabb->lower_bounds.x,
+                aabb->upper_bounds.y - aabb->lower_bounds.y,
+                aabb->upper_bounds.z - aabb->lower_bounds.z,
+                {0.0f, 1.0f, 0.0f},
+                {},
+                GL_LINE_STRIP};
+            auto offset = aabb->getCenter();
+            /* The cuboid being centered on 0, in order to center the rendered
+             * hitbox on the AABB coordinates, we need to translate the
+             * rendering model by the AABB center position multiplied by the
+             * object scale factor if any.
+             */
+            auto model = glm::mat4(1.0f);
+            if (transform_opt) {
+              auto& transform = *transform_opt;
+              model = glm::translate(model, offset * transform.scale);
+              model = glm::translate(model, transform.position);
+              model = glm::scale(model, transform.scale);
+              model = glm::rotate(model, transform.angle, transform.rotation);
+            } else {
+              model = glm::translate(model, offset);
+            }
+            renderer::Renderer::draw(shader, cuboid, model);
           }
         });
   }

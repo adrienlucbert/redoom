@@ -15,6 +15,7 @@ public:
     , width{pwidth}
     , height{pheight}
     , length{plength}
+    , aabb{this->computeAABB()}
     , mesh{graphics::mesh::Cuboid{
           pwidth, pheight, plength, {1.0f, 0.0f, 0.0f}, {}, GL_LINE_STRIP}}
   {
@@ -48,10 +49,22 @@ public:
     return this->length;
   }
 
+  [[nodiscard]] AABB const& getAABB() const noexcept override
+  {
+    return this->aabb;
+  }
+
 private:
+  [[nodiscard]] AABB computeAABB() const noexcept
+  {
+    return AABB{{-this->width / 2, -this->height / 2, -this->length / 2},
+        {this->width / 2, this->height / 2, this->length / 2}};
+  }
+
   float width;
   float height;
   float length;
+  AABB aabb;
   tl::optional<graphics::mesh::Cuboid> mesh;
 };
 } // namespace redoom::physics
