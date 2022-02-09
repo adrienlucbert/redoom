@@ -3,7 +3,8 @@
 #include <memory>
 #include <unordered_map>
 
-#include <redoom/memory/Allocator.hh>
+#include <redoom/physics/Body.hh>
+#include <redoom/physics/collisions/CollisionDetection.hh>
 
 namespace redoom::graphics
 {
@@ -13,9 +14,6 @@ class Model;
 
 namespace redoom::physics
 {
-class Body;
-struct BodyDefinition;
-
 class World
 {
 public:
@@ -42,7 +40,7 @@ private:
 
   bool debug_draw{false};
   unsigned int last_body_id{0};
-  memory::Allocator<Body> allocator;
-  std::unordered_map<unsigned int, memory::Allocator<Body>::ptr_t> bodies;
+  std::unordered_map<unsigned int, Body> bodies;
+  CollisionDetection collision_detector;
 };
 } // namespace redoom::physics

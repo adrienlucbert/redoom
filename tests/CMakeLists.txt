@@ -4,6 +4,7 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin/tests/)
 # Source files
 set(
   SRCS
+  src/tests_AABB.cpp
   src/tests_Allocator.cpp
   src/tests_Component.cpp
   src/tests_ComponentManager.cpp

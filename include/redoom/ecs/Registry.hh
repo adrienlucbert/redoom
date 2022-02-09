@@ -40,6 +40,11 @@ public:
   {
     return this->component_manager.has<C>(entity);
   }
+  template <typename C>
+  [[nodiscard]] tl::optional<C&> getComponent(Entity entity) noexcept
+  {
+    return this->component_manager.get<C>(entity);
+  }
 
   template <typename C, typename Callable>
   void apply(Callable f) noexcept

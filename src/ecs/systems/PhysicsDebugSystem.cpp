@@ -45,18 +45,13 @@ void PhysicsDebugSystem::update(UpdateContext& context) noexcept
             auto offset = aabb->getCenter();
             /* The cuboid being centered on 0, in order to center the rendered
              * hitbox on the AABB coordinates, we need to translate the
-             * rendering model by the AABB center position multiplied by the
-             * object scale factor if any.
+             * rendering model by the AABB center position.
              */
             auto model = glm::mat4(1.0f);
+            model = glm::translate(model, offset);
             if (transform_opt) {
               auto& transform = *transform_opt;
-              model = glm::translate(model, offset * transform.scale);
-              model = glm::translate(model, transform.position);
-              model = glm::scale(model, transform.scale);
               model = glm::rotate(model, transform.angle, transform.rotation);
-            } else {
-              model = glm::translate(model, offset);
             }
             renderer::Renderer::draw(shader, cuboid, model);
           }

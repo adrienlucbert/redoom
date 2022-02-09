@@ -1,5 +1,8 @@
 #include <redoom/physics/World.hh>
 
+#include <algorithm>
+#include <iostream>
+
 #include <redoom/graphics/Model.hh>
 #include <redoom/physics/Body.hh>
 
@@ -7,11 +10,10 @@ namespace redoom::physics
 {
 std::shared_ptr<Body> World::createBody(BodyDefinition def) noexcept
 {
-  auto body_ptr = this->allocator.get(*this, this->last_body_id, def);
   auto const body_id = this->last_body_id++;
-  auto [it, success] = this->bodies.emplace(body_id, std::move(body_ptr));
-  return std::shared_ptr<Body>{
-      it->second.get(), [&](Body const* ptr) { this->deleteBody(*ptr); }};
+  auto [it, success] = this->bodies.emplace(body_id, Body{*this, body_id, def});
+  auto deleter = [&](Body const* ptr) { this->deleteBody(*ptr); };
+  return std::shared_ptr<Body>{&it->second, deleter};
 }
 
 std::shared_ptr<Body> World::createBodyFromModel(
@@ -43,6 +45,17 @@ bool World::deleteBody(Body const& body) noexcept
 
 void World::step(double /*timestep*/) noexcept
 {
+  auto vbodies = std::vector<std::reference_wrapper<Body const>>{};
+  vbodies.reserve(this->bodies.size());
+  std::transform(this->bodies.begin(),
+      this->bodies.end(),
+      std::back_inserter(vbodies),
+      [](auto const& pair) { return std::cref(pair.second); });
+  auto collisions = this->collision_detector.getCollisions(std::move(vbodies));
+  for (auto const& collision : collisions) {
+    std::cout << "Collision between body " << collision.body_a.get().getId()
+              << " and " << collision.body_b.get().getId() << '\n';
+  }
 }
 
 bool World::getDebugDraw() const noexcept

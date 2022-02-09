@@ -4,8 +4,9 @@
 
 namespace redoom::ecs::systems
 {
-void PhysicsWorldSystem::update(UpdateContext& context) noexcept
+void PhysicsWorldSystem::update(UpdateContext& /*context*/) noexcept
 {
-  Application::get().getCurrentScene().getWorld().step(context.elapsed_time);
+  // auto& world = Application::get().getCurrentScene().getWorld();
+  // world.step(context.elapsed_time);
 }
 } // namespace redoom::ecs::systems
