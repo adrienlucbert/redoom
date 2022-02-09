@@ -5,7 +5,9 @@
 #include <redoom/ecs/components/BodyComponent.hh>
 #include <redoom/ecs/components/MeshComponent.hh>
 #include <redoom/ecs/components/ModelComponent.hh>
+#include <redoom/ecs/components/TransformComponent.hh>
 #include <redoom/events/Event.hh>
+#include <redoom/physics/Body.hh>
 #include <redoom/renderer/Renderer.hh>
 
 using redoom::ecs::Behaviour;
@@ -13,6 +15,8 @@ using redoom::ecs::Entity;
 using redoom::ecs::components::BodyComponent;
 using redoom::ecs::components::MeshComponent;
 using redoom::ecs::components::ModelComponent;
+using redoom::ecs::components::TransformComponent;
+using redoom::physics::BodyDefinition;
 
 struct KeyboardBehaviour : public Behaviour {
   [[nodiscard]] std::string const& getType() const noexcept override
@@ -51,15 +55,33 @@ struct KeyboardBehaviour : public Behaviour {
       registry.apply<ModelComponent>(
           [&](auto entity, ModelComponent& component) {
             if (!registry.hasComponent<BodyComponent>(entity)) {
-              registry.attachComponent<BodyComponent>(
-                  entity, BodyComponent::fromModel(world, {}, component.model));
+              auto def = BodyDefinition{};
+              auto transform_opt =
+                  registry.getComponent<TransformComponent>(entity);
+              if (transform_opt.has_value()) {
+                def.transform = {.position = transform_opt->position,
+                    .angle = transform_opt->angle,
+                    .rotation = transform_opt->rotation,
+                    .scale = transform_opt->scale};
+              }
+              registry.attachComponent<BodyComponent>(entity,
+                  BodyComponent::fromModel(world, def, component.model));
             }
           });
 
       registry.apply<MeshComponent>([&](auto entity, MeshComponent& component) {
         if (!registry.hasComponent<BodyComponent>(entity)) {
+          auto def = BodyDefinition{};
+          auto transform_opt =
+              registry.getComponent<TransformComponent>(entity);
+          if (transform_opt.has_value()) {
+            def.transform = {.position = transform_opt->position,
+                .angle = transform_opt->angle,
+                .rotation = transform_opt->rotation,
+                .scale = transform_opt->scale};
+          }
           registry.attachComponent<BodyComponent>(
-              entity, BodyComponent::fromMesh(world, {}, *component.mesh));
+              entity, BodyComponent::fromMesh(world, def, *component.mesh));
         }
       });
 
@@ -74,6 +96,13 @@ struct KeyboardBehaviour : public Behaviour {
       window.setVSync(!window.hasVSync());
       std::cout << "Setting VSync: " << std::boolalpha << window.hasVSync()
                 << '\n';
+    }
+
+    // Trigger collision detection
+    if (event.matches({.key = redoom::events::Key::C,
+            .action = redoom::events::Action::PRESS})) {
+      auto& world = redoom::Application::get().getCurrentScene().getWorld();
+      world.step(0.0);
     }
   }
 };

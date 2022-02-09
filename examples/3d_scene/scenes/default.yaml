@@ -4,40 +4,32 @@ Entities:
       CameraBehaviour
     CameraComponent:
       camera:
-        position: [1.4884721, 0.209410518, 0.0160431713]
-        yaw: -539.095825
-        pitch: -5.60004377
+        position: [0, 0, 10]
+        yaw: -90
+        pitch: 0
         speed: 0.000999999815
         sensitivity: 0.300000012
         fov: 0.785398185
-  - TransformComponent:
-      position: [0, 0, 0]
-      angle: 0
-      rotation: [1, 1, 1]
-      scale: [0.100000001, 0.100000001, 0.100000001]
-    ModelComponent:
-      path: ../assets/debug-cubes/debug-cubes.obj
-      flip_uvs: false
   - MeshComponent:
       color: [1, 0, 0]
     TransformComponent:
       position: [0, 0, 0]
       angle: 1.57079995
-      rotation: [1, 0, 0]
-      scale: [0.5, 0.5, 0.5]
+      rotation: [0, 0, 1]
+      scale: [1, 1, 1]
   - MeshComponent:
       color: [0, 1, 0]
     TransformComponent:
-      position: [0, 0, 0]
+      position: [1.5, 1.5, 0]
       angle: 1.57079995
-      rotation: [0, 1, 0]
-      scale: [0.5, 0.5, 0.5]
+      rotation: [0, 0, 1]
+      scale: [1, 1, 1]
   - MeshComponent:
       color: [0, 0, 1]
     TransformComponent:
-      position: [0, 0, 0]
+      position: [2.5, 0, 0]
       angle: 1.57079995
       rotation: [0, 0, 1]
-      scale: [0.5, 0.5, 0.5]
+      scale: [1, 1, 1]
   - BehaviourComponent:
       KeyboardBehaviour
