@@ -51,7 +51,7 @@ void World::step(double /*timestep*/) noexcept
       this->bodies.end(),
       std::back_inserter(vbodies),
       [](auto const& pair) { return std::cref(pair.second); });
-  auto collisions = this->collision_detector.getCollisions(std::move(vbodies));
+  auto collisions = this->collision_detector(std::move(vbodies));
   for (auto const& collision : collisions) {
     std::cout << "Collision between body " << collision.body_a.get().getId()
               << " and " << collision.body_b.get().getId() << '\n';
