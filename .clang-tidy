@@ -43,4 +43,9 @@ Checks: '
   -readability-else-after-return,
   -readability-uppercase-literal-suffix,
 '
+CheckOptions:
+  - key:             cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor
+    value:           '1'
+  - key:             hicpp-special-member-functions.AllowSoleDefaultDtor
+    value:           '1'
 ---

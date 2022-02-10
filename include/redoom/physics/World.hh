@@ -4,7 +4,8 @@
 #include <unordered_map>
 
 #include <redoom/physics/Body.hh>
-#include <redoom/physics/collisions/CollisionDetection.hh>
+#include <redoom/physics/collisions/CollisionDetector.hh>
+#include <redoom/physics/collisions/PairFilter.hh>
 
 namespace redoom::graphics
 {
@@ -41,6 +42,6 @@ private:
   bool debug_draw{false};
   unsigned int last_body_id{0};
   std::unordered_map<unsigned int, Body> bodies;
-  CollisionDetection collision_detector;
+  CollisionDetector<PairFilter> collision_detector;
 };
 } // namespace redoom::physics
