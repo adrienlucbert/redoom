@@ -55,6 +55,11 @@ void PhysicsDebugSystem::update(UpdateContext& context) noexcept
             }
             renderer::Renderer::draw(shader, cuboid, model);
           }
+          Application::get()
+              .getCurrentScene()
+              .getWorld()
+              .getOctTree()
+              .debugDraw(shader);
         });
   }
 }

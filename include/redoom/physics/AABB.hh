@@ -92,6 +92,11 @@ struct AABB {
     return 0.5f * (this->lower_bounds + this->upper_bounds);
   }
 
+  [[nodiscard]] glm::vec3 getSize() const noexcept
+  {
+    return this->upper_bounds - this->lower_bounds;
+  }
+
   [[nodiscard]] AABB combine(AABB const& rhs) const noexcept
   {
     return AABB{{std::min(this->lower_bounds.x, rhs.lower_bounds.x),

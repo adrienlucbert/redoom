@@ -62,11 +62,9 @@ public:
   [[nodiscard]] float getGravityScale() const noexcept;
   [[nodiscard]] std::vector<Fixture> const& getFixtures() const noexcept;
   [[nodiscard]] tl::optional<AABB> getGlobalAABB() const noexcept;
-  [[nodiscard]] tl::optional<AABB> const& getLocalAABB() const noexcept;
+  [[nodiscard]] tl::optional<AABB> getLocalAABB() const noexcept;
 
 private:
-  void updateAABB(Fixture const& fixture) noexcept;
-
   std::reference_wrapper<World> world;
   unsigned int id;
   BodyType type;
@@ -76,6 +74,5 @@ private:
   bool has_fixed_rotation;
   float gravity_scale;
   std::vector<Fixture> fixtures;
-  tl::optional<AABB> aabb;
 };
 } // namespace redoom::physics
