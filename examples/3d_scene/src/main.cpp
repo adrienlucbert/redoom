@@ -70,11 +70,11 @@ std::unique_ptr<Application> createApplication(ApplicationArguments args)
   auto& scene = scene_exp->get();
   auto& registry = scene.getRegistry();
 
-  auto shader_library_exp = ShaderLibrary::addShader("default",
+  auto default_shader_exp = ShaderLibrary::addShader("default",
       "../examples/3d_scene/shaders/vs.glslx",
       "../examples/3d_scene/shaders/fs.glslx");
-  if (!shader_library_exp) {
-    std::cerr << shader_library_exp.error() << '\n';
+  if (!default_shader_exp) {
+    std::cerr << default_shader_exp.error() << '\n';
     std::abort();
   }
 

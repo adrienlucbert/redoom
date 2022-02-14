@@ -23,6 +23,7 @@ std::shared_ptr<Body> World::createBodyFromModel(
   for (auto const& mesh : model.getMeshes()) {
     body->createFixtureFromMesh({}, mesh);
   }
+  this->octtree.insert(std::ref(*body));
   return body;
 }
 
@@ -31,6 +32,7 @@ std::shared_ptr<Body> World::createBodyFromMesh(
 {
   auto body = World::createBody(def);
   body->createFixtureFromMesh({}, mesh);
+  this->octtree.insert(std::ref(*body));
   return body;
 }
 
@@ -39,6 +41,7 @@ bool World::deleteBody(Body const& body) noexcept
   auto const& body_it = this->bodies.find(body.getId());
   if (body_it == this->bodies.end())
     return false;
+  // this->octtree.remove(body_it->second);
   this->bodies.erase(body_it);
   return true;
 }
@@ -66,5 +69,10 @@ bool World::getDebugDraw() const noexcept
 void World::setDebugDraw(bool draw) noexcept
 {
   this->debug_draw = draw;
+}
+
+OctTree<Body, BodyItemProxy> const& World::getOctTree() const noexcept
+{
+  return this->octtree;
 }
 } // namespace redoom::physics
