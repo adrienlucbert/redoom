@@ -21,6 +21,7 @@
 
 using redoom::SceneSerializer;
 using redoom::ecs::SystemPriority;
+using redoom::ecs::components::BehaviourComponent;
 using redoom::ecs::components::BodyComponent;
 using redoom::ecs::components::CameraComponent;
 using redoom::ecs::components::MeshComponent;
@@ -48,18 +49,30 @@ std::unique_ptr<Application> createApplication(ApplicationArguments args)
 {
   auto app = std::make_unique<ExampleApplication>(args);
 
-  SceneSerializer::get().registerComponentFactory(
-      "TransformComponent", std::make_unique<TransformComponent::Serializer>());
-  SceneSerializer::get().registerComponentFactory(
-      "CameraComponent", std::make_unique<CameraComponent::Serializer>());
-  SceneSerializer::get().registerComponentFactory("BehaviourComponent",
-      std::make_unique<ecs::components::BehaviourComponent::Serializer>());
-  SceneSerializer::get().registerComponentFactory(
-      "MeshComponent", std::make_unique<MeshComponent::Serializer>());
-  SceneSerializer::get().registerComponentFactory(
-      "ModelComponent", std::make_unique<ModelComponent::Serializer>());
-  SceneSerializer::get().registerComponentFactory(
-      "BodyComponent", std::make_unique<BodyComponent::Serializer>());
+  SceneSerializer::get().registerComponentFactory<TransformComponent>(
+      "TransformComponent",
+      std::make_unique<TransformComponent::Serializer>(),
+      SerializerPriority{0u});
+  SceneSerializer::get().registerComponentFactory<CameraComponent>(
+      "CameraComponent",
+      std::make_unique<CameraComponent::Serializer>(),
+      SerializerPriority{1u});
+  SceneSerializer::get().registerComponentFactory<MeshComponent>(
+      "MeshComponent",
+      std::make_unique<MeshComponent::Serializer>(),
+      SerializerPriority{100u});
+  SceneSerializer::get().registerComponentFactory<ModelComponent>(
+      "ModelComponent",
+      std::make_unique<ModelComponent::Serializer>(),
+      SerializerPriority{101u});
+  SceneSerializer::get().registerComponentFactory<BodyComponent>(
+      "BodyComponent",
+      std::make_unique<BodyComponent::Serializer>(),
+      SerializerPriority{150u});
+  SceneSerializer::get().registerComponentFactory<BehaviourComponent>(
+      "BehaviourComponent",
+      std::make_unique<BehaviourComponent::Serializer>(),
+      SerializerPriority{1000u});
 
   auto scene_exp = app->loadScene(
       fmt::format("../examples/3d_scene/scenes/{}.yaml", "default"));
