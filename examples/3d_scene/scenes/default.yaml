@@ -19,21 +19,21 @@ Entities:
       path: ../assets/debug-cubes/debug-cubes.obj
       flip_uvs: false
   - TransformComponent:
-      position: [0, 0, 0]
-      angle: 1.57079995
-      rotation: [0, 0, 1]
-      scale: [1, 1, 1]
-    MeshComponent:
-      color: [1, 0, 0]
-    BehaviourComponent:
-      ArrowsControlBehaviour
-  - TransformComponent:
       position: [1.5, 1.5, 0]
       angle: 1.57079995
       rotation: [0, 0, 1]
       scale: [1, 1, 1]
     MeshComponent:
+      color: [1, 0, 0]
+  - TransformComponent:
+      position: [0, 0, 0]
+      angle: 1.57079995
+      rotation: [0, 0, 1]
+      scale: [1, 1, 1]
+    MeshComponent:
       color: [0, 1, 0]
+    BehaviourComponent:
+      ArrowsControlBehaviour
   - TransformComponent:
       position: [2.5, 0, 0]
       angle: 1.57079995

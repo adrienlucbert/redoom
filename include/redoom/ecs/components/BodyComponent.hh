@@ -10,6 +10,7 @@
 #include <redoom/Application.hh>
 #include <redoom/Scene.hh>
 #include <redoom/ecs/Component.hh>
+#include <redoom/ecs/components/TransformComponent.hh>
 #include <redoom/graphics/Mesh.hh>
 #include <redoom/graphics/Model.hh>
 #include <redoom/physics/Body.hh>
@@ -207,11 +208,13 @@ struct BodyComponent : public Component<BodyComponent> {
       auto type_exp =
           Serializer::stringToBodyType(node["type"].as<std::string>());
       RETURN_IF_UNEXPECTED(type_exp);
+      auto transform_component_opt =
+          scene.getRegistry().getComponent<ecs::components::TransformComponent>(
+              entity);
+      assert(transform_component_opt.has_value()
+             && "BodyComponent requires a TransformComponent" == nullptr);
       auto body_def = physics::BodyDefinition{.type = type_exp.value(),
-          .transform = {.position = node["position"].as<glm::vec3>(),
-              .angle = node["angle"].as<float>(),
-              .rotation = node["rotation"].as<glm::vec3>(),
-              .scale = node["scale"].as<glm::vec3>()},
+          .transform = {transform_component_opt.value()},
           .linear_velocity = node["linear_velocity"].as<glm::vec3>(),
           .angular_velocity = node["angular_velocity"].as<float>(),
           .has_fixed_rotation = node["has_fixed_rotation"].as<bool>(),

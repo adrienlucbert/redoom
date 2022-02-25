@@ -55,33 +55,25 @@ struct KeyboardBehaviour : public Behaviour {
       registry.apply<ModelComponent>(
           [&](auto entity, ModelComponent& component) {
             if (!registry.hasComponent<BodyComponent>(entity)) {
-              auto def = BodyDefinition{};
               auto transform_opt =
                   registry.getComponent<TransformComponent>(entity);
               if (transform_opt.has_value()) {
-                def.transform = {.position = transform_opt->position,
-                    .angle = transform_opt->angle,
-                    .rotation = transform_opt->rotation,
-                    .scale = transform_opt->scale};
+                auto def = BodyDefinition{.transform = transform_opt.value()};
+                registry.attachComponent<BodyComponent>(entity,
+                    BodyComponent::fromModel(world, def, component.model));
               }
-              registry.attachComponent<BodyComponent>(entity,
-                  BodyComponent::fromModel(world, def, component.model));
             }
           });
 
       registry.apply<MeshComponent>([&](auto entity, MeshComponent& component) {
         if (!registry.hasComponent<BodyComponent>(entity)) {
-          auto def = BodyDefinition{};
           auto transform_opt =
               registry.getComponent<TransformComponent>(entity);
           if (transform_opt.has_value()) {
-            def.transform = {.position = transform_opt->position,
-                .angle = transform_opt->angle,
-                .rotation = transform_opt->rotation,
-                .scale = transform_opt->scale};
+            auto def = BodyDefinition{.transform = transform_opt.value()};
+            registry.attachComponent<BodyComponent>(
+                entity, BodyComponent::fromMesh(world, def, *component.mesh));
           }
-          registry.attachComponent<BodyComponent>(
-              entity, BodyComponent::fromMesh(world, def, *component.mesh));
         }
       });
 
