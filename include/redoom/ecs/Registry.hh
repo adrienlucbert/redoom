@@ -45,6 +45,22 @@ public:
   {
     return this->component_manager.get<C>(entity);
   }
+  template <typename C>
+  [[nodiscard]] tl::optional<C const&> getComponent(
+      Entity entity) const noexcept
+  {
+    return this->component_manager.get<C>(entity);
+  }
+  [[nodiscard]] tl::optional<ComponentBase&> getComponentByTypeId(
+      unsigned type_id, Entity entity) noexcept
+  {
+    return this->component_manager.getByTypeId(type_id, entity);
+  }
+  [[nodiscard]] tl::optional<ComponentBase const&> getComponentByTypeId(
+      unsigned type_id, Entity entity) const noexcept
+  {
+    return this->component_manager.getByTypeId(type_id, entity);
+  }
 
   template <typename C, typename Callable>
   void apply(Callable f) noexcept
@@ -80,12 +96,6 @@ public:
   std::vector<Entity> const& getEntities() const noexcept
   {
     return this->entity_manager.getEntities();
-  }
-
-  std::vector<std::reference_wrapper<const ComponentBase>> getComponents(
-      Entity entity) const noexcept
-  {
-    return this->component_manager.getComponents(entity);
   }
 
 private:

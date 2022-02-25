@@ -87,34 +87,48 @@ public:
   }
 
   template <typename T>
+  tl::optional<T const&> get(Entity entity) const noexcept
+  {
+    static_assert(std::is_base_of_v<ComponentBase, T>,
+        "T must inherit from ComponentBase");
+    auto opt = this->getByTypeId(T::getTypeId(), entity);
+    return opt.has_value() ? tl::optional<T const&>(static_cast<T const&>(*opt))
+                           : tl::nullopt;
+  }
+
+  template <typename T>
   tl::optional<T&> get(Entity entity) noexcept
   {
     static_assert(std::is_base_of_v<ComponentBase, T>,
         "T must inherit from ComponentBase");
+    auto opt = this->getByTypeId(T::getTypeId(), entity);
+    return opt.has_value() ? tl::optional<T&>(static_cast<T&>(*opt))
+                           : tl::nullopt;
+  }
+
+  tl::optional<ComponentBase const&> getByTypeId(
+      unsigned int type_id, Entity entity) const noexcept
+  {
     auto lock = std::lock_guard{*this->mutex};
-    auto const& list_it = this->components_lists.find(T::getTypeId());
+    auto list_it = this->components_lists.find(type_id);
     if (list_it == this->components_lists.end())
       return tl::nullopt;
-    auto& list = this->components_lists.at(T::getTypeId());
-    auto const& component_it = list.find(entity);
+    auto const& list = this->components_lists.at(type_id);
+    auto component_it = list.find(entity);
     if (component_it == list.end())
       return tl::nullopt;
     else
-      return static_cast<T&>(*component_it->second);
+      return *component_it->second;
   }
 
-  std::vector<std::reference_wrapper<ComponentBase const>> getComponents(
-      Entity entity) const noexcept
+  tl::optional<ComponentBase&> getByTypeId(
+      unsigned int type_id, Entity entity) noexcept
   {
-    auto components =
-        std::vector<std::reference_wrapper<ComponentBase const>>{};
-    for (auto const& pair : this->components_lists) {
-      auto const& list = pair.second;
-      auto const& component_it = list.find(entity);
-      if (component_it != list.end())
-        components.emplace_back(std::ref(*component_it->second));
-    }
-    return components;
+    auto opt =
+        const_cast<ComponentManager const*>(this)->getByTypeId(type_id, entity);
+    return opt.has_value()
+             ? tl::optional<ComponentBase&>(const_cast<ComponentBase&>(*opt))
+             : tl::nullopt;
   }
 
 private:
@@ -150,6 +164,7 @@ private:
 
   mutable std::unique_ptr<std::mutex> mutex{std::make_unique<std::mutex>()};
   std::unordered_map<unsigned int, std::unique_ptr<AllocatorBase>> allocators;
+  std::unordered_map<std::string, unsigned int> type_type_id_map;
   std::unordered_map<unsigned int,
       std::unordered_map<Entity, Allocator<ComponentBase>::ptr_t>>
       components_lists;

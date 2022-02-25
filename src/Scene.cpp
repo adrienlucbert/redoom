@@ -1,6 +1,6 @@
 #include <redoom/Scene.hh>
 
-#include <yaml-cpp/yaml.h>
+#include <iostream>
 
 #include <redoom/serializer/SceneSerializer.hh>
 
@@ -38,7 +38,9 @@ physics::World const& Scene::getWorld() const noexcept
 
 void Scene::serialize(std::string_view filepath) const noexcept
 {
-  SceneSerializer::get().serialize(filepath, *this);
+  auto exp = SceneSerializer::get().serialize(filepath, *this);
+  if (!exp)
+    std::cerr << exp.error() << '\n';
 }
 
 void Scene::setName(std::string_view pname) noexcept
