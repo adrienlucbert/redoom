@@ -27,7 +27,7 @@ struct BodyTransform {
 
 struct BodyDefinition {
   BodyType type{BodyType::Static};
-  BodyTransform transform;
+  BodyTransform& transform;
   glm::vec3 linear_velocity{0.0f, 0.0f, 0.0f};
   float angular_velocity{0.0f};
   bool has_fixed_rotation{false};
@@ -68,7 +68,7 @@ private:
   std::reference_wrapper<World> world;
   unsigned int id;
   BodyType type;
-  BodyTransform transform;
+  BodyTransform& transform;
   glm::vec3 linear_velocity;
   float angular_velocity;
   bool has_fixed_rotation;

@@ -5,33 +5,27 @@
 #include <Utils/Expected.hh>
 #include <redoom/Scene.hh>
 #include <redoom/ecs/Component.hh>
+#include <redoom/physics/Body.hh>
 #include <redoom/serializer/ComponentSerializer.hh>
 #include <redoom/serializer/common.hh>
 
 namespace redoom::ecs::components
 {
-struct TransformComponent : public Component<TransformComponent> {
+struct TransformComponent : public Component<TransformComponent>,
+                            public physics::BodyTransform {
   [[nodiscard]] std::string const& getType() const noexcept override
   {
     static auto const type = std::string{"TransformComponent"};
     return type;
   }
 
-  explicit TransformComponent(glm::vec3 pposition = {0.0f, 0.0f, 0.0f},
-      float pangle = 0.0f,
-      glm::vec3 protation = {1.0f, 1.0f, 1.0f},
-      glm::vec3 pscale = {1.0f, 1.0f, 1.0f}) noexcept
-    : position{pposition}
-    , angle{pangle}
-    , rotation{protation}
-    , scale{pscale}
+  TransformComponent(glm::vec3 pposition,
+      float pangle,
+      glm::vec3 protation,
+      glm::vec3 pscale) noexcept
+    : physics::BodyTransform{pposition, pangle, protation, pscale}
   {
   }
-
-  glm::vec3 position{0.0f, 0.0f, 0.0f};
-  float angle{0.0f};
-  glm::vec3 rotation{0.0f, 0.0f, 0.0f};
-  glm::vec3 scale{1.0f, 1.0f, 1.0f};
 
   struct Serializer : public ComponentSerializer {
     void serialize(
