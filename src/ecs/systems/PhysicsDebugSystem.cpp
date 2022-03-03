@@ -26,10 +26,11 @@ void PhysicsDebugSystem::update(UpdateContext& context) noexcept
             if (transform_opt) {
               auto& transform = *transform_opt;
               model = glm::translate(model,
-                  transform.position
-                      + fixture.getLocalPosition() * transform.scale);
-              model = glm::scale(model, transform.scale);
-              model = glm::rotate(model, transform.angle, transform.rotation);
+                  transform.getPosition()
+                      + fixture.getLocalPosition() * transform.getScale());
+              model = glm::scale(model, transform.getScale());
+              model = glm::rotate(
+                  model, transform.getAngle(), transform.getRotation());
             }
             renderer::Renderer::draw(shader, fixture.getShape(), model);
           }
@@ -51,15 +52,12 @@ void PhysicsDebugSystem::update(UpdateContext& context) noexcept
             model = glm::translate(model, offset);
             if (transform_opt) {
               auto& transform = *transform_opt;
-              model = glm::rotate(model, transform.angle, transform.rotation);
+              model = glm::rotate(
+                  model, transform.getAngle(), transform.getRotation());
             }
             renderer::Renderer::draw(shader, cuboid, model);
           }
-          Application::get()
-              .getCurrentScene()
-              .getWorld()
-              .getOctTree()
-              .debugDraw(shader);
+          Application::get().getCurrentScene().getWorld().debugDraw(shader);
         });
   }
 }

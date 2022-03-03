@@ -32,10 +32,10 @@ struct TransformComponent : public Component<TransformComponent>,
         YAML::Emitter& out, ecs::ComponentBase const* component) const override
     {
       auto const* tc = dynamic_cast<TransformComponent const*>(component);
-      out << YAML::Key << "position" << YAML::Value << tc->position;
-      out << YAML::Key << "angle" << YAML::Value << tc->angle;
-      out << YAML::Key << "rotation" << YAML::Value << tc->rotation;
-      out << YAML::Key << "scale" << YAML::Value << tc->scale;
+      out << YAML::Key << "position" << YAML::Value << tc->getPosition();
+      out << YAML::Key << "angle" << YAML::Value << tc->getAngle();
+      out << YAML::Key << "rotation" << YAML::Value << tc->getRotation();
+      out << YAML::Key << "scale" << YAML::Value << tc->getScale();
     }
     [[nodiscard]] Expected<> deserialize(
         YAML::Node const& node, Scene& scene, Entity entity) const override

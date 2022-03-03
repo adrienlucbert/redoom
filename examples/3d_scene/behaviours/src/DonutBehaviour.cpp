@@ -29,8 +29,9 @@ struct DonutBehaviour : public Behaviour {
       assert("No transform component associated" == nullptr);
     try {
       auto& transform = transform_opt.value();
-      transform.angle +=
-          static_cast<float>(context.elapsed_time * this->rotation_speed);
+      transform.setAngle(
+          transform.getAngle()
+          + static_cast<float>(context.elapsed_time * this->rotation_speed));
     } catch (tl::bad_optional_access const&) {
       // NOTE: this should never happen, but it makes clang-tidy happy
     }

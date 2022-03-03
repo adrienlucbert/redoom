@@ -23,7 +23,7 @@ std::shared_ptr<Body> World::createBodyFromModel(
   for (auto const& mesh : model.getMeshes()) {
     body->createFixtureFromMesh({}, mesh);
   }
-  this->octtree.insert(std::ref(*body));
+  this->collision_detector.insert(*body);
   return body;
 }
 
@@ -32,7 +32,7 @@ std::shared_ptr<Body> World::createBodyFromMesh(
 {
   auto body = World::createBody(def);
   body->createFixtureFromMesh({}, mesh);
-  this->octtree.insert(std::ref(*body));
+  this->collision_detector.insert(*body);
   return body;
 }
 
@@ -41,20 +41,20 @@ bool World::deleteBody(Body const& body) noexcept
   auto const& body_it = this->bodies.find(body.getId());
   if (body_it == this->bodies.end())
     return false;
-  // this->octtree.remove(body_it->second);
+  this->collision_detector.remove(body_it->second);
   this->bodies.erase(body_it);
   return true;
 }
 
 void World::step(double /*timestep*/) noexcept
 {
-  auto vbodies = std::vector<std::reference_wrapper<Body const>>{};
+  auto vbodies = std::vector<std::reference_wrapper<Body>>{};
   vbodies.reserve(this->bodies.size());
   std::transform(this->bodies.begin(),
       this->bodies.end(),
       std::back_inserter(vbodies),
-      [](auto const& pair) { return std::cref(pair.second); });
-  auto collisions = this->collision_detector(std::move(vbodies));
+      [](auto& pair) { return std::ref(pair.second); });
+  auto collisions = this->collision_detector.getCollisions(vbodies);
   for (auto const& collision : collisions) {
     std::cout << "Collision between body " << collision.body_a.get().getId()
               << " and " << collision.body_b.get().getId() << '\n';
@@ -71,8 +71,10 @@ void World::setDebugDraw(bool draw) noexcept
   this->debug_draw = draw;
 }
 
-OctTree<Body, BodyItemProxy> const& World::getOctTree() const noexcept
+void World::debugDraw(graphics::Program& program) const noexcept
 {
-  return this->octtree;
+  if (!this->debug_draw)
+    return;
+  this->collision_detector.debugDraw(program);
 }
 } // namespace redoom::physics

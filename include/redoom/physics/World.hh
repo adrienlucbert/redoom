@@ -3,6 +3,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include <redoom/graphics/Program.hh>
 #include <redoom/physics/Body.hh>
 #include <redoom/physics/collisions/CollisionDetector.hh>
 #include <redoom/physics/collisions/OctTreeFilter.hh>
@@ -36,8 +37,7 @@ public:
 
   [[nodiscard]] bool getDebugDraw() const noexcept;
   void setDebugDraw(bool draw = true) noexcept;
-
-  [[nodiscard]] OctTree<Body, BodyItemProxy> const& getOctTree() const noexcept;
+  void debugDraw(graphics::Program& program) const noexcept;
 
 private:
   bool deleteBody(Body const& body) noexcept;
@@ -45,7 +45,6 @@ private:
   bool debug_draw{false};
   unsigned int last_body_id{0};
   std::unordered_map<unsigned int, Body> bodies;
-  CollisionDetector<PairFilter> collision_detector;
-  OctTree<Body, BodyItemProxy> octtree{{}};
+  CollisionDetector<OctTreeFilter> collision_detector;
 };
 } // namespace redoom::physics

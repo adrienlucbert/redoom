@@ -21,9 +21,10 @@ void MeshSystem::update(UpdateContext& context) noexcept
                 entity);
         if (transform_opt) {
           auto& transform = *transform_opt;
-          model = glm::translate(model, transform.position);
-          model = glm::scale(model, transform.scale);
-          model = glm::rotate(model, transform.angle, transform.rotation);
+          model = glm::translate(model, transform.getPosition());
+          model = glm::scale(model, transform.getScale());
+          model =
+              glm::rotate(model, transform.getAngle(), transform.getRotation());
         }
         renderer::Renderer::draw(shader, *component.mesh, model);
       });

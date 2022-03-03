@@ -12,7 +12,6 @@ Mesh::Mesh(std::vector<Vertex> pvertices,
   , indices{std::move(pindices)}
   , textures{std::move(ptextures)}
   , topology{ptopology}
-  , vao{}
   , vbo{this->vertices, BufferUsage::STATIC}
   , ebo{this->indices, BufferUsage::STATIC}
 {

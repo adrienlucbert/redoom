@@ -3,37 +3,68 @@
 #include <functional>
 #include <vector>
 
+#include <redoom/graphics/Shader.hh>
 #include <redoom/physics/Body.hh>
 #include <redoom/physics/collisions/CollisionManifold.hh>
 
 namespace redoom::physics
 {
-struct CollisionFilter;
+class CollisionFilter;
 
 /** This class holds the workflow for detecting collisions.
  * Given a vector of bodies, it returns a vector of collisions happening at
  * the current time.
  */
 template <typename Filter>
+requires std::is_base_of_v<CollisionFilter, Filter>
 class CollisionDetector
 {
-  static_assert(std::is_base_of_v<CollisionFilter, Filter>);
-
 public:
-  std::vector<CollisionManifold> operator()(
-      std::vector<std::reference_wrapper<Body const>> bodies) noexcept
+  CollisionDetector() noexcept = default;
+  ~CollisionDetector() noexcept = default;
+
+  CollisionDetector(CollisionDetector const& rhs) noexcept = delete;
+  CollisionDetector(CollisionDetector&& rhs) noexcept = default;
+
+  CollisionDetector& operator=(CollisionDetector const& rhs) noexcept = delete;
+  CollisionDetector& operator=(CollisionDetector&& rhs) noexcept = default;
+
+  void insert(Body& item) noexcept
   {
-    auto potential_collisions = this->broadPhase(std::move(bodies));
+    this->filter.insert(item);
+  }
+
+  void remove(Body const& item) noexcept
+  {
+    this->filter.remove(item);
+  }
+
+  std::vector<CollisionManifold> getCollisions(
+      std::vector<std::reference_wrapper<Body>> const& items) noexcept
+  {
+    auto potential_collisions = this->broadPhase(items);
     auto collisions = this->narrowPhase(potential_collisions);
     return collisions;
   }
 
-private:
-  Filter filter;
-  std::vector<CollisionManifold> broadPhase(
-      std::vector<std::reference_wrapper<Body const>> bodies) noexcept
+  void debugDraw(graphics::Program& program) const noexcept
   {
-    return this->filter(std::move(bodies));
+    this->filter.debugDraw(program);
+  }
+
+private:
+  std::vector<CollisionManifold> broadPhase(
+      std::vector<std::reference_wrapper<Body>> const& items) noexcept
+  {
+    auto moved_items = std::vector<std::reference_wrapper<Body>>{};
+    for (auto const& item : items) {
+      if (item.get().getTransform().isUpdated()) {
+        moved_items.emplace_back(item);
+      }
+    }
+    this->filter.update(moved_items);
+    auto possible_collisions = this->filter.getPossibleCollisions();
+    return possible_collisions;
   }
 
   std::vector<CollisionManifold> narrowPhase(
@@ -49,5 +80,7 @@ private:
     }
     return result;
   }
+
+  Filter filter;
 };
 } // namespace redoom::physics
