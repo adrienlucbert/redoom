@@ -5,6 +5,62 @@
 
 namespace redoom::physics
 {
+BodyTransform::BodyTransform(glm::vec3 pposition,
+    float pangle,
+    glm::vec3 protation,
+    glm::vec3 pscale) noexcept
+  : position{pposition}
+  , angle{pangle}
+  , rotation{protation}
+  , scale{pscale}
+{
+}
+
+glm::vec3 const& BodyTransform::getPosition() const noexcept
+{
+  return this->position;
+}
+void BodyTransform::setPosition(glm::vec3 pposition) noexcept
+{
+  this->position = pposition;
+  this->is_updated = true;
+}
+float BodyTransform::getAngle() const noexcept
+{
+  return this->angle;
+}
+void BodyTransform::setAngle(float pangle) noexcept
+{
+  this->angle = pangle;
+  this->is_updated = true;
+}
+glm::vec3 const& BodyTransform::getRotation() const noexcept
+{
+  return this->rotation;
+}
+void BodyTransform::setRotation(glm::vec3 protation) noexcept
+{
+  this->rotation = protation;
+  this->is_updated = true;
+}
+glm::vec3 const& BodyTransform::getScale() const noexcept
+{
+  return this->scale;
+}
+void BodyTransform::setScale(glm::vec3 pscale) noexcept
+{
+  this->scale = pscale;
+  this->is_updated = true;
+}
+bool BodyTransform::isUpdated() const noexcept
+{
+  if (this->is_updated) {
+    this->is_updated = false;
+    return true;
+  }
+  return false;
+}
+
 Body::Body(World& pworld, unsigned int pid, BodyDefinition def) noexcept
   : world{pworld}
   , id{pid}
@@ -86,7 +142,8 @@ tl::optional<AABB> Body::getGlobalAABB() const noexcept
   auto aabb_opt = this->getLocalAABB();
   if (!aabb_opt)
     return tl::nullopt;
-  return aabb_opt.value() * this->transform.scale + this->transform.position;
+  return aabb_opt.value() * this->transform.getScale()
+       + this->transform.getPosition();
 }
 
 tl::optional<AABB> Body::getLocalAABB() const noexcept

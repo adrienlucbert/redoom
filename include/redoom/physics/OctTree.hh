@@ -45,16 +45,31 @@ public:
     std::list<std::reference_wrapper<T>> items{};
   };
 
-  explicit OctTree(OctTreeDefinition def) noexcept
-    : root{tl::nullopt}
+  explicit OctTree(OctTreeDefinition def = {}) noexcept
+    : root{Node{*this, tl::nullopt, def.bounding_box}}
     , min_leaf_size{def.min_leaf_size}
   {
     if (!def.items.empty())
-      this->build(std::move(all_items));
+      this->build(std::move(def.items));
+  }
+  ~OctTree() = default;
+
+  OctTree(OctTree const& rhs) noexcept = delete;
+  OctTree(OctTree&& rhs) noexcept = default;
+
+  OctTree& operator=(OctTree const& rhs) noexcept = delete;
+  OctTree& operator=(OctTree&& rhs) noexcept = default;
+
+  void dump() const noexcept
+  {
+    if (this->root.has_value())
+      this->root.value().dump();
   }
 
   void debugDraw(graphics::Program& program) const noexcept
   {
+    if (this->all_items.size() == 0)
+      return;
     if (this->root.has_value())
       this->root->draw(program);
   }
@@ -64,8 +79,7 @@ public:
     auto& ref = this->all_items.emplace_back(std::ref(item));
     if (this->root.has_value() && this->root->insert(ref))
       return true;
-    auto pitems = std::move(this->all_items);
-    this->all_items.clear();
+    auto pitems = std::exchange(this->all_items, {});
     return this->build(std::move(pitems));
   }
 
@@ -75,7 +89,9 @@ public:
       return false;
     auto it = std::find_if(this->all_items.begin(),
         this->all_items.end(),
-        [&item](T const& rhs) { return ItemProxy::equal(item, rhs); });
+        [&item](std::reference_wrapper<T> const& rhs) {
+          return ItemProxy::equal(item, rhs.get());
+        });
     if (it != this->all_items.end()) {
       assert(this->root->remove(item));
       this->all_items.erase(it);
@@ -89,8 +105,13 @@ public:
     if (this->root.has_value() && this->root->update(moved_items))
       return true;
     // update failed: some items are out of bounds
-    this->build(std::move(this->all_items));
+    this->build(std::exchange(this->all_items, {}));
     return this->root->update(moved_items);
+  }
+
+  std::vector<std::pair<T&, T&>> getClosePairs() noexcept
+  {
+    return this->root->getClosePairs();
   }
 
   [[nodiscard]] tl::optional<AABB const&> getBoundingBox() const noexcept
@@ -110,7 +131,7 @@ private:
   {
   public:
     explicit Node(OctTree<T, ItemProxy>& ptree,
-        tl::optional<Node&> pparent,
+        tl::optional<std::reference_wrapper<Node>> pparent,
         AABB pbounding_box) noexcept
       : tree{ptree}
       , parent{pparent}
@@ -124,6 +145,45 @@ private:
 
     Node& operator=(Node const&) noexcept = default;
     Node& operator=(Node&&) noexcept = default;
+
+    void dump(std::size_t indent = 0u) const noexcept
+    {
+      auto const& aabb = this->getBoundingBox();
+      this->out(indent) << fmt::format("/{: .2f} {: .2f} {: .2f}\\\n",
+          aabb.lower_bounds.x,
+          aabb.lower_bounds.y,
+          aabb.lower_bounds.z);
+      this->out(indent) << fmt::format("\\{: .2f} {: .2f} {: .2f}/\n",
+          aabb.upper_bounds.x,
+          aabb.upper_bounds.y,
+          aabb.upper_bounds.z);
+      this->out(indent) << fmt::format("size: {}", this->size) << std::endl;
+      this->out(indent) << fmt::format("items: {}", this->items.size())
+                        << std::endl;
+      for (auto const& item : this->items) {
+        auto const& iaabb = ItemProxy::getAABB(item);
+        this->out(indent + 1) << std::addressof(item.get()) << std::endl;
+        this->out(indent + 1) << fmt::format("/{: .2f} {: .2f} {: .2f}\\\n",
+            iaabb.lower_bounds.x,
+            iaabb.lower_bounds.y,
+            iaabb.lower_bounds.z);
+        this->out(indent + 1) << fmt::format("\\{: .2f} {: .2f} {: .2f}/\n",
+            iaabb.upper_bounds.x,
+            iaabb.upper_bounds.y,
+            iaabb.upper_bounds.z);
+        this->out(indent + 1) << std::endl;
+      }
+      this->out(indent) << std::endl;
+      if (this->hasChildren()) {
+        for (auto const& child : this->children)
+          child->dump(indent + 2);
+      }
+    }
+
+    [[nodiscard]] std::ostream& out(std::size_t indent) const noexcept
+    {
+      return std::cout << fmt::format("{:\t>{}}", "", indent);
+    }
 
     [[nodiscard]] AABB const& getBoundingBox() const noexcept
     {
@@ -151,7 +211,12 @@ private:
           return false;
 
         // find where the item currently is
-        auto current_opt = this->search(item);
+        auto current_opt = target_opt->get().forwardSearch(item);
+        if (!current_opt.has_value())
+          // item not found in the containing node or its children
+          // perform backward search to search for item in the tree backward
+          // until tree root
+          current_opt = target_opt->get().backwardSearch(item);
         assert(current_opt.has_value() && "item is not contained in this tree");
 
         if (std::addressof(*target_opt) != std::addressof(*current_opt)) {
@@ -171,7 +236,7 @@ private:
      */
     bool updateAll() noexcept
     {
-      auto pitems = std::move(this->items);
+      auto pitems = std::exchange(this->items, {});
       this->clear();
       for (auto const& item : pitems) {
         if (!this->insert(item))
@@ -187,7 +252,7 @@ private:
       if (!this->contains(item.get())) {
         // item bounding box is out of this leaf's bounds
         if (this->parent.has_value())
-          return this->parent->insert(item);
+          return this->parent->get().insert(item);
         return false;
       }
 
@@ -228,7 +293,7 @@ private:
      */
     bool remove(T const& item) noexcept
     {
-      auto node_opt = this->search(item);
+      auto node_opt = this->forwardSearch(item);
       if (!node_opt.has_value())
         return false;
       return node_opt->get().removeItem(item);
@@ -259,23 +324,73 @@ private:
     }
 
     /** Search in the tree the node which contains the given item
+     * Search is conducted in a up-to-bottom approach
      */
-    tl::optional<std::reference_wrapper<Node>> search(T const& item) noexcept
+    tl::optional<std::reference_wrapper<Node>> forwardSearch(
+        T const& item, int max_depth = -1)
     {
-      // item is contained in this node
-      auto it = std::find_if(this->items.begin(),
-          this->items.end(),
-          [&item](T const& rhs) { return ItemProxy::equal(item, rhs); });
-      if (it != this->items.end())
+      if (max_depth == 0)
+        return tl::nullopt;
+
+      // check if item is contained in this node's items
+      if (this->holdsItem(item))
         return std::ref(*this);
 
       if (this->hasChildren()) {
         for (auto const& child : this->children) {
-          if (child->contains(item))
+          if (child->contains(item)) {
             // item bounding box is within this child's bounds, so it might be
             // found here
-            return child->search(item);
+            auto search_res_opt = child->forwardSearch(item, max_depth - 1);
+            // if it it found here, return the result of the search
+            if (search_res_opt.has_value())
+              return search_res_opt;
+            // otherwise, stop forward search, and try brute search
+            break;
+          }
         }
+
+        // item wasn't found where it was supposed to be, perform a brute
+        // search
+        for (auto const& child : this->children) {
+          auto search_res_opt = child->bruteSearch(item, max_depth - 1);
+          if (search_res_opt.has_value())
+            return search_res_opt;
+        }
+      }
+
+      // couldn't find item in this node or its children, even with brute
+      // search this node or its children don't contain the item searched for
+      return tl::nullopt;
+    }
+
+    /** Search in the tree the node which contains the given item
+     * Search is conducted in a bottom-to-up approach
+     */
+    tl::optional<std::reference_wrapper<Node>> backwardSearch(
+        T const& item) noexcept
+    {
+      // item is contained in this node
+      if (this->holdsItem(item))
+        return std::ref(*this);
+
+      if (this->hasChildren()) {
+        for (auto const& child : this->children) {
+          if (child->contains(item)) {
+            // item bounding box is within this child's bounds, so it might be
+            // found here
+            auto search_res_opt = child->forwardSearch(item, 1);
+            if (search_res_opt.has_value())
+              return search_res_opt;
+            break;
+          }
+        }
+      }
+
+      if (this->parent.has_value()) {
+        auto search_res_opt = this->parent->get().backwardSearch(item);
+        if (search_res_opt.has_value())
+          return search_res_opt;
       }
       // item wasn't found where it was supposed to be, perform a brute search
       return this->bruteSearch(item);
@@ -285,18 +400,18 @@ private:
      * item
      */
     tl::optional<std::reference_wrapper<Node>> bruteSearch(
-        T const& item) noexcept
+        T const& item, int max_depth = -1) noexcept
     {
+      if (max_depth == 0)
+        return tl::nullopt;
+
       // item is contained in this node
-      auto it = std::find_if(this->items.begin(),
-          this->items.end(),
-          [&item](T const& rhs) { return ItemProxy::equal(item, rhs); });
-      if (it != this->items.end())
-        return std::ref(*this);
+      if (this->holdsItem(item))
+        return *this;
 
       if (this->hasChildren()) {
         for (auto const& child : this->children) {
-          auto search_res_opt = child->search(item);
+          auto search_res_opt = child->bruteSearch(item, max_depth - 1);
           if (search_res_opt.has_value())
             // item bounding box is within this child's bounds
             return search_res_opt;
@@ -304,6 +419,93 @@ private:
       }
       // item wasn't found in this node or its children, return null
       return tl::nullopt;
+    }
+
+    /** Returns an iterator to the given item in this node's items, or a
+     * past-the-end iterator if not found
+     */
+    [[nodiscard]] auto findItem(T const& item) const noexcept
+    {
+      return std::find_if(this->items.begin(),
+          this->items.end(),
+          [&item](std::reference_wrapper<T> const& rhs) {
+            return ItemProxy::equal(item, rhs.get());
+          });
+    }
+
+    /** Check if the given item is contained in this node's direct items
+     * (doesn't check children)
+     */
+    [[nodiscard]] bool holdsItem(T const& item) const noexcept
+    {
+      auto it = this->findItem(item);
+      return it != this->items.end();
+    }
+
+    std::vector<std::pair<T&, T&>> getClosePairs() noexcept
+    {
+      auto pairs = std::vector<std::pair<T&, T&>>{};
+      if (this->size <= 1)
+        return pairs;
+
+      // make pairs with this node's items
+      for (auto it = this->items.begin(); it != this->items.end(); ++it) {
+        auto own_pairs = this->makePairsWith(it);
+        pairs.reserve(pairs.size() + own_pairs.size());
+        std::move(
+            own_pairs.begin(), own_pairs.end(), std::back_inserter(pairs));
+      }
+
+      if (this->hasChildren()) {
+        for (auto& child : this->children) {
+          auto child_pairs = child->getClosePairs();
+          pairs.reserve(pairs.size() + child_pairs.size());
+          std::move(child_pairs.begin(),
+              child_pairs.end(),
+              std::back_inserter(pairs));
+        }
+      }
+      return pairs;
+    }
+
+    std::vector<std::pair<T&, T&>> makePairsWith(
+        typename std::list<std::reference_wrapper<T>>::iterator
+            item_it) noexcept
+    {
+      auto pairs = std::vector<std::pair<T&, T&>>{};
+
+      for (auto it = std::next(item_it); it != this->items.end(); ++it)
+        pairs.emplace_back(*item_it, *it);
+
+      if (this->hasChildren()) {
+        for (auto const& child : this->children) {
+          auto child_pairs = child->makePairsWith(*item_it);
+          pairs.reserve(pairs.size() + child_pairs.size());
+          std::move(child_pairs.begin(),
+              child_pairs.end(),
+              std::back_inserter(pairs));
+        }
+      }
+      return pairs;
+    }
+
+    std::vector<std::pair<T&, T&>> makePairsWith(T& item) noexcept
+    {
+      auto pairs = std::vector<std::pair<T&, T&>>{};
+
+      for (auto& it : this->items)
+        pairs.emplace_back(item, it);
+
+      if (this->hasChildren()) {
+        for (auto const& child : this->children) {
+          auto child_pairs = child->makePairsWith(item);
+          pairs.reserve(pairs.size() + child_pairs.size());
+          std::move(child_pairs.begin(),
+              child_pairs.end(),
+              std::back_inserter(pairs));
+        }
+      }
+      return pairs;
     }
 
     void draw(graphics::Program& program) const noexcept
@@ -343,7 +545,8 @@ private:
       this->updateSize(-static_cast<int>(this->size));
     }
 
-    /** Check if this node's bounding box contains the given item's bounding box
+    /** Check if this node's bounding box contains the given item's bounding
+     * box
      */
     bool contains(T const& item) const noexcept
     {
@@ -359,7 +562,7 @@ private:
       else
         this->size += static_cast<std::size_t>(add);
       if (this->parent.has_value())
-        this->parent->updateSize(add);
+        this->parent->get().updateSize(add);
     }
 
     /** Add an item to the current node and update the tree size
@@ -374,9 +577,7 @@ private:
      */
     bool removeItem(T const& item) noexcept
     {
-      auto it = std::find_if(this->items.begin(),
-          this->items.end(),
-          [&item](T const& rhs) { return ItemProxy::equal(item, rhs); });
+      auto it = this->findItem(item);
       if (it != this->items.end()) {
         this->items.erase(it);
         this->updateSize(-1);
@@ -419,7 +620,7 @@ private:
     }
 
     std::reference_wrapper<OctTree<T, ItemProxy>> tree;
-    tl::optional<Node&> parent{};
+    tl::optional<std::reference_wrapper<Node>> parent{};
     AABB bounding_box;
     std::array<std::unique_ptr<Node>, 8> children{};
     std::size_t size{0};
@@ -450,7 +651,11 @@ private:
   }
 
   tl::optional<Node> root;
+
+public:
   std::list<std::reference_wrapper<T>> all_items{};
+
+private:
   float min_leaf_size;
 
   friend class Node;

@@ -58,7 +58,7 @@ struct KeyboardBehaviour : public Behaviour {
               auto transform_opt =
                   registry.getComponent<TransformComponent>(entity);
               if (transform_opt.has_value()) {
-                auto def = BodyDefinition{.transform = transform_opt.value()};
+                auto def = BodyDefinition{.transform = *transform_opt};
                 registry.attachComponent<BodyComponent>(entity,
                     BodyComponent::fromModel(world, def, component.model));
               }
@@ -70,7 +70,7 @@ struct KeyboardBehaviour : public Behaviour {
           auto transform_opt =
               registry.getComponent<TransformComponent>(entity);
           if (transform_opt.has_value()) {
-            auto def = BodyDefinition{.transform = transform_opt.value()};
+            auto def = BodyDefinition{.transform = *transform_opt};
             registry.attachComponent<BodyComponent>(
                 entity, BodyComponent::fromMesh(world, def, *component.mesh));
           }

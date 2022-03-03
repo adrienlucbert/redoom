@@ -29,7 +29,7 @@ struct ArrowsControlBehaviour : public Behaviour {
 
   void onUpdate(Entity /*entity*/, UpdateContext& /*context*/) noexcept override
   {
-    auto& pos = this->transform->position;
+    auto pos = this->transform->getPosition();
     auto const speed = 1.0f;
 
     if (isKeyPressed(Key::UP))
@@ -44,6 +44,8 @@ struct ArrowsControlBehaviour : public Behaviour {
       pos.y += speed;
     if (isKeyPressed(Key::K))
       pos.y -= speed;
+    // TODO(alucbert): do not update if not moved
+    this->transform->setPosition(pos);
   }
 
 private:

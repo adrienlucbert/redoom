@@ -1,5 +1,8 @@
 #pragma once
 
+#include <list>
+
+#include <redoom/graphics/Program.hh>
 #include <redoom/physics/collisions/CollisionManifold.hh>
 
 namespace redoom::physics
@@ -10,10 +13,23 @@ namespace redoom::physics
  * This filter will be called during the broad phase of the collision detection
  * workflow.
  */
-struct CollisionFilter {
+class CollisionFilter
+{
+public:
+  CollisionFilter() noexcept = default;
   virtual ~CollisionFilter() noexcept = default;
 
-  virtual std::vector<CollisionManifold> operator()(
-      std::vector<std::reference_wrapper<Body const>> bodies) noexcept = 0;
+  virtual void insert(Body& item) noexcept = 0;
+  virtual void remove(Body const& item) noexcept = 0;
+
+  virtual void update(
+      std::vector<std::reference_wrapper<Body>> moved_items) noexcept = 0;
+
+  virtual void debugDraw(graphics::Program& /*program*/) const noexcept
+  {
+  }
+
+  [[nodiscard]] virtual std::vector<CollisionManifold>
+  getPossibleCollisions() noexcept = 0;
 };
 } // namespace redoom::physics

@@ -128,7 +128,7 @@ known bugs or performance issues I want to fix.
   </tr>
   <tr>
     <td>Collision detection</td>
-    <td title="planned">📅</td>
+    <td title="planned">:heavy_check_mark:</td>
   </tr>
   <tr>
     <td>Collision response</td>

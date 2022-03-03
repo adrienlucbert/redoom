@@ -18,11 +18,33 @@ class World;
 
 enum class BodyType { Static, Kinematic, Dynamic };
 
-struct BodyTransform {
+class BodyTransform
+{
+public:
+  BodyTransform(glm::vec3 pposition,
+      float pangle,
+      glm::vec3 protation,
+      glm::vec3 pscale) noexcept;
+
+  [[nodiscard]] glm::vec3 const& getPosition() const noexcept;
+  void setPosition(glm::vec3 pposition) noexcept;
+  [[nodiscard]] float getAngle() const noexcept;
+  void setAngle(float pangle) noexcept;
+  [[nodiscard]] glm::vec3 const& getRotation() const noexcept;
+  void setRotation(glm::vec3 protation) noexcept;
+  [[nodiscard]] glm::vec3 const& getScale() const noexcept;
+  void setScale(glm::vec3 pscale) noexcept;
+
+  // Useful for the physics World to know this BodyTransform was updated since
+  // last check. When called, resets the internal `is_updated` state to false.
+  bool isUpdated() const noexcept;
+
+private:
   glm::vec3 position{0.0f, 0.0f, 0.0f};
   float angle{0.0f};
   glm::vec3 rotation{1.0f, 1.0f, 1.0f};
   glm::vec3 scale{1.0f, 1.0f, 1.0f};
+  mutable bool is_updated{true};
 };
 
 struct BodyDefinition {

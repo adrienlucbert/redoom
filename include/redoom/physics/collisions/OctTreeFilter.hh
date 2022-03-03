@@ -4,8 +4,6 @@
 #include <redoom/physics/OctTree.hh>
 #include <redoom/physics/collisions/CollisionFilter.hh>
 
-#include <cassert>
-
 namespace redoom::physics
 {
 struct BodyItemProxy : public BaseOctTreeItemProxy<Body> {
@@ -19,16 +17,46 @@ struct BodyItemProxy : public BaseOctTreeItemProxy<Body> {
 class OctTreeFilter : public CollisionFilter
 {
 public:
+  OctTreeFilter() noexcept = default;
   ~OctTreeFilter() noexcept override = default;
 
-  // TODO(alucbert): update and insert
+  OctTreeFilter(OctTreeFilter const& rhs) noexcept = delete;
+  OctTreeFilter(OctTreeFilter&& rhs) noexcept = default;
 
-  std::vector<CollisionManifold> operator()(
-      std::vector<std::reference_wrapper<Body const>> /*bodies*/) noexcept
+  OctTreeFilter& operator=(OctTreeFilter const& rhs) noexcept = delete;
+  OctTreeFilter& operator=(OctTreeFilter&& rhs) noexcept = default;
+
+  void insert(Body& item) noexcept override
+  {
+    this->tree.insert(item);
+  }
+
+  void remove(Body const& item) noexcept override
+  {
+    this->tree.remove(item);
+  }
+
+  void update(
+      std::vector<std::reference_wrapper<Body>> moved_items) noexcept override
+  {
+    this->tree.update(std::move(moved_items));
+  }
+
+  [[nodiscard]] std::vector<CollisionManifold> getPossibleCollisions() noexcept
       override
   {
-    // TODO(alucbert):
-    return {};
+    auto manifolds = std::vector<CollisionManifold>{};
+    auto pairs = this->tree.getClosePairs();
+    manifolds.reserve(pairs.size());
+    for (auto& pair : pairs) {
+      manifolds.emplace_back(CollisionManifold{pair.first, pair.second, {}});
+    }
+    return manifolds;
+  }
+
+  void debugDraw(graphics::Program& program) const noexcept override
+  {
+    this->tree.debugDraw(program);
   }
 
 private:

@@ -183,10 +183,12 @@ struct BodyComponent : public Component<BodyComponent> {
       }
       out << YAML::Key << "type" << YAML::Value << type_exp.value().data();
       auto const& body_transform = bc->body->getTransform();
-      out << YAML::Key << "position" << YAML::Value << body_transform.position;
-      out << YAML::Key << "angle" << YAML::Value << body_transform.angle;
-      out << YAML::Key << "rotation" << YAML::Value << body_transform.rotation;
-      out << YAML::Key << "scale" << YAML::Value << body_transform.scale;
+      out << YAML::Key << "position" << YAML::Value
+          << body_transform.getPosition();
+      out << YAML::Key << "angle" << YAML::Value << body_transform.getAngle();
+      out << YAML::Key << "rotation" << YAML::Value
+          << body_transform.getRotation();
+      out << YAML::Key << "scale" << YAML::Value << body_transform.getScale();
       out << YAML::Key << "linear_velocity" << YAML::Value
           << bc->body->getLinearVelocity();
       out << YAML::Key << "angular_velocity" << YAML::Value
