@@ -23,7 +23,7 @@ struct DonutBehaviour : public Behaviour {
   void onUpdate(Entity entity, UpdateContext& context) noexcept override
   {
     auto transform_opt =
-        context.component_manager
+        context.getComponentManager()
             .get<redoom::ecs::components::TransformComponent>(entity);
     if (!transform_opt)
       assert("No transform component associated" == nullptr);
@@ -31,7 +31,7 @@ struct DonutBehaviour : public Behaviour {
       auto& transform = transform_opt.value();
       transform.setAngle(
           transform.getAngle()
-          + static_cast<float>(context.elapsed_time * this->rotation_speed));
+          + static_cast<float>(context.getElapsedTime() * this->rotation_speed));
     } catch (tl::bad_optional_access const&) {
       // NOTE: this should never happen, but it makes clang-tidy happy
     }

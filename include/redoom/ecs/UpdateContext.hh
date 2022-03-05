@@ -5,11 +5,13 @@
 
 namespace redoom::ecs
 {
-struct UpdateContext : public Context {
-  UpdateContext(ComponentManager& pcomponent_manager,
-      EntityManager& pentity_manager,
-      double pelapsed_time,
-      renderer::Window& pwindow) noexcept;
+class UpdateContext : public Context
+{
+public:
+  UpdateContext(ComponentManager& component_manager,
+      EntityManager& entity_manager,
+      double elapsed_time,
+      renderer::Window& window) noexcept;
   UpdateContext(UpdateContext const&) noexcept = delete;
   UpdateContext(UpdateContext&&) noexcept = delete;
   ~UpdateContext() noexcept = default;
@@ -17,7 +19,11 @@ struct UpdateContext : public Context {
   UpdateContext& operator=(UpdateContext const&) noexcept = delete;
   UpdateContext& operator=(UpdateContext&&) noexcept = delete;
 
-  double elapsed_time;
-  renderer::Window& window;
+  [[nodiscard]] double getElapsedTime() const noexcept;
+  [[nodiscard]] renderer::Window& getWindow() const noexcept;
+
+private:
+  double elapsed_time_;
+  renderer::Window& window_;
 };
 } // namespace redoom::ecs

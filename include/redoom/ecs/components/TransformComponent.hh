@@ -19,11 +19,11 @@ struct TransformComponent : public Component<TransformComponent>,
     return type;
   }
 
-  TransformComponent(glm::vec3 pposition,
-      float pangle,
-      glm::vec3 protation,
-      glm::vec3 pscale) noexcept
-    : physics::BodyTransform{pposition, pangle, protation, pscale}
+  TransformComponent(glm::vec3 position,
+      float angle,
+      glm::vec3 rotation,
+      glm::vec3 scale) noexcept
+    : physics::BodyTransform{position, angle, rotation, scale}
   {
   }
 
@@ -40,12 +40,12 @@ struct TransformComponent : public Component<TransformComponent>,
     [[nodiscard]] Expected<> deserialize(
         YAML::Node const& node, Scene& scene, Entity entity) const override
     {
-      auto pposition = node["position"].as<glm::vec3>();
-      auto pangle = node["angle"].as<float>();
-      auto protation = node["rotation"].as<glm::vec3>();
-      auto pscale = node["scale"].as<glm::vec3>();
+      auto position = node["position"].as<glm::vec3>();
+      auto angle = node["angle"].as<float>();
+      auto rotation = node["rotation"].as<glm::vec3>();
+      auto scale = node["scale"].as<glm::vec3>();
       scene.getRegistry().attachComponent<TransformComponent>(
-          entity, TransformComponent{pposition, pangle, protation, pscale});
+          entity, TransformComponent{position, angle, rotation, scale});
       return {};
     }
   };

@@ -13,7 +13,7 @@ namespace redoom::ecs::components
 class BehaviourComponent : public Component<BehaviourComponent>
 {
 public:
-  explicit BehaviourComponent(std::unique_ptr<Behaviour> pbehaviour) noexcept;
+  explicit BehaviourComponent(std::unique_ptr<Behaviour> behaviour) noexcept;
   BehaviourComponent(BehaviourComponent const& b) noexcept = delete;
   BehaviourComponent(BehaviourComponent&& b) noexcept = default;
   ~BehaviourComponent() noexcept override = default;
@@ -27,11 +27,11 @@ public:
       const noexcept
   {
     if constexpr (std::is_same_v<BehaviourType, Behaviour>) {
-      return *this->behaviour;
+      return *this->behaviour_;
     } else {
       static_assert(std::is_base_of_v<Behaviour, BehaviourType>,
           "BehaviourType must inherit from BehaviourBase");
-      auto ptr = std::dynamic_pointer_cast<BehaviourType>(this->behaviour);
+      auto ptr = std::dynamic_pointer_cast<BehaviourType>(this->behaviour_);
       if (ptr == nullptr)
         return tl::make_unexpected(
             "Invalid BehaviourBase to BehaviourType conversion");
@@ -55,6 +55,6 @@ public:
   };
 
 private:
-  std::unique_ptr<Behaviour> behaviour;
+  std::unique_ptr<Behaviour> behaviour_;
 };
 }; // namespace redoom::ecs::components

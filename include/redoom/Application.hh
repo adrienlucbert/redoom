@@ -45,16 +45,16 @@ public:
   void setCurrentScene(std::string const& name) noexcept;
 
   [[nodiscard]] renderer::Window& getWindow() noexcept;
-
-  ApplicationArguments args;
+  [[nodiscard]] ApplicationArguments const& getArgs() const noexcept;
 
 protected:
   Application(std::string_view title, ApplicationArguments args) noexcept;
 
-  double previous_time{0.0};
-  std::unique_ptr<renderer::Window> window;
-  std::shared_ptr<Scene> current_scene;
-  std::unordered_map<std::string, std::shared_ptr<Scene>> scenes;
+  ApplicationArguments args_;
+  double previous_time_{0.0};
+  std::unique_ptr<renderer::Window> window_;
+  std::shared_ptr<Scene> current_scene_;
+  std::unordered_map<std::string, std::shared_ptr<Scene>> scenes_;
 };
 
 std::unique_ptr<Application> createApplication(ApplicationArguments args);

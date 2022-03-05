@@ -25,7 +25,7 @@ namespace detail
 
 OpenGLWindow::~OpenGLWindow() noexcept
 {
-  glfwDestroyWindow(this->window);
+  glfwDestroyWindow(this->window_);
   --windows_count;
 
   if (windows_count == 0)
@@ -34,31 +34,31 @@ OpenGLWindow::~OpenGLWindow() noexcept
 
 int OpenGLWindow::getWidth() const noexcept
 {
-  return this->width;
+  return this->width_;
 }
 
 int OpenGLWindow::getHeight() const noexcept
 {
-  return this->height;
+  return this->height_;
 }
 
-void OpenGLWindow::setVSync(bool phas_vsync) noexcept
+void OpenGLWindow::setVSync(bool has_vsync) noexcept
 {
-  if (phas_vsync)
+  if (has_vsync)
     glfwSwapInterval(1);
   else
     glfwSwapInterval(0);
-  this->has_vsync = phas_vsync;
+  this->has_vsync_ = has_vsync;
 }
 
 bool OpenGLWindow::hasVSync() noexcept
 {
-  return this->has_vsync;
+  return this->has_vsync_;
 }
 
 void* OpenGLWindow::getNativeWindow() const noexcept
 {
-  return this->window;
+  return this->window_;
 }
 
 void OpenGLWindow::setCursorMode(CursorMode mode) noexcept
@@ -67,25 +67,25 @@ void OpenGLWindow::setCursorMode(CursorMode mode) noexcept
       {CursorMode::Normal, GLFW_CURSOR_NORMAL},
       {CursorMode::Hidden, GLFW_CURSOR_HIDDEN},
       {CursorMode::Disabled, GLFW_CURSOR_DISABLED}};
-  glfwSetInputMode(this->window, GLFW_CURSOR, opengl_modes.at(mode));
+  glfwSetInputMode(this->window_, GLFW_CURSOR, opengl_modes.at(mode));
 }
 
 bool OpenGLWindow::pollEvent(events::Event& buffer) noexcept
 {
-  if (this->events.empty())
+  if (this->events_.empty())
     return false;
-  buffer = this->events.pop();
+  buffer = this->events_.pop();
   return true;
 }
 
 void OpenGLWindow::onUpdate() noexcept
 {
   glfwPollEvents();
-  this->context->swapBuffers();
+  this->context_->swapBuffers();
 }
 
 Expected<std::unique_ptr<renderer::Window>> OpenGLWindow::create(
-    std::string_view title, int pwidth, int pheight) noexcept
+    std::string_view title, int width, int height) noexcept
 {
   if (windows_count == 0) {
     if (glfwInit() == GL_FALSE)
@@ -99,53 +99,53 @@ Expected<std::unique_ptr<renderer::Window>> OpenGLWindow::create(
   glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
   glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-  auto* pwindow =
-      glfwCreateWindow(pwidth, pheight, title.data(), nullptr, nullptr);
-  if (pwindow == nullptr) {
+  auto* window =
+      glfwCreateWindow(width, height, title.data(), nullptr, nullptr);
+  if (window == nullptr) {
     glfwTerminate();
     return tl::make_unexpected("Failed to create window");
   }
   ++windows_count;
-  glfwMakeContextCurrent(pwindow);
+  glfwMakeContextCurrent(window);
 
-  auto context_exp = renderer::RendererContext::create(pwindow);
+  auto context_exp = renderer::RendererContext::create(window);
   if (!context_exp) {
     glfwTerminate();
     RETURN_UNEXPECTED(context_exp);
   }
-  auto& pcontext = *context_exp;
+  auto& context = *context_exp;
 
   glEnable(GL_DEPTH_TEST);
 
   try {
     return std::unique_ptr<OpenGLWindow>(
-        new OpenGLWindow{pwindow, std::move(pcontext), pwidth, pheight});
+        new OpenGLWindow{window, std::move(context), width, height});
   } catch (std::exception const& e) {
     return tl::unexpected(e.what());
   }
 }
 
-OpenGLWindow::OpenGLWindow(GLFWwindow* pwindow,
-    std::unique_ptr<renderer::RendererContext> pcontext,
-    int pwidth,
-    int pheight) noexcept
-  : width{pwidth}
-  , height{pheight}
-  , window{pwindow}
-  , context{std::move(pcontext)}
-  , has_vsync{true}
+OpenGLWindow::OpenGLWindow(GLFWwindow* window,
+    std::unique_ptr<renderer::RendererContext> context,
+    int width,
+    int height) noexcept
+  : width_{width}
+  , height_{height}
+  , window_{window}
+  , context_{std::move(context)}
+  , has_vsync_{true}
 {
   // Set OpenGL properties without calling OpenGLWindow virtual methods
   // See clang-analyzer-optin.cplusplus.VirtualCall
   glfwSwapInterval(1);
-  glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  glfwSetInputMode(this->window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-  this->events.push(events::WindowResizeEvent{this->width, this->height});
+  this->events_.push(events::WindowResizeEvent{this->width_, this->height_});
 
-  glfwSetWindowUserPointer(this->window, &this->events);
+  glfwSetWindowUserPointer(this->window_, &this->events_);
 
   glfwSetWindowSizeCallback(
-      this->window, [](GLFWwindow* native_window, int w, int h) {
+      this->window_, [](GLFWwindow* native_window, int w, int h) {
         auto* event_queue = static_cast<events::EventQueue*>(
             glfwGetWindowUserPointer(native_window));
         event_queue->push(events::WindowResizeEvent{w, h});
@@ -153,13 +153,13 @@ OpenGLWindow::OpenGLWindow(GLFWwindow* pwindow,
         renderer::Renderer::getAPI().setViewport({0, 0, w, h});
       });
 
-  glfwSetWindowCloseCallback(this->window, [](GLFWwindow* native_window) {
+  glfwSetWindowCloseCallback(this->window_, [](GLFWwindow* native_window) {
     auto* event_queue = static_cast<events::EventQueue*>(
         glfwGetWindowUserPointer(native_window));
     event_queue->push(events::WindowCloseEvent{});
   });
 
-  glfwSetKeyCallback(this->window,
+  glfwSetKeyCallback(this->window_,
       [](GLFWwindow* native_window,
           int key,
           int scancode,
@@ -174,13 +174,13 @@ OpenGLWindow::OpenGLWindow(GLFWwindow* pwindow,
       });
 
   glfwSetCharCallback(
-      this->window, [](GLFWwindow* native_window, unsigned int keycode) {
+      this->window_, [](GLFWwindow* native_window, unsigned int keycode) {
         auto* event_queue = static_cast<events::EventQueue*>(
             glfwGetWindowUserPointer(native_window));
         event_queue->push(events::CharEvent{keycode});
       });
 
-  glfwSetMouseButtonCallback(this->window,
+  glfwSetMouseButtonCallback(this->window_,
       [](GLFWwindow* native_window, int button, int action, int mods) {
         auto* event_queue = static_cast<events::EventQueue*>(
             glfwGetWindowUserPointer(native_window));
@@ -190,7 +190,7 @@ OpenGLWindow::OpenGLWindow(GLFWwindow* pwindow,
                 mods});
       });
 
-  glfwSetScrollCallback(this->window,
+  glfwSetScrollCallback(this->window_,
       [](GLFWwindow* native_window, double x_offset, double y_offset) {
         auto* event_queue = static_cast<events::EventQueue*>(
             glfwGetWindowUserPointer(native_window));
@@ -198,7 +198,7 @@ OpenGLWindow::OpenGLWindow(GLFWwindow* pwindow,
       });
 
   glfwSetCursorPosCallback(
-      this->window, [](GLFWwindow* native_window, double x_pos, double y_pos) {
+      this->window_, [](GLFWwindow* native_window, double x_pos, double y_pos) {
         auto* event_queue = static_cast<events::EventQueue*>(
             glfwGetWindowUserPointer(native_window));
         event_queue->push(events::MouseMoveEvent{x_pos, y_pos});

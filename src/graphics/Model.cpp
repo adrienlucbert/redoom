@@ -135,34 +135,34 @@ Expected<std::vector<Texture2D>> Model::loadMaterialTexture(aiMaterial* mat,
   return textures;
 }
 
-Model::Model(std::filesystem::path ppath,
-    ModelImporterOptions pimporter_options,
-    std::vector<Mesh> pmeshes) noexcept
-  : path{std::move(ppath)}
-  , importer_options{pimporter_options}
-  , meshes{std::move(pmeshes)}
+Model::Model(std::filesystem::path path,
+    ModelImporterOptions importer_options,
+    std::vector<Mesh> meshes) noexcept
+  : path_{std::move(path)}
+  , importer_options_{importer_options}
+  , meshes_{std::move(meshes)}
 {
 }
 
 void Model::draw(Program& program) const noexcept
 {
-  for (auto const& mesh : this->meshes)
+  for (auto const& mesh : this->meshes_)
     mesh.draw(program);
 }
 
 tl::optional<std::filesystem::path> const& Model::getPath() const noexcept
 {
-  return this->path;
+  return this->path_;
 }
 
 tl::optional<ModelImporterOptions> const& Model::getImporterOptions()
     const noexcept
 {
-  return this->importer_options;
+  return this->importer_options_;
 }
 
 std::vector<Mesh> const& Model::getMeshes() const noexcept
 {
-  return this->meshes;
+  return this->meshes_;
 }
 } // namespace redoom::graphics

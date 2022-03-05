@@ -17,6 +17,6 @@ public:
   static tl::optional<Program&> getShader(std::string_view name) noexcept;
 
 private:
-  static std::unordered_map<std::string, Program> shaders; // NOLINT
+  static std::unordered_map<std::string, Program> shaders_; // NOLINT
 };
 } // namespace redoom::graphics

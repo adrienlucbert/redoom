@@ -11,8 +11,8 @@ template <typename T>
 class System : public SystemBase, public Utils::UniqueTypeId<T>
 {
 public:
-  explicit System(bool pis_multithreaded) noexcept
-    : SystemBase{pis_multithreaded}
+  explicit System(bool is_multithreaded) noexcept
+    : SystemBase{is_multithreaded}
   {
   }
 };

@@ -22,9 +22,9 @@ enum class ShaderDataType {
 };
 
 struct BufferElement {
-  BufferElement(ShaderDataType ptype,
-      std::string pname,
-      bool pnormalized = false) noexcept;
+  BufferElement(ShaderDataType p_type,
+      std::string p_name,
+      bool p_normalized = false) noexcept;
 
   ShaderDataType type;
   GLenum gl_type;

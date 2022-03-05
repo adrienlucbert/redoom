@@ -28,25 +28,25 @@ public:
 
   void insert(Body& item) noexcept override
   {
-    this->tree.insert(item);
+    this->tree_.insert(item);
   }
 
   void remove(Body const& item) noexcept override
   {
-    this->tree.remove(item);
+    this->tree_.remove(item);
   }
 
   void update(
       std::vector<std::reference_wrapper<Body>> moved_items) noexcept override
   {
-    this->tree.update(std::move(moved_items));
+    this->tree_.update(std::move(moved_items));
   }
 
   [[nodiscard]] std::vector<CollisionManifold> getPossibleCollisions() noexcept
       override
   {
     auto manifolds = std::vector<CollisionManifold>{};
-    auto pairs = this->tree.getClosePairs();
+    auto pairs = this->tree_.getClosePairs();
     manifolds.reserve(pairs.size());
     for (auto& pair : pairs) {
       manifolds.emplace_back(CollisionManifold{pair.first, pair.second, {}});
@@ -56,10 +56,10 @@ public:
 
   void debugDraw(graphics::Program& program) const noexcept override
   {
-    this->tree.debugDraw(program);
+    this->tree_.debugDraw(program);
   }
 
 private:
-  OctTree<Body, BodyItemProxy> tree;
+  OctTree<Body, BodyItemProxy> tree_;
 };
 } // namespace redoom::physics

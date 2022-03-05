@@ -25,68 +25,68 @@ public:
   template <typename C, typename... Args>
   void attachComponent(Entity entity, Args&&... args) noexcept
   {
-    this->component_manager.make<C>(entity, std::forward<Args>(args)...);
+    this->component_manager_.make<C>(entity, std::forward<Args>(args)...);
   }
 
   template <typename C>
   void detachComponent(Entity entity) noexcept
   {
-    auto opt = this->component_manager.get<C>(entity);
+    auto opt = this->component_manager_.get<C>(entity);
     if (opt)
-      this->component_manager.release<C>(entity);
+      this->component_manager_.release<C>(entity);
   }
   template <typename C>
   [[nodiscard]] bool hasComponent(Entity entity) const noexcept
   {
-    return this->component_manager.has<C>(entity);
+    return this->component_manager_.has<C>(entity);
   }
   template <typename C>
   [[nodiscard]] tl::optional<C&> getComponent(Entity entity) noexcept
   {
-    return this->component_manager.get<C>(entity);
+    return this->component_manager_.get<C>(entity);
   }
   template <typename C>
   [[nodiscard]] tl::optional<C const&> getComponent(
       Entity entity) const noexcept
   {
-    return this->component_manager.get<C>(entity);
+    return this->component_manager_.get<C>(entity);
   }
   [[nodiscard]] tl::optional<ComponentBase&> getComponentByTypeId(
       unsigned type_id, Entity entity) noexcept
   {
-    return this->component_manager.getByTypeId(type_id, entity);
+    return this->component_manager_.getByTypeId(type_id, entity);
   }
   [[nodiscard]] tl::optional<ComponentBase const&> getComponentByTypeId(
       unsigned type_id, Entity entity) const noexcept
   {
-    return this->component_manager.getByTypeId(type_id, entity);
+    return this->component_manager_.getByTypeId(type_id, entity);
   }
 
   template <typename C, typename Callable>
   void apply(Callable f) noexcept
   {
-    this->component_manager.apply<C>(f);
+    this->component_manager_.apply<C>(f);
   }
 
   template <typename T, typename... Args>
   void attachSystem(Args&&... args) noexcept
   {
-    this->system_manager.make<T>(std::forward<Args>(args)...);
+    this->system_manager_.make<T>(std::forward<Args>(args)...);
   }
   template <typename T, typename... Args>
   void attachSystem(SystemPriority priority, Args&&... args) noexcept
   {
-    this->system_manager.make<T>(priority, std::forward<Args>(args)...);
+    this->system_manager_.make<T>(priority, std::forward<Args>(args)...);
   }
   template <typename T>
   void detachSystem() noexcept
   {
-    this->system_manager.release<T>();
+    this->system_manager_.release<T>();
   }
   template <typename T>
   [[nodiscard]] bool hasSystem() const noexcept
   {
-    return this->system_manager.has<T>();
+    return this->system_manager_.has<T>();
   }
 
   void init() noexcept;
@@ -95,7 +95,7 @@ public:
 
   std::vector<Entity> const& getEntities() const noexcept
   {
-    return this->entity_manager.getEntities();
+    return this->entity_manager_.getEntities();
   }
 
 private:
@@ -103,9 +103,9 @@ private:
   [[nodiscard]] UpdateContext getUpdateContext(
       renderer::Window& window, double elapsed_time) noexcept;
 
-  bool is_init{false};
-  ComponentManager component_manager;
-  EntityManager entity_manager;
-  SystemManager system_manager;
+  bool is_init_{false};
+  ComponentManager component_manager_;
+  EntityManager entity_manager_;
+  SystemManager system_manager_;
 };
 } // namespace redoom::ecs

@@ -4,27 +4,27 @@
 
 namespace redoom::graphics
 {
-Program::Program(unsigned int pid) noexcept
-  : id{pid}
+Program::Program(unsigned int id) noexcept
+  : id_{id}
 {
 }
 
 Program::Program(Program&& b) noexcept
-  : id{b.id}
+  : id_{b.id_}
 {
-  b.id = 0;
+  b.id_ = 0;
 }
 
 Program::~Program() noexcept
 {
-  if (this->id != 0)
-    glDeleteProgram(this->id);
+  if (this->id_ != 0)
+    glDeleteProgram(this->id_);
 }
 
 Program& Program::operator=(Program&& rhs) noexcept
 {
   if (this != &rhs)
-    std::swap(this->id, rhs.id);
+    std::swap(this->id_, rhs.id_);
   return *this;
 }
 
@@ -47,11 +47,11 @@ Expected<Program> Program::create(
 
 unsigned int Program::getId() const noexcept
 {
-  return this->id;
+  return this->id_;
 }
 
 void Program::use() const noexcept
 {
-  glUseProgram(this->id);
+  glUseProgram(this->id_);
 }
 } // namespace redoom::graphics

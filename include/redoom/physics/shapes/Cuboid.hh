@@ -10,14 +10,14 @@ namespace redoom::physics
 class Cuboid : public Shape
 {
 public:
-  Cuboid(float pwidth, float pheight, float plength) noexcept
+  Cuboid(float width, float height, float length) noexcept
     : Shape("Cuboid")
-    , width{pwidth}
-    , height{pheight}
-    , length{plength}
-    , aabb{this->computeAABB()}
-    , mesh{graphics::mesh::Cuboid{
-          pwidth, pheight, plength, {1.0f, 0.0f, 0.0f}, {}, GL_LINE_STRIP}}
+    , width_{width}
+    , height_{height}
+    , length_{length}
+    , aabb_{this->computeAABB()}
+    , mesh_{graphics::mesh::Cuboid{
+          width, height, length, {1.0f, 0.0f, 0.0f}, {}, GL_LINE_STRIP}}
   {
   }
   Cuboid(Cuboid const& b) noexcept = delete;
@@ -29,42 +29,42 @@ public:
 
   void draw(graphics::Program& program) const noexcept override
   {
-    if (this->mesh.has_value()) {
-      this->mesh.value().draw(program);
+    if (this->mesh_.has_value()) {
+      this->mesh_.value().draw(program);
     }
   }
 
   [[nodiscard]] float getWidth() const noexcept
   {
-    return this->width;
+    return this->width_;
   }
 
   [[nodiscard]] float getHeight() const noexcept
   {
-    return this->height;
+    return this->height_;
   }
 
   [[nodiscard]] float getLength() const noexcept
   {
-    return this->length;
+    return this->length_;
   }
 
   [[nodiscard]] AABB const& getAABB() const noexcept override
   {
-    return this->aabb;
+    return this->aabb_;
   }
 
 private:
   [[nodiscard]] AABB computeAABB() const noexcept
   {
-    return AABB{{-this->width / 2, -this->height / 2, -this->length / 2},
-        {this->width / 2, this->height / 2, this->length / 2}};
+    return AABB{{-this->width_ / 2, -this->height_ / 2, -this->length_ / 2},
+        {this->width_ / 2, this->height_ / 2, this->length_ / 2}};
   }
 
-  float width;
-  float height;
-  float length;
-  AABB aabb;
-  tl::optional<graphics::mesh::Cuboid> mesh;
+  float width_;
+  float height_;
+  float length_;
+  AABB aabb_;
+  tl::optional<graphics::mesh::Cuboid> mesh_;
 };
 } // namespace redoom::physics

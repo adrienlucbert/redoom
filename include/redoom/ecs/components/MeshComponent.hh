@@ -20,12 +20,12 @@ struct MeshComponent : public Component<MeshComponent> {
     return type;
   }
 
-  explicit MeshComponent(std::shared_ptr<graphics::Mesh> pmesh)
-    : mesh{std::move(pmesh)}
+  explicit MeshComponent(std::shared_ptr<graphics::Mesh> mesh)
+    : mesh_{std::move(mesh)}
   {
   }
 
-  std::shared_ptr<graphics::Mesh> mesh;
+  std::shared_ptr<graphics::Mesh> mesh_;
 
   struct Serializer : public ComponentSerializer {
     void serialize(YAML::Emitter& /*out*/,

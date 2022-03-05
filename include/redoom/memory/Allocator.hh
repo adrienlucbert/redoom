@@ -29,16 +29,16 @@ public:
   template <typename... Args>
   ptr_t get(Args&&... args) noexcept
   {
-    return ptr_t{this->pool.get(std::forward<Args>(args)...),
+    return ptr_t{this->pool_.get(std::forward<Args>(args)...),
         [this](void* ptr) { this->release(ptr); }};
   }
 
 private:
-  ObjectPool<T> pool;
-
   void release(void* object) noexcept
   {
-    this->pool.release(static_cast<T*>(object));
+    this->pool_.release(static_cast<T*>(object));
   }
+
+  ObjectPool<T> pool_;
 };
 } // namespace redoom::memory

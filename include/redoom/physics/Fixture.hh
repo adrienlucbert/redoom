@@ -26,7 +26,7 @@ struct FixtureDefinition {
 class Fixture
 {
 public:
-  Fixture(Body& pbody, FixtureDefinition def) noexcept;
+  Fixture(Body& body, FixtureDefinition def) noexcept;
   Fixture(Fixture const&) noexcept = delete;
   Fixture(Fixture&&) noexcept = default;
   ~Fixture() noexcept = default;
@@ -44,16 +44,16 @@ public:
   [[nodiscard]] float getDensity() const noexcept;
 
   [[nodiscard]] static Fixture fromAABB(
-      Body& pbody, FixtureDefinition def, AABB const& aabb) noexcept;
+      Body& body, FixtureDefinition def, AABB const& aabb) noexcept;
   [[nodiscard]] static Fixture fromMesh(
-      Body& pbody, FixtureDefinition def, graphics::Mesh const& mesh) noexcept;
+      Body& body, FixtureDefinition def, graphics::Mesh const& mesh) noexcept;
 
 private:
-  std::reference_wrapper<Body> body;
-  std::shared_ptr<Shape> shape;
-  glm::vec3 local_position;
-  float friction;
-  float restitution;
-  float density;
+  std::reference_wrapper<Body> body_;
+  std::shared_ptr<Shape> shape_;
+  glm::vec3 local_position_;
+  float friction_;
+  float restitution_;
+  float density_;
 };
 } // namespace redoom::physics

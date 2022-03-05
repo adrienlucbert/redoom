@@ -20,10 +20,10 @@ public:
       unsigned int num_steps1,
       unsigned int num_steps2,
       glm::vec3 color,
-      std::vector<Texture2D> ptextures = {},
-      GLenum ptopology = GL_TRIANGLES) noexcept
+      std::vector<Texture2D> textures = {},
+      GLenum topology = GL_TRIANGLES) noexcept
     : Mesh{Torus::create(
-        r1, r2, num_steps1, num_steps2, color, std::move(ptextures), ptopology)}
+        r1, r2, num_steps1, num_steps2, color, std::move(textures), topology)}
   {
   }
   Torus(Torus const& b) noexcept = delete;
@@ -39,8 +39,8 @@ private:
       unsigned int num_steps1,
       unsigned int num_steps2,
       glm::vec3 color,
-      std::vector<Texture2D> ptextures,
-      GLenum ptopology) noexcept
+      std::vector<Texture2D> textures,
+      GLenum topology) noexcept
   {
     // source:
     // https://github.com/JoeyDeVries/Cell/blob/master/cell/mesh/sphere.cpp
@@ -103,10 +103,8 @@ private:
       }
     }
 
-    return Mesh{std::move(vertices),
-        std::move(indices),
-        std::move(ptextures),
-        ptopology};
+    return Mesh{
+        std::move(vertices), std::move(indices), std::move(textures), topology};
   }
 };
 } // namespace redoom::graphics::mesh

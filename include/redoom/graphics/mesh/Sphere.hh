@@ -19,14 +19,14 @@ public:
       unsigned int x_segment = 20,
       unsigned int y_segment = 20,
       glm::vec3 color = {1.0f, 1.0f, 1.0f},
-      std::vector<Texture2D> ptextures = {},
-      GLenum ptopology = GL_TRIANGLES) noexcept
+      std::vector<Texture2D> textures = {},
+      GLenum topology = GL_TRIANGLES) noexcept
     : Mesh{Sphere::create(radius,
         x_segment,
         y_segment,
         color,
-        std::move(ptextures),
-        ptopology)}
+        std::move(textures),
+        topology)}
   {
   }
   Sphere(Sphere const& b) noexcept = delete;
@@ -41,8 +41,8 @@ private:
       unsigned int x_segment,
       unsigned int y_segment,
       glm::vec3 color,
-      std::vector<Texture2D> ptextures,
-      GLenum ptopology) noexcept
+      std::vector<Texture2D> textures,
+      GLenum topology) noexcept
   {
     // source:
     // http://www.songho.ca/opengl/gl_sphere.html
@@ -99,8 +99,8 @@ private:
 
     return Mesh{std::move(vertices),
         std::move(indices),
-        std::move(ptextures),
-        ptopology};
+        std::move(textures),
+        topology};
   }
 };
 } // namespace redoom::graphics::mesh

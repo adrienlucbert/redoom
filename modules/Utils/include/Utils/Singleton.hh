@@ -26,20 +26,20 @@ public:
     static_assert(
         Utils::is_constructible_v<T,
             Args...> && "T must be constructible with the given arguments");
-    assert(Singleton<T>::instance == nullptr
+    assert(Singleton<T>::instance_ == nullptr
            && "T cannot be instanciated more than once");
-    Singleton<T>::instance = static_cast<T*>(
+    Singleton<T>::instance_ = static_cast<T*>(
         new detail::Derived<T>{std::forward<Args>(args)...}); // NOLINT
     std::atexit([]() {
-      delete Singleton<T>::instance; // NOLINT
-      Singleton<T>::instance = nullptr;
+      delete Singleton<T>::instance_; // NOLINT
+      Singleton<T>::instance_ = nullptr;
     });
-    return *Singleton<T>::instance;
+    return *Singleton<T>::instance_;
   }
 
   [[nodiscard]] static T& get() noexcept
   {
-    if (Singleton<T>::instance == nullptr) {
+    if (Singleton<T>::instance_ == nullptr) {
       if constexpr (!Utils::is_default_constructible_v<T>) {
         assert(
             "T cannot be default-constructed. Use `create` method." == nullptr);
@@ -48,20 +48,20 @@ public:
         return Singleton<T>::create();
       }
     } else {
-      return *Singleton<T>::instance;
+      return *Singleton<T>::instance_;
     }
   }
 
 protected:
   Singleton() noexcept
   {
-    Singleton<T>::instance = static_cast<T*>(this);
+    Singleton<T>::instance_ = static_cast<T*>(this);
   }
 
 private:
-  static T* instance; // NOLINT
+  static T* instance_; // NOLINT
 };
 
 template <typename T>
-T* Singleton<T>::instance = nullptr; // NOLINT
+T* Singleton<T>::instance_ = nullptr; // NOLINT
 } // namespace redoom::Utils

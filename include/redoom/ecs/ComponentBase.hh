@@ -6,7 +6,7 @@
 
 namespace redoom::ecs
 {
-struct Context;
+class Context;
 
 class ComponentBase
 {

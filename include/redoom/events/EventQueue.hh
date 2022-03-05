@@ -25,7 +25,7 @@ public:
   [[nodiscard]] bool empty() const noexcept;
 
 private:
-  mutable std::unique_ptr<std::mutex> mutex{std::make_unique<std::mutex>()};
-  std::queue<Event> queue;
+  mutable std::unique_ptr<std::mutex> mutex_{std::make_unique<std::mutex>()};
+  std::queue<Event> queue_;
 };
 }; // namespace redoom::events

@@ -8,8 +8,8 @@
 namespace redoom::ecs::components
 {
 BehaviourComponent::BehaviourComponent(
-    std::unique_ptr<Behaviour> pbehaviour) noexcept
-  : behaviour{std::move(pbehaviour)}
+    std::unique_ptr<Behaviour> behaviour) noexcept
+  : behaviour_{std::move(behaviour)}
 {
 }
 
@@ -23,7 +23,7 @@ void BehaviourComponent::Serializer::serialize(
     YAML::Emitter& out, ecs::ComponentBase const* component) const
 {
   auto const* bc = dynamic_cast<BehaviourComponent const*>(component);
-  out << bc->behaviour->getType();
+  out << bc->behaviour_->getType();
 }
 
 [[nodiscard]] Expected<> BehaviourComponent::Serializer::deserialize(

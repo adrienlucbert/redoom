@@ -17,22 +17,22 @@ struct ModelComponent : public Component<ModelComponent> {
     return type;
   }
 
-  explicit ModelComponent(graphics::Model pmodel)
-    : model{std::move(pmodel)}
+  explicit ModelComponent(graphics::Model model)
+    : model_{std::move(model)}
   {
   }
 
-  graphics::Model model;
+  graphics::Model model_;
 
   struct Serializer : public ComponentSerializer {
     void serialize(
         YAML::Emitter& out, ecs::ComponentBase const* component) const override
     {
       auto const* mc = dynamic_cast<ModelComponent const*>(component);
-      auto path_opt = mc->model.getPath();
+      auto path_opt = mc->model_.getPath();
       if (path_opt)
         out << YAML::Key << "path" << YAML::Value << *path_opt;
-      auto options_opt = mc->model.getImporterOptions();
+      auto options_opt = mc->model_.getImporterOptions();
       if (options_opt) {
         out << YAML::Key << "flip_uvs" << YAML::Value << options_opt->flip_uvs;
       }

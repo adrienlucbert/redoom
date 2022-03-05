@@ -32,11 +32,11 @@ struct BodyComponent : public Component<BodyComponent> {
 
   explicit BodyComponent(
       physics::World& world, physics::BodyDefinition def) noexcept
-    : body{world.createBody(def)}
+    : body_{world.createBody(def)}
   {
   }
-  explicit BodyComponent(std::shared_ptr<physics::Body> pbody) noexcept
-    : body{std::move(pbody)}
+  explicit BodyComponent(std::shared_ptr<physics::Body> body) noexcept
+    : body_{std::move(body)}
   {
   }
   BodyComponent(BodyComponent const&) noexcept = delete;
@@ -62,7 +62,7 @@ struct BodyComponent : public Component<BodyComponent> {
     return BodyComponent{std::move(body)};
   }
 
-  std::shared_ptr<physics::Body> body;
+  std::shared_ptr<physics::Body> body_;
 
   struct Serializer : public ComponentSerializer {
     static Expected<std::string_view> BodyTypeToString(
@@ -175,14 +175,14 @@ struct BodyComponent : public Component<BodyComponent> {
         YAML::Emitter& out, ecs::ComponentBase const* component) const override
     {
       auto const* bc = dynamic_cast<BodyComponent const*>(component);
-      auto type_exp = Serializer::BodyTypeToString(bc->body->getType());
+      auto type_exp = Serializer::BodyTypeToString(bc->body_->getType());
       if (!type_exp.has_value()) {
         std::cerr << "BodyComponent serialization failed: " << type_exp.error()
                   << '\n';
         return;
       }
       out << YAML::Key << "type" << YAML::Value << type_exp.value().data();
-      auto const& body_transform = bc->body->getTransform();
+      auto const& body_transform = bc->body_->getTransform();
       out << YAML::Key << "position" << YAML::Value
           << body_transform.getPosition();
       out << YAML::Key << "angle" << YAML::Value << body_transform.getAngle();
@@ -190,15 +190,15 @@ struct BodyComponent : public Component<BodyComponent> {
           << body_transform.getRotation();
       out << YAML::Key << "scale" << YAML::Value << body_transform.getScale();
       out << YAML::Key << "linear_velocity" << YAML::Value
-          << bc->body->getLinearVelocity();
+          << bc->body_->getLinearVelocity();
       out << YAML::Key << "angular_velocity" << YAML::Value
-          << bc->body->getAngularVelocity();
+          << bc->body_->getAngularVelocity();
       out << YAML::Key << "has_fixed_rotation" << YAML::Value
-          << bc->body->hasFixedRotation();
+          << bc->body_->hasFixedRotation();
       out << YAML::Key << "gravity_scale" << YAML::Value
-          << bc->body->getGravityScale();
+          << bc->body_->getGravityScale();
       out << YAML::Key << "fixtures" << YAML::Value << YAML::BeginSeq;
-      for (auto const& fixture : bc->body->getFixtures()) {
+      for (auto const& fixture : bc->body_->getFixtures()) {
         Serializer::serializeFixture(out, fixture);
       }
       out << YAML::EndSeq;
@@ -221,15 +221,15 @@ struct BodyComponent : public Component<BodyComponent> {
           .angular_velocity = node["angular_velocity"].as<float>(),
           .has_fixed_rotation = node["has_fixed_rotation"].as<bool>(),
           .gravity_scale = node["gravity_scale"].as<float>()};
-      auto pbody = scene.getWorld().createBody(body_def);
+      auto body = scene.getWorld().createBody(body_def);
       auto const fixtures = node["fixtures"];
       if (fixtures) {
         for (auto const& fixture_node : fixtures) {
-          Serializer::deserializeFixture(fixture_node, *pbody);
+          Serializer::deserializeFixture(fixture_node, *body);
         }
       }
       scene.getRegistry().attachComponent<BodyComponent>(
-          entity, BodyComponent{pbody});
+          entity, BodyComponent{body});
       return {};
     }
   };

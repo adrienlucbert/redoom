@@ -18,10 +18,10 @@ public:
   Circle(unsigned int edge_segments,
       unsigned int ring_segments,
       glm::vec3 color = {1.0f, 1.0f, 1.0f},
-      std::vector<Texture2D> ptextures = {},
-      GLenum ptopology = GL_TRIANGLE_STRIP) noexcept
+      std::vector<Texture2D> textures = {},
+      GLenum topology = GL_TRIANGLE_STRIP) noexcept
     : Mesh{Circle::create(
-        edge_segments, ring_segments, color, std::move(ptextures), ptopology)}
+        edge_segments, ring_segments, color, std::move(textures), topology)}
   {
   }
   Circle(Circle const& b) noexcept = delete;
@@ -35,8 +35,8 @@ private:
   static Mesh create(unsigned int edge_segments,
       unsigned int ring_segments,
       glm::vec3 color,
-      std::vector<Texture2D> ptextures,
-      GLenum ptopology) noexcept
+      std::vector<Texture2D> textures,
+      GLenum topology) noexcept
   {
     // source:
     // https://github.com/JoeyDeVries/Cell/blob/master/cell/mesh/circle.cpp
@@ -80,10 +80,8 @@ private:
       odd_row = !odd_row;
     }
 
-    return Mesh{std::move(vertices),
-        std::move(indices),
-        std::move(ptextures),
-        ptopology};
+    return Mesh{
+        std::move(vertices), std::move(indices), std::move(textures), topology};
   }
 };
 } // namespace redoom::graphics::mesh

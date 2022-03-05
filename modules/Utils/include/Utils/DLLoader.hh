@@ -14,7 +14,7 @@ public:
   template <typename SymT>
   Expected<SymT> load(std::string_view symbol) const
   {
-    auto* sym = dlsym(this->handle.get(), symbol.data());
+    auto* sym = dlsym(this->handle_.get(), symbol.data());
     if (sym == nullptr)
       return make_formatted_unexpected("{}: symbol not found", symbol);
     return (reinterpret_cast<SymT>(sym)); // NOLINT
@@ -30,11 +30,11 @@ public:
   }
 
 private:
-  explicit DLLoader(void* phandle) noexcept
-    : handle{phandle, &dlclose}
+  explicit DLLoader(void* handle) noexcept
+    : handle_{handle, &dlclose}
   {
   }
 
-  std::unique_ptr<void, decltype(&dlclose)> handle;
+  std::unique_ptr<void, decltype(&dlclose)> handle_;
 };
 } // namespace redoom::Utils
