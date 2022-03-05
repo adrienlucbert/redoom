@@ -16,7 +16,7 @@ template <typename EventT, typename Handler, typename... Args>
 void dispatchEvent(
     UpdateContext& context, Handler handler, EventT& event, Args&&... args)
 {
-  context.component_manager.apply<components::BehaviourComponent>(
+  context.getComponentManager().apply<components::BehaviourComponent>(
       [&](auto entity, auto& component) {
         auto behaviour_exp = component.template get();
         if (!behaviour_exp)
@@ -36,7 +36,7 @@ void dispatchEvent(
 void EventSystem::update(UpdateContext& context) noexcept
 {
   auto event_buffer = events::Event{};
-  while (context.window.pollEvent(event_buffer)) {
+  while (context.getWindow().pollEvent(event_buffer)) {
     try {
       std::visit(
           [&](auto&& event) {

@@ -22,7 +22,7 @@ public:
   [[nodiscard]] int getWidth() const noexcept override;
   [[nodiscard]] int getHeight() const noexcept override;
 
-  void setVSync(bool phas_vsync) noexcept override;
+  void setVSync(bool has_vsync) noexcept override;
   [[nodiscard]] bool hasVSync() noexcept override;
 
   [[nodiscard]] void* getNativeWindow() const noexcept override;
@@ -37,16 +37,16 @@ public:
       std::string_view title, int width, int height) noexcept;
 
 protected:
-  OpenGLWindow(GLFWwindow* pwindow,
-      std::unique_ptr<renderer::RendererContext> pcontext,
-      int pwidth,
-      int pheight) noexcept;
+  OpenGLWindow(GLFWwindow* window,
+      std::unique_ptr<renderer::RendererContext> context,
+      int width,
+      int height) noexcept;
 
-  int width;
-  int height;
-  GLFWwindow* window;
-  std::unique_ptr<renderer::RendererContext> context;
-  bool has_vsync;
-  events::EventQueue events;
+  int width_;
+  int height_;
+  GLFWwindow* window_;
+  std::unique_ptr<renderer::RendererContext> context_;
+  bool has_vsync_;
+  events::EventQueue events_;
 };
 } // namespace redoom::platform::OpenGL

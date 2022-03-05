@@ -46,8 +46,8 @@ public:
   };
 
   explicit OctTree(OctTreeDefinition def = {}) noexcept
-    : root{Node{*this, tl::nullopt, def.bounding_box}}
-    , min_leaf_size{def.min_leaf_size}
+    : root_{Node{def.min_leaf_size, tl::nullopt, def.bounding_box}}
+    , min_leaf_size_{def.min_leaf_size}
   {
     if (!def.items.empty())
       this->build(std::move(def.items));
@@ -62,39 +62,39 @@ public:
 
   void dump() const noexcept
   {
-    if (this->root.has_value())
-      this->root.value().dump();
+    if (this->root_.has_value())
+      this->root_.value().dump();
   }
 
   void debugDraw(graphics::Program& program) const noexcept
   {
-    if (this->all_items.size() == 0)
+    if (this->all_items_.size() == 0)
       return;
-    if (this->root.has_value())
-      this->root->draw(program);
+    if (this->root_.has_value())
+      this->root_->draw(program);
   }
 
   bool insert(T& item) noexcept
   {
-    auto& ref = this->all_items.emplace_back(std::ref(item));
-    if (this->root.has_value() && this->root->insert(ref))
+    auto& ref = this->all_items_.emplace_back(std::ref(item));
+    if (this->root_.has_value() && this->root_->insert(ref))
       return true;
-    auto pitems = std::exchange(this->all_items, {});
-    return this->build(std::move(pitems));
+    auto items = std::exchange(this->all_items_, {});
+    return this->build(std::move(items));
   }
 
   bool remove(T const& item) noexcept
   {
-    if (!this->root.has_value())
+    if (!this->root_.has_value())
       return false;
-    auto it = std::find_if(this->all_items.begin(),
-        this->all_items.end(),
+    auto it = std::find_if(this->all_items_.begin(),
+        this->all_items_.end(),
         [&item](std::reference_wrapper<T> const& rhs) {
           return ItemProxy::equal(item, rhs.get());
         });
-    if (it != this->all_items.end()) {
-      assert(this->root->remove(item));
-      this->all_items.erase(it);
+    if (it != this->all_items_.end()) {
+      assert(this->root_->remove(item));
+      this->all_items_.erase(it);
       return true;
     }
     return false;
@@ -102,40 +102,40 @@ public:
 
   bool update(std::vector<std::reference_wrapper<T>> moved_items) noexcept
   {
-    if (this->root.has_value() && this->root->update(moved_items))
+    if (this->root_.has_value() && this->root_->update(moved_items))
       return true;
     // update failed: some items are out of bounds
-    this->build(std::exchange(this->all_items, {}));
-    return this->root->update(moved_items);
+    this->build(std::exchange(this->all_items_, {}));
+    return this->root_->update(moved_items);
   }
 
   std::vector<std::pair<T&, T&>> getClosePairs() noexcept
   {
-    return this->root->getClosePairs();
+    return this->root_->getClosePairs();
   }
 
   [[nodiscard]] tl::optional<AABB const&> getBoundingBox() const noexcept
   {
-    if (this->root.has_value())
-      return this->root->getBoundingBox();
+    if (this->root_.has_value())
+      return this->root_->getBoundingBox();
     return tl::nullopt;
   }
 
   [[nodiscard]] std::size_t getSize() const noexcept
   {
-    return this->all_items.size();
+    return this->all_items_.size();
   }
 
 private:
   class Node
   {
   public:
-    explicit Node(OctTree<T, ItemProxy>& ptree,
-        tl::optional<std::reference_wrapper<Node>> pparent,
-        AABB pbounding_box) noexcept
-      : tree{ptree}
-      , parent{pparent}
-      , bounding_box{pbounding_box}
+    explicit Node(float min_leaf_size,
+        tl::optional<std::reference_wrapper<Node>> parent,
+        AABB bounding_box) noexcept
+      : min_leaf_size_{min_leaf_size}
+      , parent_{parent}
+      , bounding_box_{bounding_box}
     {
     }
     ~Node() noexcept = default;
@@ -157,10 +157,10 @@ private:
           aabb.upper_bounds.x,
           aabb.upper_bounds.y,
           aabb.upper_bounds.z);
-      this->out(indent) << fmt::format("size: {}", this->size) << std::endl;
-      this->out(indent) << fmt::format("items: {}", this->items.size())
+      this->out(indent) << fmt::format("size: {}", this->size_) << std::endl;
+      this->out(indent) << fmt::format("items: {}", this->items_.size())
                         << std::endl;
-      for (auto const& item : this->items) {
+      for (auto const& item : this->items_) {
         auto const& iaabb = ItemProxy::getAABB(item);
         this->out(indent + 1) << std::addressof(item.get()) << std::endl;
         this->out(indent + 1) << fmt::format("/{: .2f} {: .2f} {: .2f}\\\n",
@@ -175,7 +175,7 @@ private:
       }
       this->out(indent) << std::endl;
       if (this->hasChildren()) {
-        for (auto const& child : this->children)
+        for (auto const& child : this->children_)
           child->dump(indent + 2);
       }
     }
@@ -187,12 +187,12 @@ private:
 
     [[nodiscard]] AABB const& getBoundingBox() const noexcept
     {
-      return this->bounding_box;
+      return this->bounding_box_;
     }
 
     [[nodiscard]] std::size_t getSize() const noexcept
     {
-      return this->size;
+      return this->size_;
     }
 
     /** Update items positions in the tree
@@ -236,9 +236,9 @@ private:
      */
     bool updateAll() noexcept
     {
-      auto pitems = std::exchange(this->items, {});
+      auto items = std::exchange(this->items_, {});
       this->clear();
-      for (auto const& item : pitems) {
+      for (auto const& item : items) {
         if (!this->insert(item))
           return false;
       }
@@ -251,22 +251,22 @@ private:
     {
       if (!this->contains(item.get())) {
         // item bounding box is out of this leaf's bounds
-        if (this->parent.has_value())
-          return this->parent->get().insert(item);
+        if (this->parent_.has_value())
+          return this->parent_->get().insert(item);
         return false;
       }
 
       // this leaf is empty, just add the item to it
-      if (this->size == 0) {
+      if (this->size_ == 0) {
         this->addItem(item);
         return true;
       }
 
-      auto dimension = this->bounding_box.getSize();
+      auto dimension = this->bounding_box_.getSize();
 
-      if (dimension.x <= this->tree.get().min_leaf_size
-          && dimension.y <= this->tree.get().min_leaf_size
-          && dimension.z <= this->tree.get().min_leaf_size) {
+      if (dimension.x <= this->min_leaf_size_
+          && dimension.y <= this->min_leaf_size_
+          && dimension.z <= this->min_leaf_size_) {
         // this leaf's size is already the minimum size for a leaf
         // just add the item to it
         this->addItem(item);
@@ -278,7 +278,7 @@ private:
         this->split();
 
       // try to fit the item into a child leaf
-      for (auto& child : this->children) {
+      for (auto& child : this->children_) {
         // item bounding box is within this child's bounds
         if (child->contains(item.get()))
           return child->insert(item);
@@ -312,7 +312,7 @@ private:
 
       // search within this leaf's children if any
       if (this->hasChildren()) {
-        for (auto& child : this->children) {
+        for (auto& child : this->children_) {
           auto search_res_opt = child->findContainingNode(item);
           if (search_res_opt.has_value())
             // item bounding box is within this child's bounds
@@ -337,7 +337,7 @@ private:
         return std::ref(*this);
 
       if (this->hasChildren()) {
-        for (auto const& child : this->children) {
+        for (auto const& child : this->children_) {
           if (child->contains(item)) {
             // item bounding box is within this child's bounds, so it might be
             // found here
@@ -352,7 +352,7 @@ private:
 
         // item wasn't found where it was supposed to be, perform a brute
         // search
-        for (auto const& child : this->children) {
+        for (auto const& child : this->children_) {
           auto search_res_opt = child->bruteSearch(item, max_depth - 1);
           if (search_res_opt.has_value())
             return search_res_opt;
@@ -375,7 +375,7 @@ private:
         return std::ref(*this);
 
       if (this->hasChildren()) {
-        for (auto const& child : this->children) {
+        for (auto const& child : this->children_) {
           if (child->contains(item)) {
             // item bounding box is within this child's bounds, so it might be
             // found here
@@ -387,8 +387,8 @@ private:
         }
       }
 
-      if (this->parent.has_value()) {
-        auto search_res_opt = this->parent->get().backwardSearch(item);
+      if (this->parent_.has_value()) {
+        auto search_res_opt = this->parent_->get().backwardSearch(item);
         if (search_res_opt.has_value())
           return search_res_opt;
       }
@@ -410,7 +410,7 @@ private:
         return *this;
 
       if (this->hasChildren()) {
-        for (auto const& child : this->children) {
+        for (auto const& child : this->children_) {
           auto search_res_opt = child->bruteSearch(item, max_depth - 1);
           if (search_res_opt.has_value())
             // item bounding box is within this child's bounds
@@ -426,8 +426,8 @@ private:
      */
     [[nodiscard]] auto findItem(T const& item) const noexcept
     {
-      return std::find_if(this->items.begin(),
-          this->items.end(),
+      return std::find_if(this->items_.begin(),
+          this->items_.end(),
           [&item](std::reference_wrapper<T> const& rhs) {
             return ItemProxy::equal(item, rhs.get());
           });
@@ -439,17 +439,17 @@ private:
     [[nodiscard]] bool holdsItem(T const& item) const noexcept
     {
       auto it = this->findItem(item);
-      return it != this->items.end();
+      return it != this->items_.end();
     }
 
     std::vector<std::pair<T&, T&>> getClosePairs() noexcept
     {
       auto pairs = std::vector<std::pair<T&, T&>>{};
-      if (this->size <= 1)
+      if (this->size_ <= 1)
         return pairs;
 
       // make pairs with this node's items
-      for (auto it = this->items.begin(); it != this->items.end(); ++it) {
+      for (auto it = this->items_.begin(); it != this->items_.end(); ++it) {
         auto own_pairs = this->makePairsWith(it);
         pairs.reserve(pairs.size() + own_pairs.size());
         std::move(
@@ -457,7 +457,7 @@ private:
       }
 
       if (this->hasChildren()) {
-        for (auto& child : this->children) {
+        for (auto& child : this->children_) {
           auto child_pairs = child->getClosePairs();
           pairs.reserve(pairs.size() + child_pairs.size());
           std::move(child_pairs.begin(),
@@ -474,11 +474,11 @@ private:
     {
       auto pairs = std::vector<std::pair<T&, T&>>{};
 
-      for (auto it = std::next(item_it); it != this->items.end(); ++it)
+      for (auto it = std::next(item_it); it != this->items_.end(); ++it)
         pairs.emplace_back(*item_it, *it);
 
       if (this->hasChildren()) {
-        for (auto const& child : this->children) {
+        for (auto const& child : this->children_) {
           auto child_pairs = child->makePairsWith(*item_it);
           pairs.reserve(pairs.size() + child_pairs.size());
           std::move(child_pairs.begin(),
@@ -493,11 +493,11 @@ private:
     {
       auto pairs = std::vector<std::pair<T&, T&>>{};
 
-      for (auto& it : this->items)
+      for (auto& it : this->items_)
         pairs.emplace_back(item, it);
 
       if (this->hasChildren()) {
-        for (auto const& child : this->children) {
+        for (auto const& child : this->children_) {
           auto child_pairs = child->makePairsWith(item);
           pairs.reserve(pairs.size() + child_pairs.size());
           std::move(child_pairs.begin(),
@@ -518,7 +518,7 @@ private:
       renderer::Renderer::draw(program, *this->getMesh(), model);
 
       if (this->hasChildren()) {
-        for (auto const& child : this->children)
+        for (auto const& child : this->children_)
           child->draw(program);
       }
     }
@@ -536,13 +536,13 @@ private:
      */
     [[nodiscard]] bool hasChildren() const noexcept
     {
-      return this->children[0] != nullptr;
+      return this->children_[0] != nullptr;
     }
 
     void clear() noexcept
     {
-      this->items.clear();
-      this->updateSize(-static_cast<int>(this->size));
+      this->items_.clear();
+      this->updateSize(-static_cast<int>(this->size_));
     }
 
     /** Check if this node's bounding box contains the given item's bounding
@@ -550,7 +550,7 @@ private:
      */
     bool contains(T const& item) const noexcept
     {
-      return this->bounding_box.contains(ItemProxy::getAABB(item));
+      return this->bounding_box_.contains(ItemProxy::getAABB(item));
     }
 
     /** Increment or decrement the tree size (and its parent's recursively)
@@ -558,18 +558,18 @@ private:
     void updateSize(int add) noexcept
     {
       if (add < 0)
-        this->size -= static_cast<std::size_t>(-add);
+        this->size_ -= static_cast<std::size_t>(-add);
       else
-        this->size += static_cast<std::size_t>(add);
-      if (this->parent.has_value())
-        this->parent->get().updateSize(add);
+        this->size_ += static_cast<std::size_t>(add);
+      if (this->parent_.has_value())
+        this->parent_->get().updateSize(add);
     }
 
     /** Add an item to the current node and update the tree size
      */
     void addItem(std::reference_wrapper<T> item) noexcept
     {
-      this->items.emplace_back(item);
+      this->items_.emplace_back(item);
       this->updateSize(+1);
     }
 
@@ -578,8 +578,8 @@ private:
     bool removeItem(T const& item) noexcept
     {
       auto it = this->findItem(item);
-      if (it != this->items.end()) {
-        this->items.erase(it);
+      if (it != this->items_.end()) {
+        this->items_.erase(it);
         this->updateSize(-1);
         return true;
       }
@@ -591,11 +591,11 @@ private:
     void split() noexcept
     {
       assert(this->hasChildren() == false && "Tree is already split");
-      auto const lb = this->bounding_box.lower_bounds;
-      auto const ub = this->bounding_box.upper_bounds;
-      auto const center = this->bounding_box.getCenter();
-      this->children = {this->createChild({{center.x, lb.y, lb.z},
-                            {ub.x, center.y, center.z}}),
+      auto const lb = this->bounding_box_.lower_bounds;
+      auto const ub = this->bounding_box_.upper_bounds;
+      auto const center = this->bounding_box_.getCenter();
+      this->children_ = {this->createChild({{center.x, lb.y, lb.z},
+                             {ub.x, center.y, center.z}}),
           this->createChild({lb, center}),
           this->createChild(
               {{lb.x, lb.y, center.z}, {center.x, center.y, ub.z}}),
@@ -614,49 +614,45 @@ private:
 
     /** Create a child to the current node given its bounding box
      */
-    std::unique_ptr<Node> createChild(AABB pbounding_box) noexcept
+    std::unique_ptr<Node> createChild(AABB bounding_box) noexcept
     {
-      return std::make_unique<Node>(this->tree, *this, pbounding_box);
+      return std::make_unique<Node>(this->min_leaf_size_, *this, bounding_box);
     }
 
-    std::reference_wrapper<OctTree<T, ItemProxy>> tree;
-    tl::optional<std::reference_wrapper<Node>> parent{};
-    AABB bounding_box;
-    std::array<std::unique_ptr<Node>, 8> children{};
-    std::size_t size{0};
-    std::list<std::reference_wrapper<T>> items{};
+    float min_leaf_size_;
+    tl::optional<std::reference_wrapper<Node>> parent_{};
+    AABB bounding_box_;
+    std::array<std::unique_ptr<Node>, 8> children_{};
+    std::size_t size_{0};
+    std::list<std::reference_wrapper<T>> items_{};
 
     friend class OctTree<T, ItemProxy>;
   };
 
-  bool build(std::list<std::reference_wrapper<T>> pitems) noexcept
+  bool build(std::list<std::reference_wrapper<T>> items) noexcept
   {
-    if (pitems.empty())
+    if (items.empty())
       return true;
 
     auto aabb = tl::optional<AABB>{tl::nullopt};
-    for (auto const& item : pitems) {
+    for (auto const& item : items) {
       if (aabb.has_value())
         aabb = aabb->combine(ItemProxy::getAABB(item));
       else
         aabb = AABB{ItemProxy::getAABB(item)};
     }
     assert(aabb.has_value());
-    this->root = Node{*this, tl::nullopt, *aabb};
-    for (auto const& item : pitems) {
+    this->root_ = Node{this->min_leaf_size_, tl::nullopt, *aabb};
+    for (auto const& item : items) {
       if (!this->insert(item))
         return false;
     }
     return true;
   }
 
-  tl::optional<Node> root;
-
-public:
-  std::list<std::reference_wrapper<T>> all_items{};
-
-private:
-  float min_leaf_size;
+  tl::optional<Node> root_;
+  std::list<std::reference_wrapper<T>> all_items_{};
+  float min_leaf_size_;
 
   friend class Node;
 };

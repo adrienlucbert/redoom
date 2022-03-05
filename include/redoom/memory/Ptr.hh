@@ -9,9 +9,9 @@ template <typename T, typename Deleter>
 class Ptr
 {
 public:
-  Ptr(T* pptr, Deleter pdeleter) noexcept
-    : ptr{pptr}
-    , deleter{pdeleter}
+  Ptr(T* ptr, Deleter deleter) noexcept
+    : ptr_{ptr}
+    , deleter_{deleter}
   {
   }
   ~Ptr() noexcept
@@ -20,24 +20,24 @@ public:
   }
   Ptr(Ptr const& rhs) noexcept = delete;
   Ptr(Ptr&& rhs) noexcept
-    : ptr{std::move(rhs.ptr)}
-    , deleter{std::move(rhs.deleter)}
+    : ptr_{std::move(rhs.ptr_)}
+    , deleter_{std::move(rhs.deleter_)}
   {
-    rhs.ptr = nullptr;
+    rhs.ptr_ = nullptr;
   }
 
   Ptr& operator=(Ptr const& rhs) noexcept = delete;
   Ptr& operator=(Ptr&& rhs) noexcept
   {
     this->release();
-    this->ptr = std::move(rhs.ptr);
-    rhs.ptr = nullptr;
-    this->deleter = std::move(rhs.deleter);
+    this->ptr_ = std::move(rhs.ptr_);
+    rhs.ptr_ = nullptr;
+    this->deleter_ = std::move(rhs.deleter_);
     return *this;
   }
   bool operator==(Ptr const& rhs) const noexcept
   {
-    return this->ptr == rhs.ptr;
+    return this->ptr_ == rhs.ptr_;
   }
   bool operator!=(Ptr const& rhs) const noexcept
   {
@@ -45,42 +45,42 @@ public:
   }
   T& operator*() noexcept
   {
-    return *this->ptr;
+    return *this->ptr_;
   }
   T* operator->() noexcept
   {
-    return this->ptr;
+    return this->ptr_;
   }
   T const& operator*() const noexcept
   {
-    return *this->ptr;
+    return *this->ptr_;
   }
   T const* operator->() const noexcept
   {
-    return this->ptr;
+    return this->ptr_;
   }
   template <typename U>
   operator Ptr<U, Deleter>() noexcept // NOLINT
   {
-    auto res = Ptr<U, Deleter>{static_cast<U*>(this->ptr), this->deleter};
-    this->ptr = nullptr;
+    auto res = Ptr<U, Deleter>{static_cast<U*>(this->ptr_), this->deleter_};
+    this->ptr_ = nullptr;
     return res;
   }
 
   T* get() const noexcept
   {
-    return this->ptr;
+    return this->ptr_;
   }
 
 private:
   void release()
   {
-    if (this->ptr == nullptr)
+    if (this->ptr_ == nullptr)
       return;
-    std::invoke(this->deleter, this->ptr);
+    std::invoke(this->deleter_, this->ptr_);
   }
 
-  T* ptr;
-  Deleter deleter;
+  T* ptr_;
+  Deleter deleter_;
 };
 } // namespace redoom::memory

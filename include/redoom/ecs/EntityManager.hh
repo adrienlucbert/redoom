@@ -26,7 +26,7 @@ public:
   [[nodiscard]] std::vector<Entity> const& getEntities() const noexcept;
 
 private:
-  mutable std::unique_ptr<std::mutex> mutex{std::make_unique<std::mutex>()};
-  std::vector<Entity> entities;
+  mutable std::unique_ptr<std::mutex> mutex_{std::make_unique<std::mutex>()};
+  std::vector<Entity> entities_;
 };
 } // namespace redoom::ecs

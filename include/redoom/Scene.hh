@@ -10,7 +10,7 @@ class SceneSerializer;
 class Scene
 {
 public:
-  explicit Scene(std::string_view pname) noexcept;
+  explicit Scene(std::string_view name) noexcept;
   Scene(Scene const& b) noexcept = delete;
   Scene(Scene&& b) noexcept = default;
   ~Scene() noexcept = default;
@@ -29,10 +29,10 @@ public:
 private:
   friend class SceneSerializer;
 
-  void setName(std::string_view pname) noexcept;
+  void setName(std::string_view name) noexcept;
 
-  std::string name;
-  ecs::Registry registry;
-  physics::World world;
+  std::string name_;
+  ecs::Registry registry_;
+  physics::World world_;
 };
 } // namespace redoom

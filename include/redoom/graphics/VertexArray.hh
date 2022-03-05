@@ -21,6 +21,6 @@ public:
   void unbind() const noexcept;
 
 private:
-  unsigned int id;
+  unsigned int id_;
 };
 } // namespace redoom::graphics

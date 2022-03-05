@@ -34,12 +34,12 @@ public:
   Texture2D& operator=(Texture2D&& rhs) noexcept;
 
   [[nodiscard]] static Expected<Texture2D> fromFile(
-      std::filesystem::path const& path, Type ptype) noexcept;
+      std::filesystem::path const& path, Type type) noexcept;
   [[nodiscard]] static Expected<Texture2D> fromData(unsigned char const* data,
       int width,
       int height,
-      int pchannels,
-      Type ptype) noexcept;
+      int channels,
+      Type type) noexcept;
 
   [[nodiscard]] unsigned int getId() const noexcept;
   [[nodiscard]] int getWidth() const noexcept;
@@ -56,17 +56,14 @@ public:
   static Expected<Texture2D> getPlaceholder() noexcept;
 
 private:
-  explicit Texture2D(unsigned int pid,
-      int pwidth,
-      int pheight,
-      int channels,
-      Type ptype) noexcept;
+  explicit Texture2D(
+      unsigned int id, int width, int height, int channels, Type type) noexcept;
 
-  unsigned int id;
-  mutable GLint unit;
-  int width;
-  int height;
-  int channels;
-  Type type;
+  unsigned int id_;
+  mutable GLint unit_;
+  int width_;
+  int height_;
+  int channels_;
+  Type type_;
 };
 } // namespace redoom::graphics

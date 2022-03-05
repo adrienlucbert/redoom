@@ -25,17 +25,17 @@ public:
   template <typename... Args>
   auto make(Args&&... args) const noexcept
   {
-    return std::invoke(this->allocator, std::forward<Args>(args)...);
+    return std::invoke(this->allocator_, std::forward<Args>(args)...);
   }
 
 private:
-  explicit Factory(DLLoader ploader, Allocator pallocator) noexcept
-    : loader{std::move(ploader)}
-    , allocator{pallocator}
+  explicit Factory(DLLoader loader, Allocator allocator) noexcept
+    : loader_{std::move(loader)}
+    , allocator_{allocator}
   {
   }
 
-  DLLoader loader;
-  Allocator allocator;
+  DLLoader loader_;
+  Allocator allocator_;
 };
 } // namespace redoom::Utils

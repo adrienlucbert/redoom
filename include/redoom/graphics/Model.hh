@@ -39,8 +39,8 @@ public:
 
 private:
   explicit Model(std::filesystem::path path,
-      ModelImporterOptions pimporter_options,
-      std::vector<Mesh> pmeshes) noexcept;
+      ModelImporterOptions importer_options,
+      std::vector<Mesh> meshes) noexcept;
 
   static Expected<std::vector<Mesh>> parseNode(aiNode* node,
       aiScene const* scene,
@@ -53,8 +53,8 @@ private:
       Texture2D::Type tex_type,
       std::filesystem::path const& root) noexcept;
 
-  tl::optional<std::filesystem::path> path;
-  tl::optional<ModelImporterOptions> importer_options;
-  std::vector<Mesh> meshes;
+  tl::optional<std::filesystem::path> path_;
+  tl::optional<ModelImporterOptions> importer_options_;
+  std::vector<Mesh> meshes_;
 };
 } // namespace redoom::graphics

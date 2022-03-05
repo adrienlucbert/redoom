@@ -4,8 +4,8 @@
 
 namespace redoom::graphics
 {
-Camera::Camera(glm::vec3 pposition) noexcept
-  : position{pposition}
+Camera::Camera(glm::vec3 position) noexcept
+  : position_{position}
 {
   this->updateView();
   this->updateProjection();
@@ -13,123 +13,123 @@ Camera::Camera(glm::vec3 pposition) noexcept
 
 glm::vec3 const& Camera::getPosition() const noexcept
 {
-  return this->position;
+  return this->position_;
 }
 
-void Camera::setPosition(glm::vec3 pposition) noexcept
+void Camera::setPosition(glm::vec3 position) noexcept
 {
-  this->position = pposition;
+  this->position_ = position;
   this->updateView();
 }
 
 glm::vec3 const& Camera::getFront() const noexcept
 {
-  return this->front;
+  return this->front_;
 }
 
-void Camera::setFront(glm::vec3 pfront) noexcept
+void Camera::setFront(glm::vec3 front) noexcept
 {
-  this->front = pfront;
+  this->front_ = front;
   this->updateView();
 }
 
 glm::vec3 const& Camera::getUp() const noexcept
 {
-  return this->up;
+  return this->up_;
 }
 
-void Camera::setUp(glm::vec3 pup) noexcept
+void Camera::setUp(glm::vec3 up) noexcept
 {
-  this->up = pup;
+  this->up_ = up;
   this->updateView();
 }
 
 glm::vec3 const& Camera::getRight() const noexcept
 {
-  return this->right;
+  return this->right_;
 }
 
-void Camera::setRight(glm::vec3 pright) noexcept
+void Camera::setRight(glm::vec3 right) noexcept
 {
-  this->right = pright;
+  this->right_ = right;
   this->updateView();
 }
 
 float Camera::getYaw() const noexcept
 {
-  return this->yaw;
+  return this->yaw_;
 }
 
-void Camera::setYaw(float pyaw) noexcept
+void Camera::setYaw(float yaw) noexcept
 {
-  this->yaw = pyaw;
+  this->yaw_ = yaw;
   this->updateView();
 }
 
 float Camera::getPitch() const noexcept
 {
-  return this->pitch;
+  return this->pitch_;
 }
 
-void Camera::setPitch(float ppitch) noexcept
+void Camera::setPitch(float pitch) noexcept
 {
-  this->pitch = ppitch;
+  this->pitch_ = pitch;
   this->updateView();
 }
 
 float Camera::getSpeed() const noexcept
 {
-  return this->speed;
+  return this->speed_;
 }
 
-void Camera::setSpeed(float pspeed) noexcept
+void Camera::setSpeed(float speed) noexcept
 {
-  this->speed = pspeed;
+  this->speed_ = speed;
 }
 
 float Camera::getSensitivity() const noexcept
 {
-  return this->sensitivity;
+  return this->sensitivity_;
 }
 
-void Camera::setSensitivity(float psensitivity) noexcept
+void Camera::setSensitivity(float sensitivity) noexcept
 {
-  this->sensitivity = psensitivity;
+  this->sensitivity_ = sensitivity;
 }
 
 float Camera::getFov() const noexcept
 {
-  return this->fov;
+  return this->fov_;
 }
 
-void Camera::setFov(float pfov) noexcept
+void Camera::setFov(float fov) noexcept
 {
-  this->fov = pfov;
+  this->fov_ = fov;
   this->updateProjection();
 }
 
 void Camera::setViewportSize(int width, int height) noexcept
 {
   assert(width > 0 && height > 0);
-  this->aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
+  this->aspect_ratio_ = static_cast<float>(width) / static_cast<float>(height);
   this->updateProjection();
 }
 
 glm::mat4 const& Camera::getView() const noexcept
 {
-  return this->view;
+  return this->view_;
 }
 
 glm::mat4 const& Camera::getProjection() const noexcept
 {
-  return this->projection;
+  return this->projection_;
 }
 
 void Camera::updateProjection() noexcept
 {
-  if (this->projection_type == ProjectionType::Perspective) {
-    this->projection =
-        glm::perspective(this->fov, this->aspect_ratio, 0.1f, 100.0f);
+  if (this->projection_type_ == ProjectionType::Perspective) {
+    this->projection_ =
+        glm::perspective(this->fov_, this->aspect_ratio_, 0.1f, 100.0f);
   } else
     // TODO(alucbert): add support for orthographic projection
     assert("Orthographic projection is not yet supported" == nullptr);
@@ -137,14 +137,15 @@ void Camera::updateProjection() noexcept
 
 void Camera::updateView() noexcept
 {
-  this->front = glm::normalize(glm::vec3{
-      std::cos(glm::radians(this->yaw)) * std::cos(glm::radians(this->pitch)),
-      std::sin(glm::radians(this->pitch)),
-      std::sin(glm::radians(this->yaw)) * std::cos(glm::radians(this->pitch))});
-  this->right = glm::normalize(glm::cross(this->front, this->world_up));
-  this->up = glm::normalize(glm::cross(this->right, this->front));
-  this->view =
-      glm::lookAt(this->position, this->position + this->front, this->up);
+  this->front_ = glm::normalize(glm::vec3{
+      std::cos(glm::radians(this->yaw_)) * std::cos(glm::radians(this->pitch_)),
+      std::sin(glm::radians(this->pitch_)),
+      std::sin(glm::radians(this->yaw_))
+          * std::cos(glm::radians(this->pitch_))});
+  this->right_ = glm::normalize(glm::cross(this->front_, this->world_up_));
+  this->up_ = glm::normalize(glm::cross(this->right_, this->front_));
+  this->view_ =
+      glm::lookAt(this->position_, this->position_ + this->front_, this->up_);
 }
 } // namespace redoom::graphics
 

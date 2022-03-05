@@ -16,6 +16,6 @@ public:
       std::filesystem::path const& path) noexcept;
 
 private:
-  static std::unordered_map<std::string, Texture2D> textures; // NOLINT
+  static std::unordered_map<std::string, Texture2D> textures_; // NOLINT
 };
 } // namespace redoom::graphics

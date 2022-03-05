@@ -33,7 +33,7 @@ public:
   {
     auto& allocator = this->getAllocator<T>();
     auto& list = this->getComponentsList<T>();
-    auto lock = std::lock_guard{*this->mutex};
+    auto lock = std::lock_guard{*this->mutex_};
     auto const& component_it =
         list.emplace(entity, allocator.get(std::forward<Args>(args)...)).first;
     return static_cast<T&>(*component_it->second);
@@ -41,7 +41,7 @@ public:
 
   void releaseAll(Entity entity) noexcept
   {
-    for (auto& [type_id, list] : this->components_lists) {
+    for (auto& [type_id, list] : this->components_lists_) {
       auto const& component_it = list.find(entity);
       if (component_it != list.end())
         list.erase(component_it);
@@ -54,7 +54,7 @@ public:
     static_assert(std::is_base_of_v<ComponentBase, T>,
         "T must inherit from ComponentBase");
     auto& list = this->getComponentsList<T>();
-    auto lock = std::lock_guard{*this->mutex};
+    auto lock = std::lock_guard{*this->mutex_};
     auto const& component_it = list.find(entity);
     if (component_it == list.end())
       return false;
@@ -69,12 +69,12 @@ public:
   {
     static_assert(std::is_base_of_v<ComponentBase, T>,
         "T must inherit from ComponentBase");
-    auto lock = std::lock_guard{*this->mutex};
-    auto const& list_it = this->components_lists.find(T::getTypeId());
+    auto lock = std::lock_guard{*this->mutex_};
+    auto const& list_it = this->components_lists_.find(T::getTypeId());
 
-    if (list_it == this->components_lists.end())
+    if (list_it == this->components_lists_.end())
       return false;
-    auto const& list = this->components_lists.at(T::getTypeId());
+    auto const& list = this->components_lists_.at(T::getTypeId());
     return list.contains(entity);
   }
 
@@ -109,11 +109,11 @@ public:
   tl::optional<ComponentBase const&> getByTypeId(
       unsigned int type_id, Entity entity) const noexcept
   {
-    auto lock = std::lock_guard{*this->mutex};
-    auto list_it = this->components_lists.find(type_id);
-    if (list_it == this->components_lists.end())
+    auto lock = std::lock_guard{*this->mutex_};
+    auto list_it = this->components_lists_.find(type_id);
+    if (list_it == this->components_lists_.end())
       return tl::nullopt;
-    auto const& list = this->components_lists.at(type_id);
+    auto const& list = this->components_lists_.at(type_id);
     auto component_it = list.find(entity);
     if (component_it == list.end())
       return tl::nullopt;
@@ -138,13 +138,13 @@ private:
   {
     static_assert(std::is_base_of_v<ComponentBase, T>,
         "T must inherit from ComponentBase");
-    auto lock = std::lock_guard{*this->mutex};
-    auto const& list_it = this->components_lists.find(T::getTypeId());
+    auto lock = std::lock_guard{*this->mutex_};
+    auto const& list_it = this->components_lists_.find(T::getTypeId());
 
-    if (list_it == this->components_lists.end())
-      this->components_lists.emplace(T::getTypeId(),
+    if (list_it == this->components_lists_.end())
+      this->components_lists_.emplace(T::getTypeId(),
           std::unordered_map<unsigned int, Allocator<ComponentBase>::ptr_t>{});
-    return this->components_lists.at(T::getTypeId());
+    return this->components_lists_.at(T::getTypeId());
   }
 
   template <typename T>
@@ -153,20 +153,20 @@ private:
     static_assert(std::is_base_of_v<ComponentBase, T>,
         "T must inherit from ComponentBase");
     auto const key = T::getTypeId();
-    auto lock = std::lock_guard{*this->mutex};
-    auto allocator_it = this->allocators.find(key);
-    if (allocator_it != this->allocators.end())
+    auto lock = std::lock_guard{*this->mutex_};
+    auto allocator_it = this->allocators_.find(key);
+    if (allocator_it != this->allocators_.end())
       return *dynamic_cast<Allocator<T>*>(allocator_it->second.get());
     return *dynamic_cast<Allocator<T>*>(
-        this->allocators.emplace(key, std::make_unique<Allocator<T>>())
+        this->allocators_.emplace(key, std::make_unique<Allocator<T>>())
             .first->second.get());
   }
 
-  mutable std::unique_ptr<std::mutex> mutex{std::make_unique<std::mutex>()};
-  std::unordered_map<unsigned int, std::unique_ptr<AllocatorBase>> allocators;
-  std::unordered_map<std::string, unsigned int> type_type_id_map;
+  mutable std::unique_ptr<std::mutex> mutex_{std::make_unique<std::mutex>()};
+  std::unordered_map<unsigned int, std::unique_ptr<AllocatorBase>> allocators_;
+  std::unordered_map<std::string, unsigned int> type_type_id_map_;
   std::unordered_map<unsigned int,
       std::unordered_map<Entity, Allocator<ComponentBase>::ptr_t>>
-      components_lists;
+      components_lists_;
 };
 } // namespace redoom::ecs

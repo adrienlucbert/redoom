@@ -7,11 +7,11 @@ namespace redoom::platform::OpenGL
 {
 void OpenGLContext::swapBuffers() noexcept
 {
-  glfwSwapBuffers(this->native_window);
+  glfwSwapBuffers(this->native_window_);
 }
 
 Expected<std::unique_ptr<renderer::RendererContext>> OpenGLContext::create(
-    GLFWwindow* pnative_window) noexcept
+    GLFWwindow* native_window) noexcept
 {
   glewExperimental = GL_TRUE;
   GLenum err = glewInit();
@@ -19,14 +19,14 @@ Expected<std::unique_ptr<renderer::RendererContext>> OpenGLContext::create(
     return make_formatted_unexpected(
         "Failed to create renderer context: {}", glewGetErrorString(err));
   try {
-    return std::unique_ptr<OpenGLContext>{new OpenGLContext{pnative_window}};
+    return std::unique_ptr<OpenGLContext>{new OpenGLContext{native_window}};
   } catch (std::exception const& e) {
     return tl::unexpected(e.what());
   }
 }
 
-OpenGLContext::OpenGLContext(GLFWwindow* pnative_window) noexcept
-  : native_window{pnative_window}
+OpenGLContext::OpenGLContext(GLFWwindow* native_window) noexcept
+  : native_window_{native_window}
 {
 }
 } // namespace redoom::platform::OpenGL

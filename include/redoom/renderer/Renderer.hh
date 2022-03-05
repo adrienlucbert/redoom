@@ -53,8 +53,8 @@ private:
     program.setUniformMatrix4("model", 1, GL_FALSE, glm::value_ptr(model));
   }
 
-  static std::unique_ptr<RendererAPI> api;   // NOLINT
-  static glm::mat4 camera_view_matrix;       // NOLINT
-  static glm::mat4 camera_projection_matrix; // NOLINT
+  static std::unique_ptr<RendererAPI> api_;   // NOLINT
+  static glm::mat4 camera_view_matrix_;       // NOLINT
+  static glm::mat4 camera_projection_matrix_; // NOLINT
 };
 } // namespace redoom::renderer

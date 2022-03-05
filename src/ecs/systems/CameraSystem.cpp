@@ -10,13 +10,13 @@ namespace redoom::ecs::systems
 void CameraSystem::update(UpdateContext& context) noexcept
 {
   auto count = 0u;
-  context.component_manager.apply<components::CameraComponent>(
+  context.getComponentManager().apply<components::CameraComponent>(
       [&count](auto /*entity*/, auto const& component) {
         ++count;
         assert(count <= 1 && "More than one camera is not allowed");
-        renderer::Renderer::setViewMatrix(component.camera.getView());
+        renderer::Renderer::setViewMatrix(component.camera_.getView());
         renderer::Renderer::setProjectionMatrix(
-            component.camera.getProjection());
+            component.camera_.getProjection());
       });
 }
 } // namespace redoom::ecs::systems

@@ -31,12 +31,12 @@ public:
 
   void insert(Body& item) noexcept
   {
-    this->filter.insert(item);
+    this->filter_.insert(item);
   }
 
   void remove(Body const& item) noexcept
   {
-    this->filter.remove(item);
+    this->filter_.remove(item);
   }
 
   std::vector<CollisionManifold> getCollisions(
@@ -49,7 +49,7 @@ public:
 
   void debugDraw(graphics::Program& program) const noexcept
   {
-    this->filter.debugDraw(program);
+    this->filter_.debugDraw(program);
   }
 
 private:
@@ -62,8 +62,8 @@ private:
         moved_items.emplace_back(item);
       }
     }
-    this->filter.update(moved_items);
-    auto possible_collisions = this->filter.getPossibleCollisions();
+    this->filter_.update(moved_items);
+    auto possible_collisions = this->filter_.getPossibleCollisions();
     return possible_collisions;
   }
 
@@ -81,6 +81,6 @@ private:
     return result;
   }
 
-  Filter filter;
+  Filter filter_;
 };
 } // namespace redoom::physics

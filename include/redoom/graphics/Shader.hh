@@ -27,9 +27,9 @@ public:
   [[nodiscard]] unsigned int getId() const noexcept;
 
 private:
-  explicit Shader(unsigned int pid) noexcept;
+  explicit Shader(unsigned int id) noexcept;
 
-  unsigned int id;
+  unsigned int id_;
 };
 
 struct VertexShader : public Shader {

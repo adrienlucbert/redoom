@@ -42,9 +42,9 @@ public:
 private:
   bool deleteBody(Body const& body) noexcept;
 
-  bool debug_draw{false};
-  unsigned int last_body_id{0};
-  std::unordered_map<unsigned int, Body> bodies;
-  CollisionDetector<OctTreeFilter> collision_detector;
+  bool debug_draw_{false};
+  unsigned int last_body_id_{0};
+  std::unordered_map<unsigned int, Body> bodies_;
+  CollisionDetector<OctTreeFilter> collision_detector_;
 };
 } // namespace redoom::physics

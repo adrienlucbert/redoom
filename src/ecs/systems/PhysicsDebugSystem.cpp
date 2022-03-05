@@ -16,12 +16,12 @@ void PhysicsDebugSystem::update(UpdateContext& context) noexcept
       assert("Undefined shader" == nullptr);
     auto& shader = *shader_opt;
 
-    context.component_manager.apply<components::BodyComponent>(
+    context.getComponentManager().apply<components::BodyComponent>(
         [&](auto entity, components::BodyComponent& component) {
           auto transform_opt =
-              context.component_manager.get<components::TransformComponent>(
+              context.getComponentManager().get<components::TransformComponent>(
                   entity);
-          for (auto const& fixture : component.body->getFixtures()) {
+          for (auto const& fixture : component.body_->getFixtures()) {
             auto model = glm::mat4(1.0f);
             if (transform_opt) {
               auto& transform = *transform_opt;
@@ -34,7 +34,7 @@ void PhysicsDebugSystem::update(UpdateContext& context) noexcept
             }
             renderer::Renderer::draw(shader, fixture.getShape(), model);
           }
-          auto aabb = component.body->getGlobalAABB();
+          auto aabb = component.body_->getGlobalAABB();
           if (aabb.has_value()) {
             auto cuboid = graphics::mesh::Cuboid{
                 aabb->upper_bounds.x - aabb->lower_bounds.x,

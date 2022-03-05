@@ -6,27 +6,27 @@
 
 namespace redoom::graphics
 {
-Shader::Shader(unsigned int pid) noexcept
-  : id{pid}
+Shader::Shader(unsigned int id) noexcept
+  : id_{id}
 {
 }
 
 Shader::Shader(Shader&& b) noexcept
-  : id{b.id}
+  : id_{b.id_}
 {
-  b.id = 0;
+  b.id_ = 0;
 }
 
 Shader::~Shader() noexcept
 {
-  if (this->id != 0)
-    glDeleteShader(this->id);
+  if (this->id_ != 0)
+    glDeleteShader(this->id_);
 }
 
 Shader& Shader::operator=(Shader&& rhs) noexcept
 {
   if (this != &rhs)
-    std::swap(this->id, rhs.id);
+    std::swap(this->id_, rhs.id_);
   return *this;
 }
 
@@ -61,6 +61,6 @@ Expected<Shader> Shader::fromFile(
 
 unsigned int Shader::getId() const noexcept
 {
-  return this->id;
+  return this->id_;
 }
 } // namespace redoom::graphics

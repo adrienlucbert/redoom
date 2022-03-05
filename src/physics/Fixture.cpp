@@ -5,65 +5,65 @@
 
 namespace redoom::physics
 {
-Fixture::Fixture(Body& pbody, FixtureDefinition def) noexcept
-  : body{pbody}
-  , shape{std::move(def.shape)}
-  , local_position{def.local_position}
-  , friction{def.friction}
-  , restitution{def.restitution}
-  , density{def.density}
+Fixture::Fixture(Body& body, FixtureDefinition def) noexcept
+  : body_{body}
+  , shape_{std::move(def.shape)}
+  , local_position_{def.local_position}
+  , friction_{def.friction}
+  , restitution_{def.restitution}
+  , density_{def.density}
 {
 }
 
 void Fixture::draw(graphics::Program& program) const noexcept
 {
-  if (this->shape)
-    this->shape->draw(program);
+  if (this->shape_)
+    this->shape_->draw(program);
 }
 
 Body& Fixture::getBody() const noexcept
 {
-  return this->body;
+  return this->body_;
 }
 
 std::shared_ptr<Shape const> Fixture::getShape() const noexcept
 {
-  return this->shape;
+  return this->shape_;
 }
 
 glm::vec3 const& Fixture::getLocalPosition() const noexcept
 {
-  return this->local_position;
+  return this->local_position_;
 }
 
 float Fixture::getFriction() const noexcept
 {
-  return this->friction;
+  return this->friction_;
 }
 
 float Fixture::getRestitution() const noexcept
 {
-  return this->restitution;
+  return this->restitution_;
 }
 
 float Fixture::getDensity() const noexcept
 {
-  return this->density;
+  return this->density_;
 }
 
 Fixture Fixture::fromAABB(
-    Body& pbody, FixtureDefinition def, AABB const& aabb) noexcept
+    Body& body, FixtureDefinition def, AABB const& aabb) noexcept
 {
   def.shape = std::make_shared<physics::Cuboid>(
       aabb.upper_bounds.x - aabb.lower_bounds.x,
       aabb.upper_bounds.y - aabb.lower_bounds.y,
       aabb.upper_bounds.z - aabb.lower_bounds.z);
   def.local_position = aabb.getCenter();
-  return Fixture{pbody, std::move(def)};
+  return Fixture{body, std::move(def)};
 }
 
 Fixture Fixture::fromMesh(
-    Body& pbody, FixtureDefinition def, graphics::Mesh const& mesh) noexcept
+    Body& body, FixtureDefinition def, graphics::Mesh const& mesh) noexcept
 {
   auto initialized = false;
   auto aabb = AABB{};
@@ -90,6 +90,6 @@ Fixture Fixture::fromMesh(
     }
   }
 
-  return Fixture::fromAABB(pbody, std::move(def), aabb);
+  return Fixture::fromAABB(body, std::move(def), aabb);
 }
 } // namespace redoom::physics

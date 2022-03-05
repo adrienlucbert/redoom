@@ -7,44 +7,41 @@
 
 namespace redoom::graphics
 {
-Texture2D::Texture2D(unsigned int pid,
-    int pwidth,
-    int pheight,
-    int pchannels,
-    Type ptype) noexcept
-  : id{pid}
-  , unit{0}
-  , width{pwidth}
-  , height{pheight}
-  , channels{pchannels}
-  , type{ptype}
+Texture2D::Texture2D(
+    unsigned int id, int width, int height, int channels, Type type) noexcept
+  : id_{id}
+  , unit_{0}
+  , width_{width}
+  , height_{height}
+  , channels_{channels}
+  , type_{type}
 {
 }
 
 Texture2D::Texture2D(Texture2D&& b) noexcept
-  : id{b.id}
-  , unit{0}
-  , width{b.width}
-  , height{b.height}
-  , channels{b.channels}
-  , type{b.type}
+  : id_{b.id_}
+  , unit_{0}
+  , width_{b.width_}
+  , height_{b.height_}
+  , channels_{b.channels_}
+  , type_{b.type_}
 {
-  b.id = 0;
+  b.id_ = 0;
 }
 
 Texture2D::~Texture2D() noexcept
 {
-  if (this->id != 0)
-    glDeleteTextures(1, &this->id);
+  if (this->id_ != 0)
+    glDeleteTextures(1, &this->id_);
 }
 
 Texture2D& Texture2D::operator=(Texture2D&& rhs) noexcept
 {
   if (this != &rhs) {
-    std::swap(this->id, rhs.id);
-    this->width = rhs.width;
-    this->height = rhs.height;
-    this->channels = rhs.channels;
+    std::swap(this->id_, rhs.id_);
+    this->width_ = rhs.width_;
+    this->height_ = rhs.height_;
+    this->channels_ = rhs.channels_;
   }
   return *this;
 }
@@ -116,42 +113,42 @@ Expected<Texture2D> Texture2D::fromFile(
 
 unsigned int Texture2D::getId() const noexcept
 {
-  return this->id;
+  return this->id_;
 }
 
 int Texture2D::getWidth() const noexcept
 {
-  return this->width;
+  return this->width_;
 }
 
 int Texture2D::getHeight() const noexcept
 {
-  return this->height;
+  return this->height_;
 }
 
 int Texture2D::getChannels() const noexcept
 {
-  return this->channels;
+  return this->channels_;
 }
 
 Texture2D::Type Texture2D::getType() const noexcept
 {
-  return this->type;
+  return this->type_;
 }
 
 void Texture2D::setUnit(
-    Program& program, std::string_view uniform, GLint punit) const noexcept
+    Program& program, std::string_view uniform, GLint unit) const noexcept
 {
-  this->unit = punit;
+  this->unit_ = unit;
   program.use();
-  glActiveTexture(GL_TEXTURE0 + this->unit);
-  program.setUniform(uniform, this->unit);
+  glActiveTexture(GL_TEXTURE0 + this->unit_);
+  program.setUniform(uniform, this->unit_);
 }
 
 void Texture2D::bind() const noexcept
 {
-  glActiveTexture(GL_TEXTURE0 + this->unit);
-  glBindTexture(GL_TEXTURE_2D, this->id);
+  glActiveTexture(GL_TEXTURE0 + this->unit_);
+  glBindTexture(GL_TEXTURE_2D, this->id_);
 }
 
 void Texture2D::unbind() const noexcept // NOLINT

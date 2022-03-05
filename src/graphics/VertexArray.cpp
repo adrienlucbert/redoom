@@ -5,33 +5,33 @@
 namespace redoom::graphics
 {
 VertexArray::VertexArray() noexcept
-  : id{}
+  : id_{}
 {
-  glGenVertexArrays(1, &this->id);
+  glGenVertexArrays(1, &this->id_);
 }
 
 VertexArray::VertexArray(VertexArray&& b) noexcept
-  : id{b.id}
+  : id_{b.id_}
 {
-  b.id = 0;
+  b.id_ = 0;
 }
 
 VertexArray::~VertexArray() noexcept
 {
-  if (this->id != 0)
-    glDeleteVertexArrays(1, &this->id);
+  if (this->id_ != 0)
+    glDeleteVertexArrays(1, &this->id_);
 }
 
 VertexArray& VertexArray::operator=(VertexArray&& rhs) noexcept
 {
   if (this != &rhs)
-    std::swap(this->id, rhs.id);
+    std::swap(this->id_, rhs.id_);
   return *this;
 }
 
 void VertexArray::bind() const noexcept
 {
-  glBindVertexArray(this->id);
+  glBindVertexArray(this->id_);
 }
 
 void VertexArray::unbind() const noexcept // NOLINT

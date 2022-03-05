@@ -19,6 +19,6 @@ protected:
   explicit OpenGLContext(GLFWwindow* native_window) noexcept;
 
 private:
-  GLFWwindow* native_window;
+  GLFWwindow* native_window_;
 };
 } // namespace redoom::platform::OpenGL

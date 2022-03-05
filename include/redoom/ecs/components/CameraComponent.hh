@@ -15,18 +15,18 @@ struct CameraComponent : public Component<CameraComponent> {
   }
 
   explicit CameraComponent(
-      graphics::Camera pcamera = graphics::Camera{}) noexcept
-    : camera{pcamera}
+      graphics::Camera camera = graphics::Camera{}) noexcept
+    : camera_{camera}
   {
   }
-  graphics::Camera camera;
+  graphics::Camera camera_;
 
   struct Serializer : public ComponentSerializer {
     void serialize(
         YAML::Emitter& out, ecs::ComponentBase const* component) const override
     {
       auto const* cc = dynamic_cast<CameraComponent const*>(component);
-      out << YAML::Key << "camera" << YAML::Value << cc->camera;
+      out << YAML::Key << "camera" << YAML::Value << cc->camera_;
     }
     [[nodiscard]] Expected<> deserialize(
         YAML::Node const& node, Scene& scene, Entity entity) const override

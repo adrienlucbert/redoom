@@ -21,30 +21,30 @@ enum class BodyType { Static, Kinematic, Dynamic };
 class BodyTransform
 {
 public:
-  BodyTransform(glm::vec3 pposition,
-      float pangle,
-      glm::vec3 protation,
-      glm::vec3 pscale) noexcept;
+  BodyTransform(glm::vec3 position,
+      float angle,
+      glm::vec3 rotation,
+      glm::vec3 scale) noexcept;
 
   [[nodiscard]] glm::vec3 const& getPosition() const noexcept;
-  void setPosition(glm::vec3 pposition) noexcept;
+  void setPosition(glm::vec3 position) noexcept;
   [[nodiscard]] float getAngle() const noexcept;
-  void setAngle(float pangle) noexcept;
+  void setAngle(float angle) noexcept;
   [[nodiscard]] glm::vec3 const& getRotation() const noexcept;
-  void setRotation(glm::vec3 protation) noexcept;
+  void setRotation(glm::vec3 rotation) noexcept;
   [[nodiscard]] glm::vec3 const& getScale() const noexcept;
-  void setScale(glm::vec3 pscale) noexcept;
+  void setScale(glm::vec3 scale) noexcept;
 
   // Useful for the physics World to know this BodyTransform was updated since
   // last check. When called, resets the internal `is_updated` state to false.
   bool isUpdated() const noexcept;
 
 private:
-  glm::vec3 position{0.0f, 0.0f, 0.0f};
-  float angle{0.0f};
-  glm::vec3 rotation{1.0f, 1.0f, 1.0f};
-  glm::vec3 scale{1.0f, 1.0f, 1.0f};
-  mutable bool is_updated{true};
+  glm::vec3 position_{0.0f, 0.0f, 0.0f};
+  float angle_{0.0f};
+  glm::vec3 rotation_{1.0f, 1.0f, 1.0f};
+  glm::vec3 scale_{1.0f, 1.0f, 1.0f};
+  mutable bool is_updated_{true};
 };
 
 struct BodyDefinition {
@@ -59,7 +59,7 @@ struct BodyDefinition {
 class Body
 {
 public:
-  Body(World& pworld, unsigned int pid, BodyDefinition def) noexcept;
+  Body(World& world, unsigned int id, BodyDefinition def) noexcept;
   ~Body() noexcept = default;
 
   Body(Body const&) noexcept = delete;
@@ -87,14 +87,14 @@ public:
   [[nodiscard]] tl::optional<AABB> getLocalAABB() const noexcept;
 
 private:
-  std::reference_wrapper<World> world;
-  unsigned int id;
-  BodyType type;
-  BodyTransform& transform;
-  glm::vec3 linear_velocity;
-  float angular_velocity;
-  bool has_fixed_rotation;
-  float gravity_scale;
-  std::vector<Fixture> fixtures;
+  std::reference_wrapper<World> world_;
+  unsigned int id_;
+  BodyType type_;
+  BodyTransform& transform_;
+  glm::vec3 linear_velocity_;
+  float angular_velocity_;
+  bool has_fixed_rotation_;
+  float gravity_scale_;
+  std::vector<Fixture> fixtures_;
 };
 } // namespace redoom::physics

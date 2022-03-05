@@ -27,9 +27,9 @@ public:
   [[nodiscard]] virtual AABB const& getAABB() const noexcept = 0;
 
 protected:
-  explicit Shape(std::string_view ptype) noexcept;
+  explicit Shape(std::string_view type) noexcept;
 
 private:
-  std::string_view type;
+  std::string_view type_;
 };
 } // namespace redoom::physics

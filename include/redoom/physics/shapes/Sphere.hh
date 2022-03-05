@@ -10,12 +10,12 @@ namespace redoom::physics
 class Sphere : public Shape
 {
 public:
-  explicit Sphere(float pradius) noexcept
+  explicit Sphere(float radius) noexcept
     : Shape("Sphere")
-    , radius{pradius}
-    , aabb{this->computeAABB()}
-    , mesh{graphics::mesh::Sphere{
-          pradius, 20, 20, {1.0f, 0.0f, 0.0f}, {}, GL_LINE_STRIP}}
+    , radius_{radius}
+    , aabb_{this->computeAABB()}
+    , mesh_{graphics::mesh::Sphere{
+          radius, 20, 20, {1.0f, 0.0f, 0.0f}, {}, GL_LINE_STRIP}}
   {
   }
   Sphere(Sphere const& b) noexcept = delete;
@@ -27,29 +27,29 @@ public:
 
   void draw(graphics::Program& program) const noexcept override
   {
-    if (this->mesh.has_value())
-      this->mesh.value().draw(program);
+    if (this->mesh_.has_value())
+      this->mesh_.value().draw(program);
   }
 
   [[nodiscard]] float getRadius() const noexcept
   {
-    return this->radius;
+    return this->radius_;
   }
 
   [[nodiscard]] AABB const& getAABB() const noexcept override
   {
-    return this->aabb;
+    return this->aabb_;
   }
 
 private:
   [[nodiscard]] AABB computeAABB() const noexcept
   {
-    return AABB{{-this->radius, -this->radius, -this->radius},
-        {this->radius, this->radius, this->radius}};
+    return AABB{{-this->radius_, -this->radius_, -this->radius_},
+        {this->radius_, this->radius_, this->radius_}};
   }
 
-  float radius;
-  AABB aabb;
-  tl::optional<graphics::mesh::Sphere> mesh;
+  float radius_;
+  AABB aabb_;
+  tl::optional<graphics::mesh::Sphere> mesh_;
 };
 } // namespace redoom::physics

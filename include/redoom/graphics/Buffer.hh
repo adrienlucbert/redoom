@@ -15,57 +15,59 @@ template <typename T>
 class Buffer
 {
 public:
-  Buffer(unsigned int ptype,
+  Buffer(unsigned int type,
       T const* data,
-      unsigned int pcount,
+      unsigned int count,
       BufferUsage usage) noexcept
-    : id{}
-    , type{ptype}
-    , count{pcount}
+    : id_{}
+    , type_{type}
+    , count_{count}
   {
-    glCreateBuffers(1, &this->id);
+    glCreateBuffers(1, &this->id_);
     this->bind();
-    glBufferData(
-        this->type, sizeof(T) * this->count, data, static_cast<GLenum>(usage));
+    glBufferData(this->type_,
+        sizeof(T) * this->count_,
+        data,
+        static_cast<GLenum>(usage));
     this->unbind();
   }
   Buffer(Buffer const& b) noexcept = delete;
   Buffer(Buffer&& b) noexcept
-    : id{b.id}
-    , type{b.type}
-    , count{b.count}
+    : id_{b.id_}
+    , type_{b.type_}
+    , count_{b.count_}
   {
-    b.id = 0;
+    b.id_ = 0;
   }
   virtual ~Buffer() noexcept
   {
-    if (this->id != 0)
-      glDeleteBuffers(1, &this->id);
+    if (this->id_ != 0)
+      glDeleteBuffers(1, &this->id_);
   }
 
   Buffer& operator=(Buffer const& rhs) noexcept = delete;
   Buffer& operator=(Buffer&& rhs) noexcept
   {
     if (this != &rhs) {
-      std::swap(this->id, rhs.id);
-      this->type = rhs.type;
-      this->count = rhs.count;
+      std::swap(this->id_, rhs.id_);
+      this->type_ = rhs.type_;
+      this->count_ = rhs.count_;
     }
     return *this;
   }
 
   [[nodiscard]] unsigned int getId() const noexcept
   {
-    return this->id;
+    return this->id_;
   }
 
   void bind() const noexcept
   {
-    glBindBuffer(this->type, this->id);
+    glBindBuffer(this->type_, this->id_);
   }
   void unbind() const noexcept
   {
-    glBindBuffer(this->type, 0);
+    glBindBuffer(this->type_, 0);
   }
 
   virtual void draw(GLenum /*topology*/) const noexcept
@@ -74,9 +76,9 @@ public:
   }
 
 protected:
-  unsigned int id;
-  unsigned int type;
-  unsigned int count;
+  unsigned int id_;
+  unsigned int type_;
+  unsigned int count_;
 };
 
 template <concepts::ContiguousContainer<GLuint> Container>
@@ -99,7 +101,7 @@ struct IndexBuffer : public Buffer<GLuint> {
   void draw(GLenum topology) const noexcept override
   {
     glDrawElements(
-        topology, static_cast<GLsizei>(this->count), GL_UNSIGNED_INT, nullptr);
+        topology, static_cast<GLsizei>(this->count_), GL_UNSIGNED_INT, nullptr);
   }
 };
 
@@ -141,7 +143,7 @@ struct VertexBuffer : public Buffer<Vertex> {
 
   void draw(GLenum topology) const noexcept override
   {
-    glDrawArrays(topology, 0, static_cast<GLsizei>(this->count));
+    glDrawArrays(topology, 0, static_cast<GLsizei>(this->count_));
   }
 };
 } // namespace redoom::graphics

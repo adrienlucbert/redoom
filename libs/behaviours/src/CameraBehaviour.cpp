@@ -26,25 +26,26 @@ struct CameraBehaviour : public Behaviour {
 
   void onInit(Entity entity, Context& context) noexcept override
   {
-    auto opt = context.component_manager.get<CameraComponent>(entity);
+    auto opt = context.getComponentManager().get<CameraComponent>(entity);
     if (!opt)
       assert("No camera component found" == nullptr);
-    this->component = std::addressof(*opt);
-    this->initial_camera_speed = this->component->camera.getSpeed();
+    this->component_ = std::addressof(*opt);
+    this->initial_camera_speed_ = this->component_->camera_.getSpeed();
   }
 
   void onUpdate(Entity /*entity*/, UpdateContext& context) noexcept override
   {
-    auto camera_pos = this->component->camera.getPosition();
-    auto const camera_speed = this->component->camera.getSpeed()
-                            * static_cast<float>(context.elapsed_time * 1000);
-    auto const camera_front = this->component->camera.getFront();
-    auto const camera_up = this->component->camera.getUp();
+    auto camera_pos = this->component_->camera_.getPosition();
+    auto const camera_speed =
+        this->component_->camera_.getSpeed()
+        * static_cast<float>(context.getElapsedTime() * 1000);
+    auto const camera_front = this->component_->camera_.getFront();
+    auto const camera_up = this->component_->camera_.getUp();
 
     if (isKeyPressed(Key::LEFT_SHIFT) || isKeyPressed(Key::RIGHT_SHIFT))
-      this->component->camera.setSpeed(this->initial_camera_speed * 10);
+      this->component_->camera_.setSpeed(this->initial_camera_speed_ * 10);
     else
-      this->component->camera.setSpeed(this->initial_camera_speed);
+      this->component_->camera_.setSpeed(this->initial_camera_speed_);
     if (isKeyPressed(Key::W))
       camera_pos += camera_speed * camera_front;
     if (isKeyPressed(Key::S))
@@ -55,67 +56,67 @@ struct CameraBehaviour : public Behaviour {
     if (isKeyPressed(Key::D))
       camera_pos +=
           glm::normalize(glm::cross(camera_front, camera_up)) * camera_speed;
-    this->component->camera.setPosition(camera_pos);
+    this->component_->camera_.setPosition(camera_pos);
   }
 
   void onWindowResize(
       Entity /*entity*/, WindowResizeEvent& event) noexcept override
   {
-    this->component->camera.setViewportSize(event.width, event.height);
+    this->component_->camera_.setViewportSize(event.width, event.height);
   }
 
   void onMouseMove(Entity /*entity*/, MouseMoveEvent& event) noexcept override
   {
-    if (this->mouse_never_moved) {
-      this->last_mouse_x = static_cast<float>(event.x_pos);
-      this->last_mouse_y = static_cast<float>(event.y_pos);
-      this->mouse_never_moved = false;
+    if (this->mouse_never_moved_) {
+      this->last_mouse_x_ = static_cast<float>(event.x_pos);
+      this->last_mouse_y_ = static_cast<float>(event.y_pos);
+      this->mouse_never_moved_ = false;
     }
 
-    auto x_offset = static_cast<float>(event.x_pos) - this->last_mouse_x;
-    auto y_offset = this->last_mouse_y - static_cast<float>(event.y_pos);
-    this->last_mouse_x = static_cast<float>(event.x_pos);
-    this->last_mouse_y = static_cast<float>(event.y_pos);
+    auto x_offset = static_cast<float>(event.x_pos) - this->last_mouse_x_;
+    auto y_offset = this->last_mouse_y_ - static_cast<float>(event.y_pos);
+    this->last_mouse_x_ = static_cast<float>(event.x_pos);
+    this->last_mouse_y_ = static_cast<float>(event.y_pos);
 
-    auto const sensitivity = this->component->camera.getSensitivity();
+    auto const sensitivity = this->component_->camera_.getSensitivity();
     x_offset *= sensitivity;
     y_offset *= sensitivity;
 
-    auto yaw = this->component->camera.getYaw();
-    auto pitch = this->component->camera.getPitch();
+    auto yaw = this->component_->camera_.getYaw();
+    auto pitch = this->component_->camera_.getPitch();
     yaw += x_offset;
     pitch += y_offset;
     if (pitch > 89.0f)
       pitch = 89.0f;
     if (pitch < -89.0f)
       pitch = -89.0f;
-    this->component->camera.setYaw(yaw);
-    this->component->camera.setPitch(pitch);
+    this->component_->camera_.setYaw(yaw);
+    this->component_->camera_.setPitch(pitch);
 
     auto direction =
         glm::vec3{std::cos(glm::radians(yaw)) * std::cos(glm::radians(pitch)),
             std::sin(glm::radians(pitch)),
             std::sin(glm::radians(yaw)) * std::cos(glm::radians(pitch))};
-    this->component->camera.setFront(glm::normalize(direction));
+    this->component_->camera_.setFront(glm::normalize(direction));
   }
 
   void onScroll(Entity /*entity*/, ScrollEvent& event) noexcept override
   {
-    auto fov = glm::degrees(this->component->camera.getFov());
+    auto fov = glm::degrees(this->component_->camera_.getFov());
     fov -= static_cast<float>(event.y_offset);
     if (fov < 1.0f)
       fov = 1.0f;
     if (fov > 45.0f)
       fov = 45.0f;
-    this->component->camera.setFov(glm::radians(fov));
+    this->component_->camera_.setFov(glm::radians(fov));
   }
 
 private:
-  CameraComponent* component{nullptr};
-  float initial_camera_speed{0.0f};
-  bool mouse_never_moved{true};
-  float last_mouse_x{0.0f};
-  float last_mouse_y{0.0f};
+  CameraComponent* component_{nullptr};
+  float initial_camera_speed_{0.0f};
+  bool mouse_never_moved_{true};
+  float last_mouse_x_{0.0f};
+  float last_mouse_y_{0.0f};
 };
 
 std::unique_ptr<Behaviour> make() noexcept

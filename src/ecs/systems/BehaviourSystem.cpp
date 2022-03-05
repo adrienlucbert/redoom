@@ -9,7 +9,7 @@ namespace redoom::ecs::systems
 {
 void BehaviourSystem::update(UpdateContext& context) noexcept
 {
-  context.component_manager.apply<components::BehaviourComponent>(
+  context.getComponentManager().apply<components::BehaviourComponent>(
       [&](auto entity, auto& component) {
         auto behaviour_exp = component.template get();
         if (!behaviour_exp)

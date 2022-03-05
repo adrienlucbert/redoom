@@ -13,11 +13,11 @@ void ModelSystem::update(UpdateContext& context) noexcept
   if (!shader_opt)
     assert("Undefined shader" == nullptr);
   auto& shader = *shader_opt;
-  context.component_manager.apply<components::ModelComponent>(
+  context.getComponentManager().apply<components::ModelComponent>(
       [&](auto entity, components::ModelComponent& component) {
         auto model = glm::mat4(1.0f);
         auto transform_opt =
-            context.component_manager.get<components::TransformComponent>(
+            context.getComponentManager().get<components::TransformComponent>(
                 entity);
         if (transform_opt) {
           auto& transform = *transform_opt;
@@ -26,7 +26,7 @@ void ModelSystem::update(UpdateContext& context) noexcept
           model =
               glm::rotate(model, transform.getAngle(), transform.getRotation());
         }
-        renderer::Renderer::draw(shader, component.model, model);
+        renderer::Renderer::draw(shader, component.model_, model);
       });
 }
 } // namespace redoom::ecs::systems

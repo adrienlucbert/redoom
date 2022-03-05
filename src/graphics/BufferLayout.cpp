@@ -68,13 +68,13 @@ static GLenum shaderDataTypeToGLenum(ShaderDataType type)
 } // namespace detail
 
 BufferElement::BufferElement(
-    ShaderDataType ptype, std::string pname, bool pnormalized) noexcept
-  : type{ptype}
-  , gl_type{detail::shaderDataTypeToGLenum(ptype)}
-  , name{std::move(pname)}
-  , normalized{pnormalized}
-  , size{detail::shaderDataTypeSize(ptype)}
-  , components_count{detail::shaderTypeComponentCount(ptype)}
+    ShaderDataType p_type, std::string p_name, bool p_normalized) noexcept
+  : type{p_type}
+  , gl_type{detail::shaderDataTypeToGLenum(p_type)}
+  , name{std::move(p_name)}
+  , normalized{p_normalized}
+  , size{detail::shaderDataTypeSize(p_type)}
+  , components_count{detail::shaderTypeComponentCount(p_type)}
 {
 }
 

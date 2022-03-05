@@ -21,15 +21,15 @@ struct ArrowsControlBehaviour : public Behaviour {
 
   void onInit(Entity entity, Context& context) noexcept override
   {
-    auto opt = context.component_manager.get<TransformComponent>(entity);
+    auto opt = context.getComponentManager().get<TransformComponent>(entity);
     if (!opt)
       assert("No transform component found" == nullptr);
-    this->transform = std::addressof(*opt);
+    this->transform_ = std::addressof(*opt);
   }
 
   void onUpdate(Entity /*entity*/, UpdateContext& /*context*/) noexcept override
   {
-    auto pos = this->transform->getPosition();
+    auto pos = this->transform_->getPosition();
     auto const speed = 1.0f;
 
     if (isKeyPressed(Key::UP))
@@ -45,11 +45,11 @@ struct ArrowsControlBehaviour : public Behaviour {
     if (isKeyPressed(Key::K))
       pos.y -= speed;
     // TODO(alucbert): do not update if not moved
-    this->transform->setPosition(pos);
+    this->transform_->setPosition(pos);
   }
 
 private:
-  TransformComponent* transform{nullptr};
+  TransformComponent* transform_{nullptr};
 };
 
 std::unique_ptr<Behaviour> make() noexcept

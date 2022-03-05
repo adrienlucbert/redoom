@@ -7,13 +7,13 @@ namespace redoom::platform::OpenGL
 {
 bool OpenGLRendererAPI::isWireframe() const noexcept
 {
-  return this->is_wireframe;
+  return this->is_wireframe_;
 }
 
-void OpenGLRendererAPI::setWireframe(bool pis_wireframe) noexcept
+void OpenGLRendererAPI::setWireframe(bool is_wireframe) noexcept
 {
-  glPolygonMode(GL_FRONT_AND_BACK, pis_wireframe ? GL_LINE : GL_FILL);
-  this->is_wireframe = pis_wireframe;
+  glPolygonMode(GL_FRONT_AND_BACK, is_wireframe ? GL_LINE : GL_FILL);
+  this->is_wireframe_ = is_wireframe;
 }
 
 void OpenGLRendererAPI::setViewport(

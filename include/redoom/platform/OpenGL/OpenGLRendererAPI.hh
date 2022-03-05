@@ -21,6 +21,6 @@ protected:
   OpenGLRendererAPI() noexcept = default;
 
 private:
-  bool is_wireframe{false};
+  bool is_wireframe_{false};
 };
 } // namespace redoom::platform::OpenGL

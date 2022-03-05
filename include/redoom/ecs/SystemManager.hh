@@ -36,12 +36,12 @@ public:
   {
     static_assert(std::is_base_of_v<detail::System<T>, T>,
         "T must inherit from System<T>");
-    auto lock = std::lock_guard{*this->mutex};
+    auto lock = std::lock_guard{*this->mutex_};
     auto data = SystemData{
         T::getTypeId(), std::make_unique<T>(std::forward<Args>(args)...)};
-    this->systems.emplace(priority.priority, std::move(data));
+    this->systems_.emplace(priority.priority, std::move(data));
     if constexpr (std::is_base_of_v<MultithreadedSystem<T>, T>) {
-      this->thread_pool.reserve(this->thread_pool.size() + 1);
+      this->thread_pool_.reserve(this->thread_pool_.size() + 1);
     }
   }
 
@@ -57,10 +57,10 @@ public:
     static_assert(std::is_base_of_v<detail::System<T>, T>,
         "T must inherit from System<T>");
     auto system_it = this->find<T>();
-    if (system_it != this->systems.end()) {
-      auto data = std::move(this->systems.extract(system_it));
-      auto lock = std::lock_guard{*this->mutex};
-      this->systems.emplace(priority, std::move(data));
+    if (system_it != this->systems_.end()) {
+      auto data = std::move(this->systems_.extract(system_it));
+      auto lock = std::lock_guard{*this->mutex_};
+      this->systems_.emplace(priority, std::move(data));
     }
   }
 
@@ -70,9 +70,9 @@ public:
     static_assert(std::is_base_of_v<detail::System<T>, T>,
         "T must inherit from System<T>");
     auto const& system_it = this->find<T>();
-    if (system_it != this->systems.end()) {
-      auto lock = std::lock_guard{*this->mutex};
-      this->systems.erase(system_it);
+    if (system_it != this->systems_.end()) {
+      auto lock = std::lock_guard{*this->mutex_};
+      this->systems_.erase(system_it);
     } else
       assert("Exactly one element should be released" == nullptr);
   }
@@ -80,7 +80,7 @@ public:
   template <typename T>
   [[nodiscard]] bool has() const noexcept
   {
-    return this->find<T>() != this->systems.end();
+    return this->find<T>() != this->systems_.end();
   }
 
   void update(UpdateContext& context) noexcept;
@@ -96,14 +96,14 @@ private:
   {
     static_assert(std::is_base_of_v<detail::System<T>, T>,
         "T must inherit from System<T>");
-    auto lock = std::lock_guard{*this->mutex};
-    return std::find_if(this->systems.begin(),
-        this->systems.end(),
+    auto lock = std::lock_guard{*this->mutex_};
+    return std::find_if(this->systems_.begin(),
+        this->systems_.end(),
         [](auto const& pair) { return pair.second.type_id == T::getTypeId(); });
   }
 
-  mutable std::unique_ptr<std::mutex> mutex{std::make_unique<std::mutex>()};
-  Utils::ThreadPool thread_pool;
-  std::multimap<int, SystemData> systems;
+  mutable std::unique_ptr<std::mutex> mutex_{std::make_unique<std::mutex>()};
+  Utils::ThreadPool thread_pool_;
+  std::multimap<int, SystemData> systems_;
 };
 } // namespace redoom::ecs
