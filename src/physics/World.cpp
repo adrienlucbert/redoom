@@ -47,8 +47,31 @@ bool World::deleteBody(Body const& body) noexcept
   return true;
 }
 
-void World::step(double /*timestep*/) noexcept
+void World::step(double timestep) noexcept
 {
+  // Apply forces
+  for (auto& [_, body] : this->bodies_) {
+    auto forces_sum = glm::vec3{0.0f};
+
+    for (auto const& global_constant_force : this->global_constant_forces_)
+      forces_sum += global_constant_force.compute(body.getMass(), timestep);
+
+    for (auto const& constant_force : body.constant_forces_)
+      forces_sum += constant_force.compute(body.getMass(), timestep);
+    while (!body.forces_.empty()) {
+      auto const& force = body.forces_.front();
+      forces_sum += force.compute(body.getMass(), timestep);
+      body.forces_.pop();
+    }
+    body.linear_velocity_ += forces_sum;
+
+    if (body.linear_velocity_.x != 0.0f || body.linear_velocity_.y != 0.0f
+        || body.linear_velocity_.z != 0.0f)
+      body.transform_.setPosition(
+          body.transform_.getPosition() + body.linear_velocity_);
+  }
+
+  // Check collisions
   auto vbodies = std::vector<std::reference_wrapper<Body>>{};
   vbodies.reserve(this->bodies_.size());
   std::transform(this->bodies_.begin(),
@@ -57,9 +80,15 @@ void World::step(double /*timestep*/) noexcept
       [](auto& pair) { return std::ref(pair.second); });
   auto collisions = this->collision_detector_.getCollisions(vbodies);
   for (auto const& collision : collisions) {
+    // Collision response
     std::cout << "Collision between body " << collision.body_a.get().getId()
               << " and " << collision.body_b.get().getId() << '\n';
   }
+}
+
+void World::addGlobalConstantForce(Force force) noexcept
+{
+  this->global_constant_forces_.push_back(force);
 }
 
 bool World::getDebugDraw() const noexcept

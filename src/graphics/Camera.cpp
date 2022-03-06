@@ -129,7 +129,7 @@ void Camera::updateProjection() noexcept
 {
   if (this->projection_type_ == ProjectionType::Perspective) {
     this->projection_ =
-        glm::perspective(this->fov_, this->aspect_ratio_, 0.1f, 100.0f);
+        glm::perspective(this->fov_, this->aspect_ratio_, 0.1f, 1000.0f);
   } else
     // TODO(alucbert): add support for orthographic projection
     assert("Orthographic projection is not yet supported" == nullptr);

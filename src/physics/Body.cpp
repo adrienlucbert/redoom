@@ -159,4 +159,19 @@ tl::optional<AABB> Body::getLocalAABB() const noexcept
   }
   return aabb;
 }
+
+float Body::getMass() const noexcept
+{
+  return this->mass_;
+}
+
+void Body::addForce(Force force) noexcept
+{
+  this->forces_.push(force);
+}
+
+void Body::addConstantForce(Force force) noexcept
+{
+  this->constant_forces_.push_back(force);
+}
 } // namespace redoom::physics
