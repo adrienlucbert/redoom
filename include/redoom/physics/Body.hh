@@ -1,11 +1,13 @@
 #pragma once
 
+#include <queue>
 #include <vector>
 
 #include <glm/gtc/type_ptr.hpp>
 #include <tl/optional.hpp>
 
 #include <redoom/physics/Fixture.hh>
+#include <redoom/physics/Force.hh>
 
 namespace redoom::graphics
 {
@@ -85,6 +87,9 @@ public:
   [[nodiscard]] std::vector<Fixture> const& getFixtures() const noexcept;
   [[nodiscard]] tl::optional<AABB> getGlobalAABB() const noexcept;
   [[nodiscard]] tl::optional<AABB> getLocalAABB() const noexcept;
+  [[nodiscard]] float getMass() const noexcept;
+  void addForce(Force force) noexcept;
+  void addConstantForce(Force force) noexcept;
 
 private:
   std::reference_wrapper<World> world_;
@@ -95,6 +100,11 @@ private:
   float angular_velocity_;
   bool has_fixed_rotation_;
   float gravity_scale_;
+  float mass_{1.0f};
   std::vector<Fixture> fixtures_;
+  std::queue<Force> forces_;
+  std::vector<Force> constant_forces_;
+
+  friend World;
 };
 } // namespace redoom::physics

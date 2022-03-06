@@ -8,6 +8,7 @@
 #include <redoom/ecs/components/TransformComponent.hh>
 #include <redoom/events/Event.hh>
 #include <redoom/physics/Body.hh>
+#include <redoom/physics/Force.hh>
 #include <redoom/renderer/Renderer.hh>
 
 using redoom::ecs::Behaviour;
@@ -17,6 +18,7 @@ using redoom::ecs::components::MeshComponent;
 using redoom::ecs::components::ModelComponent;
 using redoom::ecs::components::TransformComponent;
 using redoom::physics::BodyDefinition;
+using redoom::physics::Force;
 
 struct KeyboardBehaviour : public Behaviour {
   [[nodiscard]] std::string const& getType() const noexcept override
@@ -80,6 +82,13 @@ struct KeyboardBehaviour : public Behaviour {
       world.setDebugDraw(!world.getDebugDraw());
       std::cout << "Setting physics debug mode: " << std::boolalpha
                 << world.getDebugDraw() << '\n';
+    }
+    // Add gravity
+    if (event.matches({.key = redoom::events::Key::SPACE,
+            .action = redoom::events::Action::PRESS})) {
+      auto& world = redoom::Application::get().getCurrentScene().getWorld();
+      world.addGlobalConstantForce(Force{glm::vec3{0.0f, -9.81f, 0.0f}});
+      std::cout << "Activating gravity" << '\n';
     }
     // Switch VSync
     if (event.matches({.key = redoom::events::Key::GRAVE_ACCENT,

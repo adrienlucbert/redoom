@@ -139,6 +139,7 @@ add_library(
   src/graphics/VertexArray.cpp
   src/physics/Body.cpp
   src/physics/Fixture.cpp
+  src/physics/Force.cpp
   src/physics/Shape.cpp
   src/physics/World.cpp
   src/platform/OpenGL/OpenGLContext.cpp

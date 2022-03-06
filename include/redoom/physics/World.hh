@@ -2,12 +2,13 @@
 
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 #include <redoom/graphics/Program.hh>
 #include <redoom/physics/Body.hh>
+#include <redoom/physics/Force.hh>
 #include <redoom/physics/collisions/CollisionDetector.hh>
 #include <redoom/physics/collisions/OctTreeFilter.hh>
-#include <redoom/physics/collisions/PairFilter.hh>
 
 namespace redoom::graphics
 {
@@ -34,6 +35,7 @@ public:
   std::shared_ptr<Body> createBodyFromMesh(
       BodyDefinition def, graphics::Mesh const& mesh) noexcept;
   void step(double timestep) noexcept;
+  void addGlobalConstantForce(Force force) noexcept;
 
   [[nodiscard]] bool getDebugDraw() const noexcept;
   void setDebugDraw(bool draw = true) noexcept;
@@ -46,5 +48,6 @@ private:
   unsigned int last_body_id_{0};
   std::unordered_map<unsigned int, Body> bodies_;
   CollisionDetector<OctTreeFilter> collision_detector_;
+  std::vector<Force> global_constant_forces_;
 };
 } // namespace redoom::physics
