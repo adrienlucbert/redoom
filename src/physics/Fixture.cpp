@@ -2,6 +2,7 @@
 
 #include <redoom/graphics/Mesh.hh>
 #include <redoom/physics/shapes/Cuboid.hh>
+#include <redoom/physics/shapes/Quad.hh>
 
 namespace redoom::physics
 {
@@ -60,10 +61,16 @@ float Fixture::getMass() const noexcept
 Fixture Fixture::fromAABB(
     Body& body, FixtureDefinition def, AABB const& aabb) noexcept
 {
-  def.shape = std::make_shared<physics::Cuboid>(
-      aabb.upper_bounds.x - aabb.lower_bounds.x,
-      aabb.upper_bounds.y - aabb.lower_bounds.y,
-      aabb.upper_bounds.z - aabb.lower_bounds.z);
+  if (aabb.getSize().z == 0.0f) {
+    def.shape = std::make_shared<physics::Quad>(
+        aabb.upper_bounds.x - aabb.lower_bounds.x,
+        aabb.upper_bounds.y - aabb.lower_bounds.y);
+  } else {
+    def.shape = std::make_shared<physics::Cuboid>(
+        aabb.upper_bounds.x - aabb.lower_bounds.x,
+        aabb.upper_bounds.y - aabb.lower_bounds.y,
+        aabb.upper_bounds.z - aabb.lower_bounds.z);
+  }
   def.local_position = aabb.getCenter();
   return Fixture{body, std::move(def)};
 }

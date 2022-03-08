@@ -17,6 +17,7 @@
 #include <redoom/physics/Fixture.hh>
 #include <redoom/physics/World.hh>
 #include <redoom/physics/shapes/Cuboid.hh>
+#include <redoom/physics/shapes/Quad.hh>
 #include <redoom/physics/shapes/Sphere.hh>
 #include <redoom/serializer/ComponentSerializer.hh>
 #include <redoom/serializer/common.hh>
@@ -122,6 +123,10 @@ struct BodyComponent : public Component<BodyComponent> {
         out << YAML::Key << "width" << YAML::Value << cuboid.getWidth();
         out << YAML::Key << "height" << YAML::Value << cuboid.getHeight();
         out << YAML::Key << "length" << YAML::Value << cuboid.getLength();
+      } else if (shape_type == "Quad") {
+        auto const& quad = dynamic_cast<physics::Quad const&>(shape);
+        out << YAML::Key << "width" << YAML::Value << quad.getWidth();
+        out << YAML::Key << "height" << YAML::Value << quad.getHeight();
       } else if (shape_type == "Sphere") {
         auto const& sphere = dynamic_cast<physics::Sphere const&>(shape);
         out << YAML::Key << "radius" << YAML::Value << sphere.getRadius();
@@ -152,6 +157,7 @@ struct BodyComponent : public Component<BodyComponent> {
     static Expected<std::shared_ptr<physics::Shape>> deserializeShape(
         YAML::Node const& node) noexcept
     {
+      // TODO(alucbert): reduce cognitive complexity
       auto shape_type = node["type"].as<std::string>();
       if (shape_type == "Cuboid") {
         auto width_exp = YAML::exp_get_value<float>(node, "width");
@@ -162,6 +168,13 @@ struct BodyComponent : public Component<BodyComponent> {
         RETURN_IF_UNEXPECTED(length_exp);
         return std::make_shared<physics::Cuboid>(
             width_exp.value(), height_exp.value(), length_exp.value());
+      } else if (shape_type == "Quad") {
+        auto width_exp = YAML::exp_get_value<float>(node, "width");
+        RETURN_IF_UNEXPECTED(width_exp);
+        auto height_exp = YAML::exp_get_value<float>(node, "height");
+        RETURN_IF_UNEXPECTED(height_exp);
+        return std::make_shared<physics::Quad>(
+            width_exp.value(), height_exp.value());
       } else if (shape_type == "Sphere") {
         auto radius_exp = YAML::exp_get_value<float>(node, "radius");
         RETURN_IF_UNEXPECTED(radius_exp);

@@ -22,10 +22,10 @@ public:
     : Mesh{
         std::vector{
           // TODO(alucbert): determine actual normals
-          Vertex{{-width,  height, 0.0f}, {0.0f, 0.0f, 0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{-width, -height, 0.0f}, {0.0f, 0.0f, 0.0f}, color, {0.0f, 0.0f}},
-          Vertex{{ width,  height, 0.0f}, {0.0f, 0.0f, 0.0f}, color, {1.0f, 1.0f}},
-          Vertex{{ width, -height, 0.0f}, {0.0f, 0.0f, 0.0f}, color, {1.0f, 0.0f}},
+          Vertex{{-width / 2,  height / 2, 0.0f}, {0.0f, 0.0f, 0.0f}, color, {0.0f, 1.0f}},
+          Vertex{{-width / 2, -height / 2, 0.0f}, {0.0f, 0.0f, 0.0f}, color, {0.0f, 0.0f}},
+          Vertex{{ width / 2,  height / 2, 0.0f}, {0.0f, 0.0f, 0.0f}, color, {1.0f, 1.0f}},
+          Vertex{{ width / 2, -height / 2, 0.0f}, {0.0f, 0.0f, 0.0f}, color, {1.0f, 0.0f}},
         },
         std::vector<GLuint>{},
         std::move(textures),
