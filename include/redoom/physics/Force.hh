@@ -5,7 +5,7 @@
 namespace redoom::physics
 {
 struct Force {
-  enum class Type { Force };
+  enum class Type { Force, Acceleration, Impulse, VelocityChange };
 
   glm::vec3 force;
   Type type{Type::Force};
