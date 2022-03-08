@@ -12,12 +12,12 @@ Entities:
       CameraBehaviour
   - TransformComponent:
       position: [20, 20, 0]
-      angle: 1.57079995
-      rotation: [0, 0, 1]
-      scale: [1, 1, 10]
+      angle: 0
+      rotation: [1, 1, 1]
+      scale: [1, 1, 1]
     ModelComponent:
-      path: ../assets/debug-cubes/debug-cubes.obj
-      flip_uvs: false
+      path: ../assets/backpack/backpack.obj
+      flip_uvs: true
   - TransformComponent:
       position: [1.5, 1.5, 0]
       angle: 1.57079995
