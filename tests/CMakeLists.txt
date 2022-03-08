@@ -6,12 +6,14 @@ set(
   SRCS
   src/tests_AABB.cpp
   src/tests_Allocator.cpp
+  src/tests_Body.cpp
   src/tests_Component.cpp
   src/tests_ComponentManager.cpp
   src/tests_EntityManager.cpp
   src/tests_OctTree.cpp
   src/tests_Registry.cpp
   src/tests_SystemManager.cpp
+  src/tests_World.cpp
   utils/mock/systems.cpp
   utils/mock/Window.cpp
 )

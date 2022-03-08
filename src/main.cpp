@@ -1,7 +1,5 @@
 #include <redoom/Application.hh>
 
-#include <redoom/ecs/components/MeshComponent.hh>
-
 using redoom::Application;
 using redoom::ApplicationArguments;
 

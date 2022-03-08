@@ -20,13 +20,17 @@ class World;
 
 enum class BodyType { Static, Kinematic, Dynamic };
 
+struct BodyTransformDefinition {
+  glm::vec3 position{0.0f, 0.0f, 0.0f};
+  float angle{0.0f};
+  glm::vec3 rotation{1.0f, 1.0f, 1.0f};
+  glm::vec3 scale{1.0f, 1.0f, 1.0f};
+};
+
 class BodyTransform
 {
 public:
-  BodyTransform(glm::vec3 position,
-      float angle,
-      glm::vec3 rotation,
-      glm::vec3 scale) noexcept;
+  explicit BodyTransform(BodyTransformDefinition def = {}) noexcept;
 
   [[nodiscard]] glm::vec3 const& getPosition() const noexcept;
   void setPosition(glm::vec3 position) noexcept;
@@ -42,10 +46,10 @@ public:
   bool isUpdated() const noexcept;
 
 private:
-  glm::vec3 position_{0.0f, 0.0f, 0.0f};
-  float angle_{0.0f};
-  glm::vec3 rotation_{1.0f, 1.0f, 1.0f};
-  glm::vec3 scale_{1.0f, 1.0f, 1.0f};
+  glm::vec3 position_;
+  float angle_;
+  glm::vec3 rotation_;
+  glm::vec3 scale_;
   mutable bool is_updated_{true};
 };
 
@@ -61,7 +65,6 @@ struct BodyDefinition {
 class Body
 {
 public:
-  Body(World& world, unsigned int id, BodyDefinition def) noexcept;
   ~Body() noexcept = default;
 
   Body(Body const&) noexcept = delete;
@@ -92,6 +95,9 @@ public:
   void addConstantForce(Force force) noexcept;
 
 private:
+  Body(World& world, unsigned int id, BodyDefinition def) noexcept;
+  void updateMass(Fixture const& fixture) noexcept;
+
   std::reference_wrapper<World> world_;
   unsigned int id_;
   BodyType type_;
@@ -100,7 +106,7 @@ private:
   float angular_velocity_;
   bool has_fixed_rotation_;
   float gravity_scale_;
-  float mass_{1.0f};
+  float mass_{0.0f};
   std::vector<Fixture> fixtures_;
   std::queue<Force> forces_;
   std::vector<Force> constant_forces_;

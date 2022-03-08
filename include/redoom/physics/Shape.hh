@@ -25,6 +25,7 @@ public:
 
   [[nodiscard]] std::string_view getType() const noexcept;
   [[nodiscard]] virtual AABB const& getAABB() const noexcept = 0;
+  [[nodiscard]] virtual float computeMass(float density) const noexcept = 0;
 
 protected:
   explicit Shape(std::string_view type) noexcept;

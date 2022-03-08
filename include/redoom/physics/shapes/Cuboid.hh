@@ -16,8 +16,7 @@ public:
     , height_{height}
     , length_{length}
     , aabb_{this->computeAABB()}
-    , mesh_{graphics::mesh::Cuboid{
-          width, height, length, {1.0f, 0.0f, 0.0f}, {}, GL_LINE_STRIP}}
+    , mesh_{tl::nullopt}
   {
   }
   Cuboid(Cuboid const& b) noexcept = delete;
@@ -29,9 +28,14 @@ public:
 
   void draw(graphics::Program& program) const noexcept override
   {
-    if (this->mesh_.has_value()) {
-      this->mesh_.value().draw(program);
-    }
+    if (!this->mesh_.has_value())
+      this->mesh_ = graphics::mesh::Cuboid{this->width_,
+          this->height_,
+          this->length_,
+          {1.0f, 0.0f, 0.0f},
+          {},
+          GL_LINE_STRIP};
+    this->mesh_->draw(program);
   }
 
   [[nodiscard]] float getWidth() const noexcept
@@ -54,6 +58,11 @@ public:
     return this->aabb_;
   }
 
+  [[nodiscard]] float computeMass(float density) const noexcept override
+  {
+    return this->width_ * this->height_ * this->length_ * density;
+  }
+
 private:
   [[nodiscard]] AABB computeAABB() const noexcept
   {
@@ -65,6 +74,6 @@ private:
   float height_;
   float length_;
   AABB aabb_;
-  tl::optional<graphics::mesh::Cuboid> mesh_;
+  mutable tl::optional<graphics::mesh::Cuboid> mesh_;
 };
 } // namespace redoom::physics

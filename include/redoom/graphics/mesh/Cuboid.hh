@@ -13,7 +13,7 @@ namespace redoom::graphics::mesh
 class Cuboid : public Mesh
 {
 public:
-  explicit Cuboid(float width,
+  Cuboid(float width,
       float height,
       float depth,
       glm::vec3 color = {1.0f, 1.0f, 1.0f},

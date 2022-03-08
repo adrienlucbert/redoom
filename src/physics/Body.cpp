@@ -5,14 +5,11 @@
 
 namespace redoom::physics
 {
-BodyTransform::BodyTransform(glm::vec3 position,
-    float angle,
-    glm::vec3 rotation,
-    glm::vec3 scale) noexcept
-  : position_{position}
-  , angle_{angle}
-  , rotation_{rotation}
-  , scale_{scale}
+BodyTransform::BodyTransform(BodyTransformDefinition def) noexcept
+  : position_{def.position}
+  , angle_{def.angle}
+  , rotation_{def.rotation}
+  , scale_{def.scale}
 {
 }
 
@@ -76,6 +73,7 @@ Body::Body(World& world, unsigned int id, BodyDefinition def) noexcept
 Fixture& Body::createFixture(FixtureDefinition def) noexcept
 {
   this->fixtures_.emplace_back(*this, std::move(def));
+  this->updateMass(this->fixtures_.back());
   return this->fixtures_.back();
 }
 
@@ -83,6 +81,7 @@ Fixture& Body::createFixtureFromMesh(
     FixtureDefinition def, graphics::Mesh const& mesh) noexcept
 {
   this->fixtures_.push_back(Fixture::fromMesh(*this, std::move(def), mesh));
+  this->updateMass(this->fixtures_.back());
   return this->fixtures_.back();
 }
 
@@ -173,5 +172,10 @@ void Body::addForce(Force force) noexcept
 void Body::addConstantForce(Force force) noexcept
 {
   this->constant_forces_.push_back(force);
+}
+
+void Body::updateMass(Fixture const& fixture) noexcept
+{
+  this->mass_ += fixture.getMass();
 }
 } // namespace redoom::physics

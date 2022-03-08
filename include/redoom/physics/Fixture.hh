@@ -20,7 +20,7 @@ struct FixtureDefinition {
   glm::vec3 local_position{0.0f, 0.0f, 0.0f};
   float friction{0.2f};
   float restitution{0.0f};
-  float density{0.0f};
+  float density{1.0f};
 };
 
 class Fixture
@@ -42,6 +42,7 @@ public:
   [[nodiscard]] float getFriction() const noexcept;
   [[nodiscard]] float getRestitution() const noexcept;
   [[nodiscard]] float getDensity() const noexcept;
+  [[nodiscard]] float getMass() const noexcept;
 
   [[nodiscard]] static Fixture fromAABB(
       Body& body, FixtureDefinition def, AABB const& aabb) noexcept;
@@ -55,5 +56,6 @@ private:
   float friction_;
   float restitution_;
   float density_;
+  float mass_;
 };
 } // namespace redoom::physics
