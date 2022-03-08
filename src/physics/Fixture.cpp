@@ -12,6 +12,7 @@ Fixture::Fixture(Body& body, FixtureDefinition def) noexcept
   , friction_{def.friction}
   , restitution_{def.restitution}
   , density_{def.density}
+  , mass_{this->shape_->computeMass(this->density_)}
 {
 }
 
@@ -49,6 +50,11 @@ float Fixture::getRestitution() const noexcept
 float Fixture::getDensity() const noexcept
 {
   return this->density_;
+}
+
+float Fixture::getMass() const noexcept
+{
+  return this->mass_;
 }
 
 Fixture Fixture::fromAABB(

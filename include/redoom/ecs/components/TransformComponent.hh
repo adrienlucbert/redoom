@@ -23,7 +23,7 @@ struct TransformComponent : public Component<TransformComponent>,
       float angle,
       glm::vec3 rotation,
       glm::vec3 scale) noexcept
-    : physics::BodyTransform{position, angle, rotation, scale}
+    : physics::BodyTransform{{position, angle, rotation, scale}}
   {
   }
 

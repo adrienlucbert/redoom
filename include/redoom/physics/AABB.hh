@@ -143,6 +143,17 @@ struct AABB {
     return result;
   }
 
+  [[nodiscard]] explicit operator std::string() const noexcept
+  {
+    return fmt::format("/{: .2f} {: .2f} {: .2f}\\\n\\{: .2f} {: .2f} {: .2f}/",
+        this->lower_bounds.x,
+        this->lower_bounds.y,
+        this->lower_bounds.z,
+        this->upper_bounds.x,
+        this->upper_bounds.y,
+        this->upper_bounds.z);
+  }
+
   // [[nodiscard]] bool intersects(glm::vec3 const& vector) const noexcept
   // {
   //   // TODO(alucbert): intersection with a ray
@@ -153,13 +164,6 @@ struct AABB {
 inline std::ostream& operator<<(
     std::ostream& out, redoom::physics::AABB const& aabb) noexcept
 {
-  out << fmt::format("/{: .2f} {: .2f} {: .2f}\\\n\\{: .2f} {: .2f} {: .2f}/",
-      aabb.lower_bounds.x,
-      aabb.lower_bounds.y,
-      aabb.lower_bounds.z,
-      aabb.upper_bounds.x,
-      aabb.upper_bounds.y,
-      aabb.upper_bounds.z)
-      << '\n';
+  out << static_cast<std::string>(aabb) << '\n';
   return out;
 }
