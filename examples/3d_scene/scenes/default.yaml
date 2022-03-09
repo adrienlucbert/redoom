@@ -41,5 +41,27 @@ Entities:
       scale: [1, 1, 1]
     MeshComponent:
       color: [0, 0, 1]
-  - BehaviourComponent:
+    BehaviourComponent:
       KeyboardBehaviour
+  - TransformComponent:
+      position: [0, -10, 0]
+      angle: 1.57079995
+      rotation: [1, 0, 0]
+      scale: [100, 100, 100]
+    MeshComponent:
+      {}
+    BodyComponent:
+      type: Static
+      linear_velocity: [0, 0, 0]
+      angular_velocity: 0
+      has_fixed_rotation: false
+      gravity_scale: 1
+      fixtures:
+        - shape:
+            type: Quad
+            width: 1
+            height: 1
+          local_position: [0, 0, 0]
+          friction: 0.200000003
+          restitution: 0
+          density: 1

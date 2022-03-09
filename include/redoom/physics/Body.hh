@@ -54,7 +54,7 @@ private:
 };
 
 struct BodyDefinition {
-  BodyType type{BodyType::Static};
+  BodyType type{BodyType::Dynamic};
   BodyTransform& transform;
   glm::vec3 linear_velocity{0.0f, 0.0f, 0.0f};
   float angular_velocity{0.0f};

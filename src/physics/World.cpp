@@ -24,7 +24,7 @@ std::shared_ptr<Body> World::createBodyFromModel(
   for (auto const& mesh : model.getMeshes()) {
     body->createFixtureFromMesh({}, mesh);
   }
-  this->collision_detector_.insert(*body);
+  this->addBodyToCollisionDetector(*body);
   return body;
 }
 
@@ -33,8 +33,13 @@ std::shared_ptr<Body> World::createBodyFromMesh(
 {
   auto body = World::createBody(def);
   body->createFixtureFromMesh({}, mesh);
-  this->collision_detector_.insert(*body);
+  this->addBodyToCollisionDetector(*body);
   return body;
+}
+
+void World::addBodyToCollisionDetector(Body& body) noexcept
+{
+  this->collision_detector_.insert(body);
 }
 
 bool World::deleteBody(Body const& body) noexcept
@@ -51,6 +56,9 @@ void World::step(double timestep) noexcept
 {
   // Apply forces
   for (auto& [_, body] : this->bodies_) {
+    if (body.getType() == BodyType::Static) // don't add forces to static bodies
+      continue;
+
     auto forces_sum = glm::vec3{0.0f};
 
     for (auto const& global_constant_force : this->global_constant_forces_)

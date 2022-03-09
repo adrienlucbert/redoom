@@ -195,13 +195,6 @@ struct BodyComponent : public Component<BodyComponent> {
         return;
       }
       out << YAML::Key << "type" << YAML::Value << type_exp.value().data();
-      auto const& body_transform = bc->body_->getTransform();
-      out << YAML::Key << "position" << YAML::Value
-          << body_transform.getPosition();
-      out << YAML::Key << "angle" << YAML::Value << body_transform.getAngle();
-      out << YAML::Key << "rotation" << YAML::Value
-          << body_transform.getRotation();
-      out << YAML::Key << "scale" << YAML::Value << body_transform.getScale();
       out << YAML::Key << "linear_velocity" << YAML::Value
           << bc->body_->getLinearVelocity();
       out << YAML::Key << "angular_velocity" << YAML::Value
@@ -227,7 +220,7 @@ struct BodyComponent : public Component<BodyComponent> {
           scene.getRegistry().getComponent<ecs::components::TransformComponent>(
               entity);
       assert(transform_component_opt.has_value()
-             && "BodyComponent requires a TransformComponent" == nullptr);
+             && "BodyComponent requires a TransformComponent" != nullptr);
       auto body_def = physics::BodyDefinition{.type = type_exp.value(),
           .transform = {transform_component_opt.value()},
           .linear_velocity = node["linear_velocity"].as<glm::vec3>(),
@@ -241,6 +234,7 @@ struct BodyComponent : public Component<BodyComponent> {
           Serializer::deserializeFixture(fixture_node, *body);
         }
       }
+      scene.getWorld().addBodyToCollisionDetector(*body);
       scene.getRegistry().attachComponent<BodyComponent>(
           entity, BodyComponent{body});
       return {};

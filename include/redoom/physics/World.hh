@@ -34,6 +34,7 @@ public:
       BodyDefinition def, graphics::Model const& model) noexcept;
   std::shared_ptr<Body> createBodyFromMesh(
       BodyDefinition def, graphics::Mesh const& mesh) noexcept;
+  void addBodyToCollisionDetector(Body& body) noexcept;
   void step(double timestep) noexcept;
   void addGlobalConstantForce(Force force) noexcept;
 

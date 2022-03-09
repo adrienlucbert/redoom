@@ -138,6 +138,7 @@ add_library(
   src/graphics/TextureLibrary.cpp
   src/graphics/VertexArray.cpp
   src/physics/Body.cpp
+  src/physics/collisions/CollisionResolver.cpp
   src/physics/Fixture.cpp
   src/physics/Force.cpp
   src/physics/Shape.cpp
