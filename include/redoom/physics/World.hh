@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
 #include <unordered_map>
 #include <vector>
 
@@ -45,6 +46,7 @@ public:
 private:
   bool deleteBody(Body const& body) noexcept;
 
+  mutable std::unique_ptr<std::mutex> mutex_{std::make_unique<std::mutex>()};
   bool debug_draw_{false};
   unsigned int last_body_id_{0};
   std::unordered_map<unsigned int, Body> bodies_;

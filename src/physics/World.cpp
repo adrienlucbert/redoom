@@ -10,6 +10,7 @@ namespace redoom::physics
 {
 std::shared_ptr<Body> World::createBody(BodyDefinition def) noexcept
 {
+  auto lock = std::lock_guard{*this->mutex_};
   auto const body_id = this->last_body_id_++;
   auto [it, success] =
       this->bodies_.emplace(body_id, Body{*this, body_id, def});
@@ -21,8 +22,11 @@ std::shared_ptr<Body> World::createBodyFromModel(
     BodyDefinition def, graphics::Model const& model) noexcept
 {
   auto body = World::createBody(def);
-  for (auto const& mesh : model.getMeshes()) {
-    body->createFixtureFromMesh({}, mesh);
+  {
+    auto lock = std::lock_guard{*this->mutex_};
+    for (auto const& mesh : model.getMeshes()) {
+      body->createFixtureFromMesh({}, mesh);
+    }
   }
   this->addBodyToCollisionDetector(*body);
   return body;
@@ -32,18 +36,23 @@ std::shared_ptr<Body> World::createBodyFromMesh(
     BodyDefinition def, graphics::Mesh const& mesh) noexcept
 {
   auto body = World::createBody(def);
-  body->createFixtureFromMesh({}, mesh);
+  {
+    auto lock = std::lock_guard{*this->mutex_};
+    body->createFixtureFromMesh({}, mesh);
+  }
   this->addBodyToCollisionDetector(*body);
   return body;
 }
 
 void World::addBodyToCollisionDetector(Body& body) noexcept
 {
+  auto lock = std::lock_guard{*this->mutex_};
   this->collision_detector_.insert(body);
 }
 
 bool World::deleteBody(Body const& body) noexcept
 {
+  auto lock = std::lock_guard{*this->mutex_};
   auto const& body_it = this->bodies_.find(body.getId());
   if (body_it == this->bodies_.end())
     return false;
@@ -54,6 +63,7 @@ bool World::deleteBody(Body const& body) noexcept
 
 void World::step(double timestep) noexcept
 {
+  auto lock = std::lock_guard{*this->mutex_};
   // Apply forces
   for (auto& [_, body] : this->bodies_) {
     if (body.getType() == BodyType::Static) // don't add forces to static bodies
@@ -113,6 +123,7 @@ void World::debugDraw(graphics::Program& program) const noexcept
 {
   if (!this->debug_draw_)
     return;
+  auto lock = std::lock_guard{*this->mutex_};
   this->collision_detector_.debugDraw(program);
 }
 } // namespace redoom::physics
