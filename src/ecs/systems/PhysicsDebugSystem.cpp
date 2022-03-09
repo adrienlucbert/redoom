@@ -50,11 +50,6 @@ void PhysicsDebugSystem::update(UpdateContext& context) noexcept
              */
             auto model = glm::mat4(1.0f);
             model = glm::translate(model, offset);
-            if (transform_opt) {
-              auto& transform = *transform_opt;
-              model = glm::rotate(
-                  model, transform.getAngle(), transform.getRotation());
-            }
             renderer::Renderer::draw(shader, cuboid, model);
           }
           Application::get().getCurrentScene().getWorld().debugDraw(shader);

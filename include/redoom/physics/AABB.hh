@@ -1,7 +1,6 @@
 #pragma once
 
 #include <algorithm>
-#include <iostream>
 #include <ostream>
 
 #include <fmt/format.h>
@@ -25,6 +24,47 @@ struct AABB {
   [[nodiscard]] AABB operator*(T const& rhs) const noexcept
   {
     return AABB{this->lower_bounds * rhs, this->upper_bounds * rhs};
+  }
+  template <>
+  [[nodiscard]] AABB operator*(glm::mat4 const& rhs) const noexcept
+  {
+    // TODO(alucbert): make this less computation heavy!
+
+    auto initialized = false;
+    auto aabb = AABB{};
+
+    auto vertices = std::array<glm::vec3, 8>{{
+        {this->lower_bounds.x, this->lower_bounds.y, this->lower_bounds.z},
+        {this->upper_bounds.x, this->lower_bounds.y, this->lower_bounds.z},
+        {this->upper_bounds.x, this->upper_bounds.y, this->lower_bounds.z},
+        {this->lower_bounds.x, this->upper_bounds.y, this->lower_bounds.z},
+        {this->lower_bounds.x, this->lower_bounds.y, this->upper_bounds.z},
+        {this->upper_bounds.x, this->lower_bounds.y, this->upper_bounds.z},
+        {this->upper_bounds.x, this->upper_bounds.y, this->upper_bounds.z},
+        {this->lower_bounds.x, this->upper_bounds.y, this->upper_bounds.z},
+    }};
+    for (auto& vertex : vertices) {
+      auto vertex4 = glm::vec4{vertex.x, vertex.y, vertex.z, 1.0f} * rhs;
+      if (!initialized) {
+        aabb.lower_bounds = {vertex4.x, vertex4.y, vertex4.z};
+        aabb.upper_bounds = {vertex4.x, vertex4.y, vertex4.z};
+        initialized = true;
+      } else {
+        if (vertex4.x < aabb.lower_bounds.x)
+          aabb.lower_bounds.x = vertex4.x;
+        if (vertex4.x > aabb.upper_bounds.x)
+          aabb.upper_bounds.x = vertex4.x;
+        if (vertex4.y < aabb.lower_bounds.y)
+          aabb.lower_bounds.y = vertex4.y;
+        if (vertex4.y > aabb.upper_bounds.y)
+          aabb.upper_bounds.y = vertex4.y;
+        if (vertex4.z < aabb.lower_bounds.z)
+          aabb.lower_bounds.z = vertex4.z;
+        if (vertex4.z > aabb.upper_bounds.z)
+          aabb.upper_bounds.z = vertex4.z;
+      }
+    }
+    return aabb;
   }
   template <typename T>
   AABB& operator*=(T const& rhs) noexcept
