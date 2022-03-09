@@ -234,7 +234,6 @@ struct BodyComponent : public Component<BodyComponent> {
           Serializer::deserializeFixture(fixture_node, *body);
         }
       }
-      scene.getWorld().addBodyToCollisionDetector(*body);
       scene.getRegistry().attachComponent<BodyComponent>(
           entity, BodyComponent{body});
       return {};

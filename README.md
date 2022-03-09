@@ -120,7 +120,7 @@ known bugs or performance issues I want to fix.
   <th rowspan=5>Game physics</th>
   <tr>
     <td>Gravity and movement forces</td>
-    <td title="planned">📅</td>
+    <td title="done">:heavy_check_mark:</td>
   </tr>
   <tr>
     <td>Hitboxes and debug wireframe visualization</td>
@@ -132,7 +132,7 @@ known bugs or performance issues I want to fix.
   </tr>
   <tr>
     <td>Collision response</td>
-    <td title="planned">📅</td>
+    <td title="in progress">🚧</td>
   </tr>
   <!--
     <td title="planned">📅</td>

@@ -9,6 +9,7 @@
 #include <redoom/physics/Body.hh>
 #include <redoom/physics/Force.hh>
 #include <redoom/physics/collisions/CollisionDetector.hh>
+#include <redoom/physics/collisions/CollisionResolver.hh>
 #include <redoom/physics/collisions/OctTreeFilter.hh>
 
 namespace redoom::graphics
@@ -35,7 +36,6 @@ public:
       BodyDefinition def, graphics::Model const& model) noexcept;
   std::shared_ptr<Body> createBodyFromMesh(
       BodyDefinition def, graphics::Mesh const& mesh) noexcept;
-  void addBodyToCollisionDetector(Body& body) noexcept;
   void step(double timestep) noexcept;
   void addGlobalConstantForce(Force force) noexcept;
 
@@ -51,6 +51,7 @@ private:
   unsigned int last_body_id_{0};
   std::unordered_map<unsigned int, Body> bodies_;
   CollisionDetector<OctTreeFilter> collision_detector_;
+  CollisionResolver collision_resolver_;
   std::vector<Force> global_constant_forces_;
 };
 } // namespace redoom::physics

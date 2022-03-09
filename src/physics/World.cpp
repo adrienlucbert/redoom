@@ -14,6 +14,7 @@ std::shared_ptr<Body> World::createBody(BodyDefinition def) noexcept
   auto const body_id = this->last_body_id_++;
   auto [it, success] =
       this->bodies_.emplace(body_id, Body{*this, body_id, def});
+  this->collision_detector_.insert(it->second);
   auto deleter = [&](Body const* ptr) { this->deleteBody(*ptr); };
   return std::shared_ptr<Body>{&it->second, deleter};
 }
@@ -22,13 +23,10 @@ std::shared_ptr<Body> World::createBodyFromModel(
     BodyDefinition def, graphics::Model const& model) noexcept
 {
   auto body = World::createBody(def);
-  {
-    auto lock = std::lock_guard{*this->mutex_};
-    for (auto const& mesh : model.getMeshes()) {
-      body->createFixtureFromMesh({}, mesh);
-    }
+  auto lock = std::lock_guard{*this->mutex_};
+  for (auto const& mesh : model.getMeshes()) {
+    body->createFixtureFromMesh({}, mesh);
   }
-  this->addBodyToCollisionDetector(*body);
   return body;
 }
 
@@ -36,18 +34,9 @@ std::shared_ptr<Body> World::createBodyFromMesh(
     BodyDefinition def, graphics::Mesh const& mesh) noexcept
 {
   auto body = World::createBody(def);
-  {
-    auto lock = std::lock_guard{*this->mutex_};
-    body->createFixtureFromMesh({}, mesh);
-  }
-  this->addBodyToCollisionDetector(*body);
-  return body;
-}
-
-void World::addBodyToCollisionDetector(Body& body) noexcept
-{
   auto lock = std::lock_guard{*this->mutex_};
-  this->collision_detector_.insert(body);
+  body->createFixtureFromMesh({}, mesh);
+  return body;
 }
 
 bool World::deleteBody(Body const& body) noexcept
@@ -97,10 +86,10 @@ void World::step(double timestep) noexcept
       std::back_inserter(vbodies),
       [](auto& pair) { return std::ref(pair.second); });
   auto collisions = this->collision_detector_.getCollisions(vbodies);
-  for (auto const& collision : collisions) {
-    // Collision response
-    std::cout << "Collision between body " << collision.body_a.get().getId()
-              << " and " << collision.body_b.get().getId() << '\n';
+
+  // Collision response
+  for (auto& collision : collisions) {
+    this->collision_resolver_.resolve(collision);
   }
 }
 
