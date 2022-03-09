@@ -9,8 +9,10 @@ namespace redoom::physics
 struct BodyItemProxy : public BaseOctTreeItemProxy<Body> {
   [[nodiscard]] static AABB getAABB(Body const& item) noexcept
   {
-    // TODO(alucbert): make this noexcept
-    return *item.getGlobalAABB();
+    auto aabb_opt = item.getGlobalAABB();
+    if (!aabb_opt.has_value())
+      return AABB{};
+    return *aabb_opt;
   }
 };
 

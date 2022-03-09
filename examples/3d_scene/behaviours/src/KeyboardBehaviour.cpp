@@ -88,7 +88,8 @@ struct KeyboardBehaviour : public Behaviour {
             .action = redoom::events::Action::PRESS})) {
       auto& world = redoom::Application::get().getCurrentScene().getWorld();
       world.addGlobalConstantForce(
-          Force{glm::vec3{0.0f, -9.81f, 0.0f}, Force::Type::Acceleration});
+          Force{glm::vec3{0.0f, -0.1f, 0.0f}, Force::Type::Acceleration});
+      // TODO(alucbert): -9.81
       std::cout << "Activating gravity" << '\n';
     }
     // Switch VSync

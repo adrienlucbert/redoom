@@ -11,7 +11,7 @@ Entities:
     BehaviourComponent:
       CameraBehaviour
   - TransformComponent:
-      position: [20, 20, 0]
+      position: [5, 10, 0]
       angle: 0
       rotation: [1, 1, 1]
       scale: [1, 1, 1]
@@ -25,6 +25,8 @@ Entities:
       scale: [1, 1, 1]
     MeshComponent:
       color: [1, 0, 0]
+    BehaviourComponent:
+      RotationBehaviour
   - TransformComponent:
       position: [0, 0, 0]
       angle: 1.57079995

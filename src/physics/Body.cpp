@@ -169,12 +169,14 @@ float Body::getMass() const noexcept
 
 void Body::addForce(Force force) noexcept
 {
-  this->forces_.push(force);
+  if (this->type_ != BodyType::Static)
+    this->forces_.push(force);
 }
 
 void Body::addConstantForce(Force force) noexcept
 {
-  this->constant_forces_.push_back(force);
+  if (this->type_ != BodyType::Static)
+    this->constant_forces_.push_back(force);
 }
 
 void Body::updateMass(Fixture const& fixture) noexcept
