@@ -22,9 +22,10 @@ struct ArrowsControlBehaviour : public Behaviour {
   void onInit(Entity entity, Context& context) noexcept override
   {
     auto opt = context.getComponentManager().get<TransformComponent>(entity);
-    if (!opt)
+    if (opt.has_value())
+      this->transform_ = std::addressof(opt.value());
+    else
       assert("No transform component found" == nullptr);
-    this->transform_ = std::addressof(*opt);
   }
 
   void onUpdate(Entity /*entity*/, UpdateContext& /*context*/) noexcept override

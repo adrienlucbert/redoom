@@ -81,13 +81,13 @@ jobs:
           time ninja
 
       - name: Run tests
-        if: ${{ matrix.build-type }} == Debug
+        if: ${{ matrix.build-type == 'Debug' }}
         run: |
           ./build/bin/tests/tests-redoom
           ./build/bin/tests/tests-redoom-utils
 
       - name: Run thread-safety tests
-        if: ${{ matrix.build-type }} == tsan
+        if: ${{ matrix.build-type == 'tsan' }}
         run: |
           ./build/bin/tests/tests-redoom "[Thread]"
           ./build/bin/tests/tests-redoom-utils "[Thread]"
