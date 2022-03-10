@@ -11,14 +11,22 @@ on:
 env:
   CLCACHE_VERSION: v1
   CLCACHE_MAX_SIZE: 500M
-  DEFAULT_BUILD_DIRECTORY: build
-  RELEASE_BUILD_DIRECTORY: build-release
-  TIDY_BUILD_DIRECTORY: build-tidy
 
 jobs:
   build-and-test:
-    name: Compile, run tests and thread sanitizer
+    name: Build and run tests
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - build-type: Debug
+            cmake-options: -DREDOOM_BUILD_TESTS=on -DREDOOM_BUILD_BENCHMARKS=on -DUSE_CLANG_TIDY=off
+          - build-type: tsan
+            cmake-options: -DREDOOM_BUILD_TESTS=on -DREDOOM_BUILD_BENCHMARKS=on -DUSE_CLANG_TIDY=off
+          - build-type: Release
+            cmake-options: -DREDOOM_BUILD_TESTS=off -DREDOOM_BUILD_BENCHMARKS=off -DREDOOM_WARNING_FLAGS=-Werror -DUSE_CLANG_TIDY=on -DREDOOM_CLANG_TIDY_FLAGS='--warnings-as-errors=*'
 
     steps:
       - name: Install system packages
@@ -38,15 +46,15 @@ jobs:
         run: |
           git apply .patches/system_includes.diff
 
-      - name: Cache dependencies and build caches
+      - name: Cache build caches
         uses: actions/cache@v2
         with:
           path: |
             .ccache
             .ctcache
             ctcache
-          key: clcache-${{ env.CLCACHE_VERSION }}-${{ github.run_id }}
-          restore-keys: clcache-${{ env.CLCACHE_VERSION }}
+          key: clcache-${{ env.CLCACHE_VERSION }}-${{ matrix.build-type }}-${{ github.run_id }}
+          restore-keys: clcache-${{ env.CLCACHE_VERSION }}-${{ matrix.build-type }}
 
       - name: Configure compiler cache (ccache)
         run: |
@@ -63,55 +71,23 @@ jobs:
           echo "PATH=$GITHUB_WORKSPACE/ctcache/bin:$PATH" >> $GITHUB_ENV
           echo "CTCACHE_DIR=$GITHUB_WORKSPACE/.ctcache" >> $GITHUB_ENV
 
-      - name: Build project for debug (with tsan)
+      - name: Build project
         env:
-          BUILD_FOLDER: ${{ env.DEFAULT_BUILD_DIRECTORY }}
-          BUILD_TYPE: tsan
-          CMAKE_OPTIONS: -DREDOOM_BUILD_TESTS=on -DREDOOM_BUILD_BENCHMARKS=on -DUSE_CLANG_TIDY=off
+          BUILD_TYPE: ${{ matrix.build-type }}
+          CMAKE_OPTIONS: ${{ matrix.cmake-options }}
         run: |
-          mkdir -p ${BUILD_FOLDER} && cd ${BUILD_FOLDER}
-          cmake .. -GNinja -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PROGRAM_PATH=/usr/lib/ccache ${CMAKE_OPTIONS}
-          time ninja
-
-      - name: Build project for release
-        if: ${{ github.ref_name == github.event.repository.default_branch }}
-        env:
-          BUILD_FOLDER: ${{ env.RELEASE_BUILD_DIRECTORY }}
-          BUILD_TYPE: Release
-          CMAKE_OPTIONS: -DREDOOM_BUILD_TESTS=off -DREDOOM_BUILD_BENCHMARKS=off -DUSE_CLANG_TIDY=off -DREDOOM_WARNING_FLAGS=-Werror
-        run: |
-          mkdir -p ${BUILD_FOLDER} && cd ${BUILD_FOLDER}
-          cmake .. -GNinja -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PROGRAM_PATH=/usr/lib/ccache ${CMAKE_OPTIONS}
+          mkdir -p build && cd build
+          cmake .. -GNinja -DCMAKE_build-type=$BUILD_TYPE -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PROGRAM_PATH=/usr/lib/ccache $CMAKE_OPTIONS
           time ninja
 
       - name: Run tests
+        if: ${{ matrix.build-type }} == Debug
         run: |
           ./build/bin/tests/tests-redoom
           ./build/bin/tests/tests-redoom-utils
 
       - name: Run thread-safety tests
+        if: ${{ matrix.build-type }} == tsan
         run: |
           ./build/bin/tests/tests-redoom "[Thread]"
           ./build/bin/tests/tests-redoom-utils "[Thread]"
-
-      - name: Build project with clang-tidy
-        env:
-          BUILD_FOLDER: ${{ env.TIDY_BUILD_DIRECTORY }}
-          BUILD_TYPE: Debug
-          CMAKE_OPTIONS: -DREDOOM_BUILD_TESTS=off -DREDOOM_BUILD_BENCHMARKS=off -DUSE_CLANG_TIDY=on -DREDOOM_CLANG_TIDY_FLAGS='--warnings-as-errors=*'
-        run: |
-          mkdir -p ${BUILD_FOLDER} && cd ${BUILD_FOLDER}
-          cmake .. -GNinja -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PROGRAM_PATH=/usr/lib/ccache ${CMAKE_OPTIONS}
-          time ninja
-
-      - name: Save build artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: build-artifacts-${{ github.run_id }}
-          path: |
-            ${{ env.DEFAULT_BUILD_DIRECTORY }}/bin
-            ${{ env.DEFAULT_BUILD_DIRECTORY }}/lib/*.so
-            ${{ env.RELEASE_BUILD_DIRECTORY }}/bin
-            ${{ env.RELEASE_BUILD_DIRECTORY }}/lib/*.so
-            ${{ env.TIDY_BUILD_DIRECTORY }}/bin
-            ${{ env.TIDY_BUILD_DIRECTORY }}/lib/*.so
