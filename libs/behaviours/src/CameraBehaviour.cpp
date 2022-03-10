@@ -27,10 +27,12 @@ struct CameraBehaviour : public Behaviour {
   void onInit(Entity entity, Context& context) noexcept override
   {
     auto opt = context.getComponentManager().get<CameraComponent>(entity);
-    if (!opt)
+    if (opt.has_value()) {
+      this->component_ = std::addressof(opt.value());
+      this->initial_camera_speed_ = this->component_->camera_.getSpeed();
+    } else {
       assert("No camera component found" == nullptr);
-    this->component_ = std::addressof(*opt);
-    this->initial_camera_speed_ = this->component_->camera_.getSpeed();
+    }
   }
 
   void onUpdate(Entity /*entity*/, UpdateContext& context) noexcept override
