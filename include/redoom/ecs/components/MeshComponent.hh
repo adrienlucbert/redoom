@@ -5,13 +5,13 @@
 #include <redoom/Scene.hh>
 #include <redoom/ecs/Component.hh>
 #include <redoom/graphics/Mesh.hh>
-#include <redoom/graphics/mesh/Quad.hh>
+#include <redoom/graphics/mesh/Sphere.hh>
 #include <redoom/serializer/ComponentSerializer.hh>
 #include <redoom/serializer/common.hh>
 
 namespace redoom::ecs::components
 {
-using redoom::graphics::mesh::Quad;
+using redoom::graphics::mesh::Sphere;
 
 struct MeshComponent : public Component<MeshComponent> {
   [[nodiscard]] std::string const& getType() const noexcept override
@@ -39,12 +39,12 @@ struct MeshComponent : public Component<MeshComponent> {
         YAML::Node const& node, Scene& scene, Entity entity) const override
     {
       // TODO(alucbert): deserialize meshes
-      auto color = glm::vec3{1.0f, 1.0f, 1.0f};
+      auto color = glm::vec3{1.0f, 0.4f, 0.6f};
       if (node["color"])
         color = node["color"].as<glm::vec3>();
-      auto quad_mesh =
-          std::shared_ptr<Quad>(new Quad{1.0f, 1.0f, color}); // NOLINT
-      scene.getRegistry().attachComponent<MeshComponent>(entity, quad_mesh);
+      auto mesh =
+          std::shared_ptr<Sphere>(new Sphere{1.0f, 25u, 25u, color}); // NOLINT
+      scene.getRegistry().attachComponent<MeshComponent>(entity, mesh);
       return {};
     }
   };

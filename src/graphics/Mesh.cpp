@@ -76,6 +76,8 @@ void Mesh::draw(Program& program) const noexcept
   else
     this->vbo_.draw(this->topology_);
 
+  program.apply();
+
   for (auto const& texture : this->textures_)
     texture.unbind();
   this->vao_.unbind();

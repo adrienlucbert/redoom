@@ -108,7 +108,7 @@ Expected<Mesh> Model::parseMesh(aiMesh* mesh,
           {aiTextureType_BASE_COLOR, Texture2D::Type::BaseColor},
       };
 
-  for (auto const [assimp_type, texture_type] : texture_types) {
+  for (auto const& [assimp_type, texture_type] : texture_types) {
     auto exp =
         Model::loadMaterialTexture(material, assimp_type, texture_type, root);
     RETURN_IF_UNEXPECTED(exp);

@@ -29,6 +29,7 @@ set(
 set(
   CLANG_WARNING_FLAGS
   -Weverything
+  -Wno-c++20-compat
   -Wno-c++98-c++11-compat-binary-literal
   -Wno-c++98-compat
   -Wno-c++98-compat-pedantic
@@ -39,10 +40,9 @@ set(
   -Wno-global-constructors
   -Wno-implicit-int-float-conversion
   -Wno-return-std-move
-  -Wno-c++20-compat
+  -Wno-return-type-c-linkage
   -Wno-signed-enum-bitfield
   -Wno-weak-vtables
-  -Wno-return-type-c-linkage
 )
 
 if(${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 13.0.0)
@@ -120,6 +120,7 @@ add_library(
   src/ecs/systems/BehaviourSystem.cpp
   src/ecs/systems/CameraSystem.cpp
   src/ecs/systems/EventSystem.cpp
+  src/ecs/systems/LightSystem.cpp
   src/ecs/systems/MeshSystem.cpp
   src/ecs/systems/ModelSystem.cpp
   src/ecs/systems/PhysicsDebugSystem.cpp
@@ -129,6 +130,7 @@ add_library(
   src/events/Key.cpp
   src/graphics/BufferLayout.cpp
   src/graphics/Camera.cpp
+  src/graphics/Material.cpp
   src/graphics/Mesh.cpp
   src/graphics/Model.cpp
   src/graphics/Program.cpp
@@ -136,6 +138,7 @@ add_library(
   src/graphics/ShaderLibrary.cpp
   src/graphics/Texture.cpp
   src/graphics/TextureLibrary.cpp
+  src/graphics/UniformBase.cpp
   src/graphics/VertexArray.cpp
   src/physics/Body.cpp
   src/physics/collisions/CollisionResolver.cpp

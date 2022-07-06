@@ -2,68 +2,45 @@ Scene: default
 Entities:
   - CameraComponent:
       camera:
-        position: [0, 0, 10]
-        yaw: -90
-        pitch: 0
-        speed: 0.000999999815
+        position: [2.24777246, 0.24708873, 0.567228198]
+        yaw: 251.999466
+        pitch: -19.1001301
+        speed: 0.00100000005
         sensitivity: 0.300000012
         fov: 0.785398185
     BehaviourComponent:
       CameraBehaviour
+  - AmbientLightComponent:
+      color: [0.100000001, 0.100000001, 0.100000001]
+  - DirectionalLightComponent:
+      direction: [1, 1, 1]
+      color: [1, 1, 1]
   - TransformComponent:
-      position: [5, 10, 0]
+      position: [1.5, 0, 0]
       angle: 0
       rotation: [1, 1, 1]
-      scale: [1, 1, 1]
+      scale: [0.200000003, 0.200000003, 0.200000003]
+    MeshComponent:
+      {}
+    MaterialComponent:
+      shader: lit
+      gloss: 6
+      smoothness: 1
+      metallicness: 0.2
+  - TransformComponent:
+      position: [2, 0, 0]
+      angle: 0
+      rotation: [0, 1, 0]
+      scale: [0.100000001, 0.100000001, 0.100000001]
     ModelComponent:
       path: ../assets/backpack/backpack.obj
       flip_uvs: true
-  - TransformComponent:
-      position: [1.5, 1.5, 0]
-      angle: 1.57079995
-      rotation: [0, 0, 1]
-      scale: [1, 1, 1]
-    MeshComponent:
-      color: [1, 0, 0]
-    BehaviourComponent:
-      RotationBehaviour
-  - TransformComponent:
-      position: [0, 0, 0]
-      angle: 1.57079995
-      rotation: [0, 0, 1]
-      scale: [1, 1, 1]
-    MeshComponent:
-      color: [0, 1, 0]
-    BehaviourComponent:
-      ArrowsControlBehaviour
-  - TransformComponent:
-      position: [2.5, 0, 0]
-      angle: 1.57079995
-      rotation: [0, 0, 1]
-      scale: [1, 1, 1]
-    MeshComponent:
-      color: [0, 0, 1]
-    BehaviourComponent:
+    MaterialComponent:
+      shader: lit
+      gloss: 6
+      smoothness: 1
+      metallicness: 0.1
+  - BehaviourComponent:
       KeyboardBehaviour
-  - TransformComponent:
-      position: [0, -10, 0]
-      angle: 1.57079995
-      rotation: [1, 0, 0]
-      scale: [100, 100, 100]
-    MeshComponent:
-      {}
-    BodyComponent:
-      type: Static
-      linear_velocity: [0, 0, 0]
-      angular_velocity: 0
-      has_fixed_rotation: false
-      gravity_scale: 1
-      fixtures:
-        - shape:
-            type: Quad
-            width: 1
-            height: 1
-          local_position: [0, 0, 0]
-          friction: 0.200000003
-          restitution: 0
-          density: 1
+  - BehaviourComponent:
+      FPSCounterBehaviour

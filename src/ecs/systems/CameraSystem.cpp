@@ -14,9 +14,16 @@ void CameraSystem::update(UpdateContext& context) noexcept
       [&count](auto /*entity*/, auto const& component) {
         ++count;
         assert(count <= 1 && "More than one camera is not allowed");
-        renderer::Renderer::setViewMatrix(component.camera_.getView());
-        renderer::Renderer::setProjectionMatrix(
-            component.camera_.getProjection());
+        renderer::Renderer::setGlobalUniform("CameraPosition",
+            graphics::uniforms::Vector<3>{
+                .value = component.camera_.getPosition()});
+        renderer::Renderer::setGlobalUniform("view",
+            graphics::uniforms::Matrix<4, 4>{
+                .value = component.camera_.getView(), .transpose = GL_FALSE});
+        renderer::Renderer::setGlobalUniform("projection",
+            graphics::uniforms::Matrix<4, 4>{
+                .value = component.camera_.getProjection(),
+                .transpose = GL_FALSE});
       });
 }
 } // namespace redoom::ecs::systems

@@ -19,6 +19,7 @@ struct CameraComponent : public Component<CameraComponent> {
     : camera_{camera}
   {
   }
+
   graphics::Camera camera_;
 
   struct Serializer : public ComponentSerializer {

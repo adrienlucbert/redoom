@@ -106,6 +106,24 @@ public:
                            : tl::nullopt;
   }
 
+  template <typename T>
+  [[nodiscard]] tl::optional<T const&> getOne() noexcept
+  {
+    static_assert(std::is_base_of_v<ComponentBase, T>,
+        "T must inherit from ComponentBase");
+    auto lock = std::lock_guard{*this->mutex_};
+    auto list_it = this->components_lists_.find(T::getTypeId());
+    if (list_it == this->components_lists_.end())
+      return tl::nullopt;
+    auto const& list = (*list_it).second;
+    auto component_it = std::find_if(
+        list.begin(), list.end(), [&](auto const&) { return true; });
+    if (component_it == list.end())
+      return tl::nullopt;
+    else
+      return static_cast<T const&>(*component_it->second);
+  }
+
   tl::optional<ComponentBase const&> getByTypeId(
       unsigned int type_id, Entity entity) const noexcept
   {

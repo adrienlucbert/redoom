@@ -1,0 +1,27 @@
+#include <iostream>
+
+#include <redoom/graphics/Material.hh>
+#include <redoom/graphics/Program.hh>
+#include <redoom/graphics/UniformTypes.hh>
+
+namespace redoom::graphics
+{
+Material::Material(std::string pshader,
+    float pgloss,
+    float psmoothness,
+    float pmetallicness) noexcept
+  : shader{std::move(pshader)}
+  , gloss{pgloss}
+  , smoothness{psmoothness}
+  , metallicness{pmetallicness}
+{
+}
+
+void Material::apply(Program& program) const noexcept
+{
+  program.setUniform("Gloss", uniforms::Float{.value = this->gloss});
+  program.setUniform("Smoothness", uniforms::Float{.value = this->smoothness});
+  program.setUniform(
+      "Metallicness", uniforms::Float{.value = this->metallicness});
+}
+} // namespace redoom::graphics

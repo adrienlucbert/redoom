@@ -1,15 +1,19 @@
 #include <redoom/Application.hh>
 #include <redoom/EntryPoint.hh>
 #include <redoom/ecs/Registry.hh>
+#include <redoom/ecs/components/AmbientLightComponent.hh>
 #include <redoom/ecs/components/BehaviourComponent.hh>
 #include <redoom/ecs/components/BodyComponent.hh>
 #include <redoom/ecs/components/CameraComponent.hh>
+#include <redoom/ecs/components/DirectionalLightComponent.hh>
+#include <redoom/ecs/components/MaterialComponent.hh>
 #include <redoom/ecs/components/MeshComponent.hh>
 #include <redoom/ecs/components/ModelComponent.hh>
 #include <redoom/ecs/components/TransformComponent.hh>
 #include <redoom/ecs/systems/BehaviourSystem.hh>
 #include <redoom/ecs/systems/CameraSystem.hh>
 #include <redoom/ecs/systems/EventSystem.hh>
+#include <redoom/ecs/systems/LightSystem.hh>
 #include <redoom/ecs/systems/MeshSystem.hh>
 #include <redoom/ecs/systems/ModelSystem.hh>
 #include <redoom/ecs/systems/PhysicsDebugSystem.hh>
@@ -21,15 +25,19 @@
 
 using redoom::SceneSerializer;
 using redoom::ecs::SystemPriority;
+using redoom::ecs::components::AmbientLightComponent;
 using redoom::ecs::components::BehaviourComponent;
 using redoom::ecs::components::BodyComponent;
 using redoom::ecs::components::CameraComponent;
+using redoom::ecs::components::DirectionalLightComponent;
+using redoom::ecs::components::MaterialComponent;
 using redoom::ecs::components::MeshComponent;
 using redoom::ecs::components::ModelComponent;
 using redoom::ecs::components::TransformComponent;
 using redoom::ecs::systems::BehaviourSystem;
 using redoom::ecs::systems::CameraSystem;
 using redoom::ecs::systems::EventSystem;
+using redoom::ecs::systems::LightSystem;
 using redoom::ecs::systems::MeshSystem;
 using redoom::ecs::systems::ModelSystem;
 using redoom::ecs::systems::PhysicsDebugSystem;
@@ -57,9 +65,21 @@ std::unique_ptr<Application> createApplication(ApplicationArguments args)
       "CameraComponent",
       std::make_unique<CameraComponent::Serializer>(),
       SerializerPriority{1u});
+  SceneSerializer::get().registerComponentFactory<DirectionalLightComponent>(
+      "DirectionalLightComponent",
+      std::make_unique<DirectionalLightComponent::Serializer>(),
+      SerializerPriority{2u});
+  SceneSerializer::get().registerComponentFactory<AmbientLightComponent>(
+      "AmbientLightComponent",
+      std::make_unique<AmbientLightComponent::Serializer>(),
+      SerializerPriority{2u});
   SceneSerializer::get().registerComponentFactory<MeshComponent>(
       "MeshComponent",
       std::make_unique<MeshComponent::Serializer>(),
+      SerializerPriority{100u});
+  SceneSerializer::get().registerComponentFactory<MaterialComponent>(
+      "MaterialComponent",
+      std::make_unique<MaterialComponent::Serializer>(),
       SerializerPriority{100u});
   SceneSerializer::get().registerComponentFactory<ModelComponent>(
       "ModelComponent",
@@ -83,17 +103,25 @@ std::unique_ptr<Application> createApplication(ApplicationArguments args)
   auto& scene = scene_exp->get();
   auto& registry = scene.getRegistry();
 
-  auto default_shader_exp = ShaderLibrary::addShader("default",
-      "../examples/3d_scene/shaders/vs.glslx",
-      "../examples/3d_scene/shaders/fs.glslx");
-  if (!default_shader_exp) {
-    std::cerr << default_shader_exp.error() << '\n';
+  auto lit_shader_exp = ShaderLibrary::addShader("lit",
+      "../examples/3d_scene/shaders/lit/vs.glslx",
+      "../examples/3d_scene/shaders/lit/fs.glslx");
+  if (!lit_shader_exp) {
+    std::cerr << lit_shader_exp.error() << '\n';
+    std::abort();
+  }
+  auto unlit_shader_exp = ShaderLibrary::addShader("unlit",
+      "../examples/3d_scene/shaders/unlit/vs.glslx",
+      "../examples/3d_scene/shaders/unlit/fs.glslx");
+  if (!unlit_shader_exp) {
+    std::cerr << unlit_shader_exp.error() << '\n';
     std::abort();
   }
 
   registry.attachSystem<EventSystem>(SystemPriority{0});
   registry.attachSystem<BehaviourSystem>(SystemPriority{1});
   registry.attachSystem<CameraSystem>(SystemPriority{1});
+  registry.attachSystem<LightSystem>(SystemPriority{2});
   registry.attachSystem<PhysicsWorldSystem>(SystemPriority{900});
   registry.attachSystem<PhysicsDebugSystem>(SystemPriority{901});
   registry.attachSystem<MeshSystem>(SystemPriority{1000});

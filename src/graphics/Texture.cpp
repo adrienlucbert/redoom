@@ -4,6 +4,7 @@
 #include <stb/stb_image.h>
 
 #include <redoom/graphics/TextureLibrary.hh>
+#include <redoom/graphics/UniformTypes.hh>
 
 namespace redoom::graphics
 {
@@ -140,9 +141,8 @@ void Texture2D::setUnit(
     Program& program, std::string_view uniform, GLint unit) const noexcept
 {
   this->unit_ = unit;
-  program.use();
   glActiveTexture(GL_TEXTURE0 + this->unit_);
-  program.setUniform(uniform, this->unit_);
+  program.setUniform(uniform.data(), uniforms::Int{.value = this->unit_});
 }
 
 void Texture2D::bind() const noexcept

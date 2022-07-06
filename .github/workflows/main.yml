@@ -47,7 +47,7 @@ jobs:
           git apply .patches/system_includes.diff
 
       - name: Cache build caches
-        uses: ruohola/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             .ccache

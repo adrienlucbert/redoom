@@ -11,7 +11,7 @@ void PhysicsDebugSystem::update(UpdateContext& context) noexcept
 {
   // Debug mode: draw bodies fixtures
   if (Application::get().getCurrentScene().getWorld().getDebugDraw()) {
-    auto shader_opt = graphics::ShaderLibrary::getShader("default");
+    auto shader_opt = graphics::ShaderLibrary::getShader("lit");
     if (!shader_opt)
       assert("Undefined shader" == nullptr);
     auto& shader = *shader_opt;

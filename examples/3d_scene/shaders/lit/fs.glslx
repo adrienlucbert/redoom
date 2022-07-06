@@ -1,0 +1,39 @@
+#version 330 core
+out vec4 FragColor;
+  
+in vec3 Color;
+in vec4 WorldPosition;
+in vec3 WorldNormal;
+in vec2 TexCoord;
+
+uniform sampler2D texture_diffuse1;
+uniform float Gloss;
+uniform float Smoothness;
+uniform float Metallicness;
+uniform vec3 AmbientLightColor;
+uniform vec3 DirectionalLightDirection;
+uniform vec3 DirectionalLightColor;
+uniform vec3 CameraPosition;
+
+void main()
+{
+  // Directional light
+  float dirLightFalloff = max(0, dot(DirectionalLightDirection, WorldNormal));
+  vec3 dirDiffuseLight = dirLightFalloff * DirectionalLightColor;
+
+  // Ambient light
+  vec3 diffuseLight = AmbientLightColor + dirDiffuseLight;
+
+  // Specular light
+  vec3 viewDirection = normalize(CameraPosition - WorldPosition.xyz);
+  vec3 viewReflect = reflect(-viewDirection, WorldNormal);
+  float specularFalloff = max(0, dot(viewReflect, DirectionalLightDirection));
+
+  // Apply gloss
+  specularFalloff = min(1, pow(specularFalloff, Gloss)) * Metallicness;
+
+  vec3 specularLight = DirectionalLightColor * specularFalloff;
+
+  vec4 texColor = texture(texture_diffuse1, TexCoord);
+  FragColor = vec4(diffuseLight.xyz, 1) * vec4(Color, 1) * texColor + vec4(specularLight.xyz, 1);
+}

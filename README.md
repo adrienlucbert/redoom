@@ -59,7 +59,7 @@ known bugs or performance issues I want to fix.
     <td title="done">:heavy_check_mark:</td>
   </tr>
 
-  <th rowspan=7>Core</th>
+  <th rowspan=8>Core</th>
   <tr>
     <td>Implement a data-oriented Entity Component System pattern</td>
     <td title="done">:heavy_check_mark:</td>
@@ -84,6 +84,10 @@ known bugs or performance issues I want to fix.
     <td>Serialize and deserialize scenes</td>
     <td title="done">:heavy_check_mark:</td>
   </tr>
+  <tr>
+    <td>Asset pipeline</td>
+    <td title="planned">📅</td>
+  </tr>
 
   <th rowspan=2>User interface</th>
   <tr>
@@ -91,7 +95,7 @@ known bugs or performance issues I want to fix.
     <td title="planned">📅</td>
   </tr>
 
-  <th rowspan=7>Computer graphics</th>
+  <th rowspan=8>Computer graphics</th>
   <tr>
     <td>Perspective projection camera with free movements</td>
     <td title="done">:heavy_check_mark:</td>
@@ -113,7 +117,11 @@ known bugs or performance issues I want to fix.
     <td title="planned">📅</td>
   </tr>
   <tr>
-    <td>Basic lighting and shadows</td>
+    <td>Basic lighting (directional, specular, ambient)</td>
+    <td title="done">:heavy_check_mark:</td>
+  </tr>
+  <tr>
+    <td>Basic shadows</td>
     <td title="planned">📅</td>
   </tr>
 

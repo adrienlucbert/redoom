@@ -84,14 +84,14 @@ struct KeyboardBehaviour : public Behaviour {
                 << world.getDebugDraw() << '\n';
     }
     // Add gravity
-    if (event.matches({.key = redoom::events::Key::SPACE,
-            .action = redoom::events::Action::PRESS})) {
-      auto& world = redoom::Application::get().getCurrentScene().getWorld();
-      world.addGlobalConstantForce(
-          Force{glm::vec3{0.0f, -0.1f, 0.0f}, Force::Type::Acceleration});
-      // TODO(alucbert): -9.81
-      std::cout << "Activating gravity" << '\n';
-    }
+    // if (event.matches({.key = redoom::events::Key::SPACE,
+    //         .action = redoom::events::Action::PRESS})) {
+    //   auto& world = redoom::Application::get().getCurrentScene().getWorld();
+    //   world.addGlobalConstantForce(
+    //       Force{glm::vec3{0.0f, -0.1f, 0.0f}, Force::Type::Acceleration});
+    //   // TODO(alucbert): -9.81
+    //   std::cout << "Activating gravity" << '\n';
+    // }
     // Switch VSync
     if (event.matches({.key = redoom::events::Key::GRAVE_ACCENT,
             .action = redoom::events::Action::PRESS})) {

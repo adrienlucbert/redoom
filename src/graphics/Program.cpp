@@ -1,6 +1,6 @@
 #include <redoom/graphics/Program.hh>
 
-#include <stdexcept>
+#include <redoom/graphics/BoundUniform.hh>
 
 namespace redoom::graphics
 {
@@ -53,5 +53,11 @@ unsigned int Program::getId() const noexcept
 void Program::use() const noexcept
 {
   glUseProgram(this->id_);
+}
+
+void Program::apply() const noexcept
+{
+  for (auto const& uniform : this->uniforms_)
+    uniform.second->set(*this, uniform.first);
 }
 } // namespace redoom::graphics

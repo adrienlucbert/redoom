@@ -12,32 +12,22 @@ std::unique_ptr<RendererAPI> Renderer::api_ = []() {
   return std::move(*exp);
 }();
 
-// NOLINTNEXTLINE
-auto Renderer::camera_view_matrix_ = glm::mat4{};       // NOLINT
-auto Renderer::camera_projection_matrix_ = glm::mat4{}; // NOLINT
+auto Renderer::global_uniforms_ = std::unordered_map<std::string, // NOLINT
+    std::unique_ptr<graphics::UniformBase>>{};                    // NOLINT
 
 RendererAPI& Renderer::getAPI() noexcept
 {
   return *Renderer::api_;
 }
 
-void Renderer::setViewMatrix(glm::mat4 view) noexcept
+void Renderer::prepareDraw(
+    graphics::Program& program, const glm::mat4& model) noexcept
 {
-  Renderer::camera_view_matrix_ = view;
-}
-
-glm::mat4 const& Renderer::getViewMatrix() noexcept
-{
-  return Renderer::camera_view_matrix_;
-}
-
-void Renderer::setProjectionMatrix(glm::mat4 view) noexcept
-{
-  Renderer::camera_projection_matrix_ = view;
-}
-
-glm::mat4 const& Renderer::getProjectionMatrix() noexcept
-{
-  return Renderer::camera_projection_matrix_;
+  program.use();
+  program.setUniform("model",
+      graphics::uniforms::Matrix<4, 4>{.value = model, .transpose = GL_FALSE});
+  for (auto const& uniform : Renderer::global_uniforms_)
+    uniform.second->set(program, uniform.first);
+  program.apply();
 }
 } // namespace redoom::renderer
