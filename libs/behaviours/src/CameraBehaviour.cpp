@@ -11,6 +11,7 @@ using redoom::ecs::Behaviour;
 using redoom::ecs::Context;
 using redoom::ecs::Entity;
 using redoom::ecs::UpdateContext;
+using redoom::ecs::components::BehaviourComponent;
 using redoom::ecs::components::CameraComponent;
 using redoom::events::Key;
 using redoom::events::MouseMoveEvent;
@@ -121,7 +122,14 @@ private:
   float last_mouse_y_{0.0f};
 };
 
-std::unique_ptr<Behaviour> make() noexcept
+void serialize(YAML::Emitter& /*out*/, BehaviourComponent const* /*component*/)
+{
+}
+
+redoom::Expected<std::unique_ptr<Behaviour>> deserialize(
+    YAML::Node const& /*node*/,
+    redoom::Scene& /*scene*/,
+    redoom::ecs::Entity /*entity*/)
 {
   return std::make_unique<CameraBehaviour>();
 }

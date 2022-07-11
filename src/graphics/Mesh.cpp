@@ -1,6 +1,7 @@
 #include <redoom/graphics/Mesh.hh>
 
 #include <iostream>
+#include <tl/expected.hpp>
 
 namespace redoom::graphics
 {
@@ -28,7 +29,6 @@ Mesh::Mesh(std::vector<Vertex> vertices,
   this->ebo_.bind();
   this->vbo_.setLayout({{ShaderDataType::Float3, "aPos"},
       {ShaderDataType::Float3, "aNormal"},
-      {ShaderDataType::Float3, "aColor"},
       {ShaderDataType::Float2, "aTexCoord"}});
   this->vao_.unbind();
   this->vbo_.unbind();
@@ -83,8 +83,24 @@ void Mesh::draw(Program& program) const noexcept
   this->vao_.unbind();
 }
 
+std::string const& Mesh::getType() const noexcept
+{
+  static auto const type = std::string{"Custom"};
+  return type;
+}
+
 std::vector<Vertex> const& Mesh::getVertices() const noexcept
 {
   return this->vertices_;
+}
+
+std::vector<unsigned int> const& Mesh::getIndices() const noexcept
+{
+  return this->indices_;
+}
+
+GLenum Mesh::getTopology() const noexcept
+{
+  return this->topology_;
 }
 } // namespace redoom::graphics

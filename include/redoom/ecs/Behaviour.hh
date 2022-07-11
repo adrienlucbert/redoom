@@ -11,12 +11,12 @@ class Behaviour
 {
 public:
   Behaviour() noexcept = default;
-  Behaviour(Behaviour const& b) noexcept = delete;
-  Behaviour(Behaviour&& b) noexcept = default;
+  Behaviour(Behaviour const&) noexcept = delete;
+  Behaviour(Behaviour&&) noexcept = default;
   virtual ~Behaviour() noexcept = default;
 
-  Behaviour& operator=(Behaviour const& rhs) noexcept = delete;
-  Behaviour& operator=(Behaviour&& rhs) noexcept = default;
+  Behaviour& operator=(Behaviour const&) noexcept = delete;
+  Behaviour& operator=(Behaviour&&) noexcept = default;
 
   [[nodiscard]] virtual std::string const& getType() const noexcept = 0;
 

@@ -8,12 +8,12 @@ class TestWindow : public redoom::renderer::Window
 {
 public:
   TestWindow() noexcept = default;
-  TestWindow(TestWindow const& b) noexcept = delete;
-  TestWindow(TestWindow&& b) noexcept = default;
+  TestWindow(TestWindow const&) noexcept = delete;
+  TestWindow(TestWindow&&) noexcept = default;
   ~TestWindow() noexcept override = default;
 
-  TestWindow& operator=(TestWindow const& rhs) noexcept = delete;
-  TestWindow& operator=(TestWindow&& rhs) noexcept = default;
+  TestWindow& operator=(TestWindow const&) noexcept = delete;
+  TestWindow& operator=(TestWindow&&) noexcept = default;
 
   [[nodiscard]] int getWidth() const noexcept override;
   [[nodiscard]] int getHeight() const noexcept override;

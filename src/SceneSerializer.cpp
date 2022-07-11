@@ -1,6 +1,8 @@
 #include <redoom/serializer/SceneSerializer.hh>
 
+#include <filesystem>
 #include <fstream>
+#include <iostream>
 
 #include <yaml-cpp/yaml.h>
 
@@ -9,6 +11,41 @@
 
 namespace redoom
 {
+SceneSerializer::SceneSerializer() noexcept
+{
+  auto load_order_exp = this->loadSerializers();
+  if (!load_order_exp)
+    std::cerr << "Could not parse serialization order file: "
+              << load_order_exp.error() << '\n';
+}
+
+Expected<> SceneSerializer::loadSerializers() noexcept
+{
+  YAML::Node data;
+  try {
+    auto filepath =
+        std::filesystem::path{"../settings/SerializationOrder.yaml"};
+    data = YAML::LoadFile(filepath.c_str());
+    auto const& root = data["Components"];
+    if (!root)
+      return make_formatted_unexpected(
+          "{}: Invalid file format", filepath.c_str());
+    for (auto const& item : root) {
+      auto component_type = item.first.as<std::string>();
+      auto load_exp = this->factory_.loadSerializer(
+          fmt::format("lib/lib{}.so", component_type), component_type);
+      RETURN_IF_UNEXPECTED(load_exp);
+      auto type_id_exp = this->factory_.getTypeId(component_type);
+      RETURN_IF_UNEXPECTED(type_id_exp);
+      this->component_serialization_order_.emplace(item.second.as<Priority>(),
+          ComponentTypeData{*type_id_exp, std::move(component_type)});
+    }
+  } catch (YAML::Exception const& e) {
+    return tl::make_unexpected(e.what());
+  }
+  return {};
+}
+
 Expected<> SceneSerializer::serialize(
     std::string_view filepath, Scene const& scene) const noexcept
 {
@@ -38,9 +75,9 @@ Expected<> SceneSerializer::serializeEntity(
     YAML::Emitter& out, ecs::Entity entity, Scene const& scene) const
 {
   out << YAML::BeginMap;
-  for (auto const& component_serializer : this->component_serializers) {
+  for (auto const& component_type : this->component_serialization_order_) {
     auto component_opt = scene.getRegistry().getComponentByTypeId(
-        component_serializer.second.type_id, entity);
+        component_type.second.type_id, entity);
     if (component_opt.has_value())
       RETURN_IF_UNEXPECTED(this->serializeComponent(out, *component_opt));
   }
@@ -52,10 +89,12 @@ Expected<> SceneSerializer::serializeComponent(YAML::Emitter& out,
     std::reference_wrapper<const ecs::ComponentBase> component) const
 {
   auto const type = component.get().getType();
-  auto serializer_exp = this->find(type);
-  RETURN_IF_UNEXPECTED(serializer_exp);
   out << YAML::Key << type << YAML::Value << YAML::BeginMap;
-  serializer_exp.value()->serialize(out, &component.get());
+  try {
+    this->factory_.serialize(type, out, &component.get());
+  } catch (std::exception const& e) {
+    std::cerr << "Serialization failed: " << e.what() << '\n';
+  }
   out << YAML::EndMap;
   return {};
 }
@@ -101,22 +140,6 @@ Expected<> SceneSerializer::deserializeComponent(std::string_view type,
     ecs::Entity entity,
     Scene& scene) const
 {
-  auto serializer_exp = this->find(type);
-  RETURN_IF_UNEXPECTED(serializer_exp);
-  RETURN_IF_UNEXPECTED(
-      serializer_exp.value()->deserialize(component_node, scene, entity));
-  return {};
-}
-
-Expected<ComponentSerializer const*> SceneSerializer::find(
-    std::string_view name) const noexcept
-{
-  auto it = std::find_if(this->component_serializers.begin(),
-      this->component_serializers.end(),
-      [&name](auto const& pair) { return pair.second.name == name; });
-  if (it != this->component_serializers.end())
-    return it->second.serializer.get();
-  return make_formatted_unexpected(
-      "Component type {} has no associated serializer", name);
+  return this->factory_.deserialize(type, component_node, scene, entity);
 }
 } // namespace redoom

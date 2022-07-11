@@ -17,24 +17,33 @@ class Circle : public Mesh
 public:
   Circle(unsigned int edge_segments,
       unsigned int ring_segments,
-      glm::vec3 color = {1.0f, 1.0f, 1.0f},
       std::vector<Texture2D> textures = {},
       GLenum topology = GL_TRIANGLE_STRIP) noexcept
     : Mesh{Circle::create(
-        edge_segments, ring_segments, color, std::move(textures), topology)}
+        edge_segments, ring_segments, std::move(textures), topology)}
+    , edge_segments_{edge_segments}
+    , ring_segments_{ring_segments}
   {
   }
-  Circle(Circle const& b) noexcept = delete;
-  Circle(Circle&& b) noexcept = default;
+  Circle(Circle const&) noexcept = delete;
+  Circle(Circle&&) noexcept = default;
   ~Circle() noexcept override = default;
 
-  Circle& operator=(Circle const& rhs) noexcept = delete;
-  Circle& operator=(Circle&& rhs) noexcept = default;
+  Circle& operator=(Circle const&) noexcept = delete;
+  Circle& operator=(Circle&&) noexcept = default;
+
+  [[nodiscard]] std::string const& getType() const noexcept override
+  {
+    static auto const type = std::string{"Circle"};
+    return type;
+  }
+
+  unsigned int edge_segments_;
+  unsigned int ring_segments_;
 
 private:
   static Mesh create(unsigned int edge_segments,
       unsigned int ring_segments,
-      glm::vec3 color,
       std::vector<Texture2D> textures,
       GLenum topology) noexcept
   {
@@ -57,7 +66,6 @@ private:
         // TODO(alucbert): determine actual normals and texture coordinates
         vertices.push_back({{x_pos * ring_depth, y_pos * ring_depth, 0.0f},
             {0.0f, 0.0f, 0.0f},
-            color,
             {0.0f, 0.0f}});
       }
     }

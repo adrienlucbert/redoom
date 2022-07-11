@@ -15,12 +15,12 @@ template <typename T>
 class UniqueTypeId
 {
 public:
-  UniqueTypeId(UniqueTypeId const& b) noexcept = default;
-  UniqueTypeId(UniqueTypeId&& b) noexcept = default;
+  UniqueTypeId(UniqueTypeId const&) noexcept = default;
+  UniqueTypeId(UniqueTypeId&&) noexcept = default;
   virtual ~UniqueTypeId() = default;
 
-  UniqueTypeId& operator=(UniqueTypeId const& rhs) noexcept = default;
-  UniqueTypeId& operator=(UniqueTypeId&& rhs) noexcept = default;
+  UniqueTypeId& operator=(UniqueTypeId const&) noexcept = default;
+  UniqueTypeId& operator=(UniqueTypeId&&) noexcept = default;
 
   [[nodiscard]] static type_id getTypeId() noexcept
   {

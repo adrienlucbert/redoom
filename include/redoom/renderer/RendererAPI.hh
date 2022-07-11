@@ -21,12 +21,12 @@ public:
   enum class API { Unknown, OpenGL };
 
   RendererAPI() noexcept = default;
-  RendererAPI(RendererAPI const& b) noexcept = default;
-  RendererAPI(RendererAPI&& b) noexcept = default;
+  RendererAPI(RendererAPI const&) noexcept = default;
+  RendererAPI(RendererAPI&&) noexcept = default;
   virtual ~RendererAPI() noexcept = default;
 
-  RendererAPI& operator=(RendererAPI const& rhs) noexcept = default;
-  RendererAPI& operator=(RendererAPI&& rhs) noexcept = default;
+  RendererAPI& operator=(RendererAPI const&) noexcept = default;
+  RendererAPI& operator=(RendererAPI&&) noexcept = default;
 
   [[nodiscard]] virtual bool isWireframe() const noexcept = 0;
   virtual void setWireframe(bool is_wireframe) noexcept = 0;

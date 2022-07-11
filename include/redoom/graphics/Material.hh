@@ -1,5 +1,7 @@
 #include <string>
 
+#include <glm/gtc/type_ptr.hpp>
+
 #pragma once
 
 namespace redoom::graphics
@@ -12,13 +14,14 @@ public:
   explicit Material(std::string pshader,
       float pgloss,
       float psmoothness,
-      float pmetallicness) noexcept;
-  Material(Material const& b) noexcept = delete;
-  Material(Material&& b) noexcept = default;
+      float pmetallicness,
+      glm::vec3 pcolor) noexcept;
+  Material(Material const&) noexcept = delete;
+  Material(Material&&) noexcept = default;
   virtual ~Material() noexcept = default;
 
-  Material& operator=(Material const& rhs) noexcept = delete;
-  Material& operator=(Material&& rhs) noexcept = default;
+  Material& operator=(Material const&) noexcept = delete;
+  Material& operator=(Material&&) noexcept = default;
 
   void apply(Program& program) const noexcept;
 
@@ -26,5 +29,6 @@ public:
   float gloss;
   float smoothness;
   float metallicness;
+  glm::vec3 color;
 };
 } // namespace redoom::graphics

@@ -22,8 +22,8 @@ public:
   {
     this->reserve(size);
   }
-  ThreadPool(ThreadPool const& b) noexcept = delete;
-  ThreadPool(ThreadPool&& b) noexcept = default;
+  ThreadPool(ThreadPool const&) noexcept = delete;
+  ThreadPool(ThreadPool&&) noexcept = default;
   ~ThreadPool() noexcept
   {
     {
@@ -35,8 +35,8 @@ public:
       worker.join();
   }
 
-  ThreadPool& operator=(ThreadPool const& rhs) noexcept = delete;
-  ThreadPool& operator=(ThreadPool&& rhs) noexcept = default;
+  ThreadPool& operator=(ThreadPool const&) noexcept = delete;
+  ThreadPool& operator=(ThreadPool&&) noexcept = default;
 
   template <typename Callable, typename... Args>
   std::future<typename std::result_of_t<Callable(Args...)>> enqueue(

@@ -12,12 +12,12 @@ class EntityManager
 {
 public:
   EntityManager() noexcept = default;
-  EntityManager(EntityManager const& b) noexcept = delete;
-  EntityManager(EntityManager&& b) noexcept = default;
+  EntityManager(EntityManager const&) noexcept = delete;
+  EntityManager(EntityManager&&) noexcept = default;
   ~EntityManager() noexcept = default;
 
-  EntityManager& operator=(EntityManager const& rhs) noexcept = delete;
-  EntityManager& operator=(EntityManager&& rhs) noexcept = default;
+  EntityManager& operator=(EntityManager const&) noexcept = delete;
+  EntityManager& operator=(EntityManager&&) noexcept = default;
 
   [[nodiscard]] Entity make() noexcept;
   void release(Entity entity) noexcept;

@@ -22,11 +22,11 @@ public:
   OctTreeFilter() noexcept = default;
   ~OctTreeFilter() noexcept override = default;
 
-  OctTreeFilter(OctTreeFilter const& rhs) noexcept = delete;
-  OctTreeFilter(OctTreeFilter&& rhs) noexcept = default;
+  OctTreeFilter(OctTreeFilter const&) noexcept = delete;
+  OctTreeFilter(OctTreeFilter&&) noexcept = default;
 
-  OctTreeFilter& operator=(OctTreeFilter const& rhs) noexcept = delete;
-  OctTreeFilter& operator=(OctTreeFilter&& rhs) noexcept = default;
+  OctTreeFilter& operator=(OctTreeFilter const&) noexcept = delete;
+  OctTreeFilter& operator=(OctTreeFilter&&) noexcept = default;
 
   void insert(Body& item) noexcept override
   {

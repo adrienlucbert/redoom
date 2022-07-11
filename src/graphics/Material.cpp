@@ -9,11 +9,13 @@ namespace redoom::graphics
 Material::Material(std::string pshader,
     float pgloss,
     float psmoothness,
-    float pmetallicness) noexcept
+    float pmetallicness,
+    glm::vec3 pcolor) noexcept
   : shader{std::move(pshader)}
   , gloss{pgloss}
   , smoothness{psmoothness}
   , metallicness{pmetallicness}
+  , color{pcolor}
 {
 }
 
@@ -23,5 +25,6 @@ void Material::apply(Program& program) const noexcept
   program.setUniform("Smoothness", uniforms::Float{.value = this->smoothness});
   program.setUniform(
       "Metallicness", uniforms::Float{.value = this->metallicness});
+  program.setUniform("Color", uniforms::Vector<3>{.value = this->color});
 }
 } // namespace redoom::graphics

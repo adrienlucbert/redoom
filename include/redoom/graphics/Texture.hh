@@ -26,11 +26,11 @@ public:
     Reflection,
     BaseColor
   };
-  Texture2D(Texture2D const& b) noexcept = default;
+  Texture2D(Texture2D const&) noexcept = default;
   Texture2D(Texture2D&& b) noexcept;
   ~Texture2D() noexcept;
 
-  Texture2D& operator=(Texture2D const& rhs) noexcept = delete;
+  Texture2D& operator=(Texture2D const&) noexcept = delete;
   Texture2D& operator=(Texture2D&& rhs) noexcept;
 
   [[nodiscard]] static Expected<Texture2D> fromFile(

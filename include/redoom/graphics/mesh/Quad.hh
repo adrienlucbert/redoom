@@ -13,7 +13,6 @@ class Quad : public Mesh
 public:
   explicit Quad(float width,
       float height,
-      glm::vec3 color = {1.0f, 1.0f, 1.0f},
       std::vector<Texture2D> textures = {},
       GLenum topology = GL_TRIANGLE_STRIP) noexcept
     // source:
@@ -22,24 +21,31 @@ public:
     : Mesh{
         std::vector{
           // TODO(alucbert): determine actual normals
-          Vertex{{-width / 2,  height / 2, 0.0f}, {0.0f, 0.0f, 0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{-width / 2, -height / 2, 0.0f}, {0.0f, 0.0f, 0.0f}, color, {0.0f, 0.0f}},
-          Vertex{{ width / 2,  height / 2, 0.0f}, {0.0f, 0.0f, 0.0f}, color, {1.0f, 1.0f}},
-          Vertex{{ width / 2, -height / 2, 0.0f}, {0.0f, 0.0f, 0.0f}, color, {1.0f, 0.0f}},
+          Vertex{{-width / 2,  height / 2, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+          Vertex{{-width / 2, -height / 2, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+          Vertex{{ width / 2,  height / 2, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+          Vertex{{ width / 2, -height / 2, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
         },
         std::vector<GLuint>{},
         std::move(textures),
         topology
-    } // clang-format on
+      } // clang-format on
+    , size_{width, height}
   {
   }
-  Quad(Quad const& b) noexcept = delete;
-  Quad(Quad&& b) noexcept = default;
+  Quad(Quad const&) noexcept = delete;
+  Quad(Quad&&) noexcept = default;
   ~Quad() noexcept override = default;
 
-  Quad& operator=(Quad const& rhs) noexcept = delete;
-  Quad& operator=(Quad&& rhs) noexcept = default;
+  Quad& operator=(Quad const&) noexcept = delete;
+  Quad& operator=(Quad&&) noexcept = default;
 
-private:
+  [[nodiscard]] std::string const& getType() const noexcept override
+  {
+    static auto const type = std::string{"Quad"};
+    return type;
+  }
+
+  glm::vec2 size_;
 };
 } // namespace redoom::graphics::mesh

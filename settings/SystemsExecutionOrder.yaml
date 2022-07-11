@@ -1,0 +1,9 @@
+Systems:
+  EventSystem: 0
+  BehaviourSystem: 1
+  CameraSystem: 1
+  LightSystem: 2
+  PhysicsWorldSystem: 900
+  PhysicsDebugSystem: 901
+  MeshSystem: 1000
+  ModelSystem: 1000

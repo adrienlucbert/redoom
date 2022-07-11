@@ -19,12 +19,12 @@ struct ModelImporterOptions {
 class Model
 {
 public:
-  Model(Model const& b) noexcept = default;
-  Model(Model&& b) noexcept = default;
+  Model(Model const&) noexcept = default;
+  Model(Model&&) noexcept = default;
   ~Model() noexcept = default;
 
-  Model& operator=(Model const& rhs) noexcept = default;
-  Model& operator=(Model&& rhs) noexcept = default;
+  Model& operator=(Model const&) noexcept = default;
+  Model& operator=(Model&&) noexcept = default;
 
   static Expected<Model> fromFile(std::filesystem::path path,
       ModelImporterOptions const& options = {}) noexcept;

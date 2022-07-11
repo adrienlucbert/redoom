@@ -23,11 +23,11 @@ public:
   CollisionDetector() noexcept = default;
   ~CollisionDetector() noexcept = default;
 
-  CollisionDetector(CollisionDetector const& rhs) noexcept = delete;
-  CollisionDetector(CollisionDetector&& rhs) noexcept = default;
+  CollisionDetector(CollisionDetector const&) noexcept = delete;
+  CollisionDetector(CollisionDetector&&) noexcept = default;
 
-  CollisionDetector& operator=(CollisionDetector const& rhs) noexcept = delete;
-  CollisionDetector& operator=(CollisionDetector&& rhs) noexcept = default;
+  CollisionDetector& operator=(CollisionDetector const&) noexcept = delete;
+  CollisionDetector& operator=(CollisionDetector&&) noexcept = default;
 
   void insert(Body& item) noexcept
   {

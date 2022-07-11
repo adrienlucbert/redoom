@@ -20,11 +20,11 @@ class UniformBase;
 class Program
 {
 public:
-  Program(Program const& b) noexcept = delete;
+  Program(Program const&) noexcept = delete;
   Program(Program&& b) noexcept;
   ~Program() noexcept;
 
-  Program& operator=(Program const& rhs) noexcept = delete;
+  Program& operator=(Program const&) noexcept = delete;
   Program& operator=(Program&& rhs) noexcept;
 
   [[nodiscard]] static Expected<Program> create(

@@ -23,8 +23,8 @@ about the different concerned fields:
 
 There is no fixed end goal, as this project aims to be a playground for any idea
 I would be interested in trying. However an unofficial goal is to recreate at
-some point level of [the first Doom game](https://en.wikipedia.org/wiki/Doom_(1993_video_game)),
-mostly as a tribute to this game which is considered, along with its older
+some point one level from [the first Doom game](https://en.wikipedia.org/wiki/Doom_(1993_video_game)),
+mostly as a tribute to this game which is considered, alongside its older
 brother Wolfenstein 3D, to be the grandfather of first-person-shooter games.
 
 ## 🗺️ Roadmap

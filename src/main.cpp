@@ -1,8 +1,5 @@
 #include <redoom/Application.hh>
 
-using redoom::Application;
-using redoom::ApplicationArguments;
-
 namespace redoom
 {
 struct EditorApplication : public Application {

@@ -10,6 +10,7 @@
 using redoom::ecs::Behaviour;
 using redoom::ecs::Entity;
 using redoom::ecs::UpdateContext;
+using redoom::ecs::components::BehaviourComponent;
 
 struct DonutBehaviour : public Behaviour {
   double rotation_speed{5.0};
@@ -29,16 +30,23 @@ struct DonutBehaviour : public Behaviour {
       assert("No transform component associated" == nullptr);
     try {
       auto& transform = transform_opt.value();
-      transform.setAngle(
-          transform.getAngle()
-          + static_cast<float>(context.getElapsedTime() * this->rotation_speed));
+      transform.setAngle(transform.getAngle()
+                         + static_cast<float>(
+                             context.getElapsedTime() * this->rotation_speed));
     } catch (tl::bad_optional_access const&) {
       // NOTE: this should never happen, but it makes clang-tidy happy
     }
   }
 };
 
-std::unique_ptr<Behaviour> make() noexcept
+void serialize(YAML::Emitter& /*out*/, BehaviourComponent const* /*component*/)
+{
+}
+
+redoom::Expected<std::unique_ptr<Behaviour>> deserialize(
+    YAML::Node const& /*node*/,
+    redoom::Scene& /*scene*/,
+    redoom::ecs::Entity /*entity*/)
 {
   return std::make_unique<DonutBehaviour>();
 }

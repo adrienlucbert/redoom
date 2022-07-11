@@ -12,12 +12,12 @@ namespace redoom::platform::OpenGL
 class OpenGLWindow : public renderer::Window
 {
 public:
-  OpenGLWindow(OpenGLWindow const& b) noexcept = delete;
-  OpenGLWindow(OpenGLWindow&& b) noexcept = default;
+  OpenGLWindow(OpenGLWindow const&) noexcept = delete;
+  OpenGLWindow(OpenGLWindow&&) noexcept = default;
   ~OpenGLWindow() noexcept override;
 
-  OpenGLWindow& operator=(OpenGLWindow const& rhs) noexcept = delete;
-  OpenGLWindow& operator=(OpenGLWindow&& rhs) noexcept = default;
+  OpenGLWindow& operator=(OpenGLWindow const&) noexcept = delete;
+  OpenGLWindow& operator=(OpenGLWindow&&) noexcept = default;
 
   [[nodiscard]] int getWidth() const noexcept override;
   [[nodiscard]] int getHeight() const noexcept override;

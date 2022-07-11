@@ -5,12 +5,12 @@ namespace redoom::memory
 class AllocatorBase
 {
 public:
-  AllocatorBase(AllocatorBase const& b) noexcept = delete;
-  AllocatorBase(AllocatorBase&& b) noexcept = default;
+  AllocatorBase(AllocatorBase const&) noexcept = delete;
+  AllocatorBase(AllocatorBase&&) noexcept = default;
   virtual ~AllocatorBase() noexcept = default;
 
-  AllocatorBase& operator=(AllocatorBase const& rhs) noexcept = delete;
-  AllocatorBase& operator=(AllocatorBase&& rhs) noexcept = default;
+  AllocatorBase& operator=(AllocatorBase const&) noexcept = delete;
+  AllocatorBase& operator=(AllocatorBase&&) noexcept = default;
 
 protected:
   AllocatorBase() noexcept = default;

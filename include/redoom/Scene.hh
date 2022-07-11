@@ -11,12 +11,12 @@ class Scene
 {
 public:
   explicit Scene(std::string_view name) noexcept;
-  Scene(Scene const& b) noexcept = delete;
-  Scene(Scene&& b) noexcept = default;
+  Scene(Scene const&) noexcept = delete;
+  Scene(Scene&&) noexcept = default;
   ~Scene() noexcept = default;
 
-  Scene& operator=(Scene const& rhs) noexcept = delete;
-  Scene& operator=(Scene&& rhs) noexcept = default;
+  Scene& operator=(Scene const&) noexcept = delete;
+  Scene& operator=(Scene&&) noexcept = default;
 
   [[nodiscard]] std::string const& getName() const noexcept;
   [[nodiscard]] ecs::Registry& getRegistry() noexcept;

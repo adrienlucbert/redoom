@@ -11,12 +11,12 @@ public:
   enum class ProjectionType { Perspective, Orthographic };
 
   explicit Camera(glm::vec3 position = glm::vec3{0.0f, 0.0f, 0.0f}) noexcept;
-  Camera(Camera const& b) noexcept = default;
-  Camera(Camera&& b) noexcept = default;
+  Camera(Camera const&) noexcept = default;
+  Camera(Camera&&) noexcept = default;
   ~Camera() noexcept = default;
 
-  Camera& operator=(Camera const& rhs) noexcept = default;
-  Camera& operator=(Camera&& rhs) noexcept = default;
+  Camera& operator=(Camera const&) noexcept = default;
+  Camera& operator=(Camera&&) noexcept = default;
 
   [[nodiscard]] glm::vec3 const& getPosition() const noexcept;
   void setPosition(glm::vec3 position) noexcept;

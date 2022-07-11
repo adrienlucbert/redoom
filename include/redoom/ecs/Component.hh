@@ -10,12 +10,12 @@ template <typename T>
 class Component : public ComponentBase, public Utils::UniqueTypeId<T>
 {
 public:
-  Component(Component const& b) noexcept = default;
-  Component(Component&& b) noexcept = default;
+  Component(Component const&) noexcept = default;
+  Component(Component&&) noexcept = default;
   ~Component() noexcept override = default;
 
-  Component& operator=(Component const& rhs) noexcept = default;
-  Component& operator=(Component&& rhs) noexcept = default;
+  Component& operator=(Component const&) noexcept = default;
+  Component& operator=(Component&&) noexcept = default;
 
 protected:
   Component() noexcept = default;

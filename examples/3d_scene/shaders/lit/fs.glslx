@@ -1,7 +1,6 @@
 #version 330 core
 out vec4 FragColor;
   
-in vec3 Color;
 in vec4 WorldPosition;
 in vec3 WorldNormal;
 in vec2 TexCoord;
@@ -10,6 +9,7 @@ uniform sampler2D texture_diffuse1;
 uniform float Gloss;
 uniform float Smoothness;
 uniform float Metallicness;
+uniform vec3 Color;
 uniform vec3 AmbientLightColor;
 uniform vec3 DirectionalLightDirection;
 uniform vec3 DirectionalLightColor;

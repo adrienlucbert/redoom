@@ -14,12 +14,12 @@ public:
   enum class CursorMode { Normal, Hidden, Disabled };
 
   Window() noexcept = default;
-  Window(Window const& b) noexcept = delete;
-  Window(Window&& b) noexcept = default;
+  Window(Window const&) noexcept = delete;
+  Window(Window&&) noexcept = default;
   virtual ~Window() noexcept = default;
 
-  Window& operator=(Window const& rhs) noexcept = delete;
-  Window& operator=(Window&& rhs) noexcept = default;
+  Window& operator=(Window const&) noexcept = delete;
+  Window& operator=(Window&&) noexcept = default;
 
   [[nodiscard]] virtual int getWidth() const noexcept = 0;
   [[nodiscard]] virtual int getHeight() const noexcept = 0;

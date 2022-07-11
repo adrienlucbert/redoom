@@ -1,0 +1,10 @@
+Components:
+  TransformComponent: 0
+  CameraComponent: 1
+  DirectionalLightComponent: 2
+  AmbientLightComponent: 2
+  MeshComponent: 100
+  MaterialComponent: 101
+  ModelComponent: 102
+  BodyComponent: 150
+  BehaviourComponent: 1000

@@ -1,5 +1,6 @@
 #include <redoom/ecs/systems/PhysicsDebugSystem.hh>
 
+#include <redoom/Application.hh>
 #include <redoom/ecs/components/BodyComponent.hh>
 #include <redoom/ecs/components/TransformComponent.hh>
 #include <redoom/graphics/ShaderLibrary.hh>
@@ -40,7 +41,6 @@ void PhysicsDebugSystem::update(UpdateContext& context) noexcept
                 aabb->upper_bounds.x - aabb->lower_bounds.x,
                 aabb->upper_bounds.y - aabb->lower_bounds.y,
                 aabb->upper_bounds.z - aabb->lower_bounds.z,
-                {0.0f, 1.0f, 0.0f},
                 {},
                 GL_LINE_STRIP};
             auto offset = aabb->getCenter();

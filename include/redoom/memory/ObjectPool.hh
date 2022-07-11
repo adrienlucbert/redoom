@@ -27,16 +27,16 @@ private:
       for (auto i = this->chunk_size_; i > 0; --i)
         this->available_.push(i - 1);
     }
-    Chunk(Chunk const& b) noexcept = default;
-    Chunk(Chunk&& b) noexcept = default;
+    Chunk(Chunk const&) noexcept = default;
+    Chunk(Chunk&&) noexcept = default;
     ~Chunk() noexcept
     {
       assert(this->available_.size() == this->chunk_size_
              && "Some objects were not released");
     }
 
-    Chunk& operator=(Chunk const& rhs) noexcept = default;
-    Chunk& operator=(Chunk&& rhs) noexcept = default;
+    Chunk& operator=(Chunk const&) noexcept = default;
+    Chunk& operator=(Chunk&&) noexcept = default;
 
     [[nodiscard]] bool isFull() const noexcept
     {
@@ -111,12 +111,12 @@ private:
 
 public:
   ObjectPool() noexcept = default;
-  ObjectPool(ObjectPool const& b) noexcept = default;
-  ObjectPool(ObjectPool&& b) noexcept = default;
+  ObjectPool(ObjectPool const&) noexcept = default;
+  ObjectPool(ObjectPool&&) noexcept = default;
   ~ObjectPool() noexcept = default;
 
-  ObjectPool& operator=(ObjectPool const& rhs) noexcept = default;
-  ObjectPool& operator=(ObjectPool&& rhs) noexcept = default;
+  ObjectPool& operator=(ObjectPool const&) noexcept = default;
+  ObjectPool& operator=(ObjectPool&&) noexcept = default;
 
   Chunk& grow() noexcept
   {

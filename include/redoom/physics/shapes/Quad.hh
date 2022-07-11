@@ -18,18 +18,18 @@ public:
     , mesh_{tl::nullopt}
   {
   }
-  Quad(Quad const& b) noexcept = delete;
-  Quad(Quad&& b) noexcept = default;
+  Quad(Quad const&) noexcept = delete;
+  Quad(Quad&&) noexcept = default;
   ~Quad() noexcept override = default;
 
-  Quad& operator=(Quad const& rhs) noexcept = delete;
-  Quad& operator=(Quad&& rhs) noexcept = default;
+  Quad& operator=(Quad const&) noexcept = delete;
+  Quad& operator=(Quad&&) noexcept = default;
 
   void draw(graphics::Program& program) const noexcept override
   {
     if (!this->mesh_.has_value())
-      this->mesh_ = graphics::mesh::Quad{
-          this->width_, this->height_, {1.0f, 0.0f, 0.0f}, {}, GL_LINE_STRIP};
+      this->mesh_ =
+          graphics::mesh::Quad{this->width_, this->height_, {}, GL_LINE_STRIP};
     this->mesh_->draw(program);
   }
 

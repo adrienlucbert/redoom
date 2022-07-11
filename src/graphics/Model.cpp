@@ -72,10 +72,6 @@ Expected<Mesh> Model::parseMesh(aiMesh* mesh,
     vertex.normal.y = mesh->mNormals[i].y; // NOLINT
     vertex.normal.z = mesh->mNormals[i].z; // NOLINT
 
-    vertex.color.x = 1.0f; // NOLINT
-    vertex.color.y = 1.0f; // NOLINT
-    vertex.color.z = 1.0f; // NOLINT
-
     if (mesh->mTextureCoords[0] != nullptr) {
       vertex.texUV.x = mesh->mTextureCoords[0][i].x; // NOLINT
       vertex.texUV.y = mesh->mTextureCoords[0][i].y; // NOLINT

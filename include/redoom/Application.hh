@@ -28,12 +28,12 @@ struct ApplicationArguments {
 class Application : public Utils::Singleton<Application>
 {
 public:
-  Application(Application const& b) noexcept = delete;
-  Application(Application&& b) noexcept = delete;
+  Application(Application const&) noexcept = delete;
+  Application(Application&&) noexcept = delete;
   ~Application() noexcept override = default;
 
-  Application& operator=(Application const& rhs) noexcept = delete;
-  Application& operator=(Application&& rhs) noexcept = delete;
+  Application& operator=(Application const&) noexcept = delete;
+  Application& operator=(Application&&) noexcept = delete;
 
   [[nodiscard]] bool isReady() const noexcept;
   void run() noexcept;

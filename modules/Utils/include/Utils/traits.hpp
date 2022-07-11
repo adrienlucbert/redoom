@@ -3,11 +3,22 @@
 #include <type_traits>
 #include <utility>
 
+#include <Utils/Error.hh>
+#include <tl/expected.hpp>
+
 namespace redoom::Utils
 {
 template <typename T, typename... Ts>
 using are_same =
     typename std::enable_if_t<std::conjunction_v<std::is_same<Ts, T>...>>;
+
+template <class T, template <class...> class Template>
+struct is_specialization : std::false_type {
+};
+
+template <template <class...> class Template, class... Args>
+struct is_specialization<Template<Args...>, Template> : std::true_type {
+};
 
 namespace detail
 {

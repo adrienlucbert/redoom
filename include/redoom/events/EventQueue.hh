@@ -12,12 +12,12 @@ class EventQueue
 {
 public:
   EventQueue() noexcept = default;
-  EventQueue(EventQueue const& b) noexcept = delete;
-  EventQueue(EventQueue&& b) noexcept = default;
+  EventQueue(EventQueue const&) noexcept = delete;
+  EventQueue(EventQueue&&) noexcept = default;
   ~EventQueue() noexcept = default;
 
-  EventQueue& operator=(EventQueue const& rhs) noexcept = delete;
-  EventQueue& operator=(EventQueue&& rhs) noexcept = default;
+  EventQueue& operator=(EventQueue const&) noexcept = delete;
+  EventQueue& operator=(EventQueue&&) noexcept = default;
 
   void push(Event event) noexcept;
   Event pop() noexcept;

@@ -19,22 +19,18 @@ public:
     , mesh_{tl::nullopt}
   {
   }
-  Cuboid(Cuboid const& b) noexcept = delete;
-  Cuboid(Cuboid&& b) noexcept = default;
+  Cuboid(Cuboid const&) noexcept = delete;
+  Cuboid(Cuboid&&) noexcept = default;
   ~Cuboid() noexcept override = default;
 
-  Cuboid& operator=(Cuboid const& rhs) noexcept = delete;
-  Cuboid& operator=(Cuboid&& rhs) noexcept = default;
+  Cuboid& operator=(Cuboid const&) noexcept = delete;
+  Cuboid& operator=(Cuboid&&) noexcept = default;
 
   void draw(graphics::Program& program) const noexcept override
   {
     if (!this->mesh_.has_value())
-      this->mesh_ = graphics::mesh::Cuboid{this->width_,
-          this->height_,
-          this->length_,
-          {1.0f, 0.0f, 0.0f},
-          {},
-          GL_LINE_STRIP};
+      this->mesh_ = graphics::mesh::Cuboid{
+          this->width_, this->height_, this->length_, {}, GL_LINE_STRIP};
     this->mesh_->draw(program);
   }
 

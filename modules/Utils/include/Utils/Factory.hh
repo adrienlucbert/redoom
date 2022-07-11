@@ -1,41 +1,86 @@
 #pragma once
 
+#include <filesystem>
+#include <functional>
 #include <memory>
+#include <stdexcept>
+#include <type_traits>
 
-#include <Utils/DLLoader.hh>
+#include <yaml-cpp/yaml.h>
+
 #include <Utils/Expected.hh>
+#include <Utils/Serializer.hh>
 
 namespace redoom::Utils
 {
-template <typename T, typename Allocator = std::unique_ptr<T> (*)()>
+template <typename T, typename Serialize, typename Deserialize>
 class Factory
 {
 public:
-  Expected<Factory> static fromDL(
-      std::string_view filepath, std::string_view symbol) noexcept
+  using value_type = T;
+  using serialize_type = Serialize;
+  using deserialize_type = Deserialize;
+  using serializer_type = Serializer<T, Serialize, Deserialize>;
+
+  Factory() noexcept = default;
+  virtual ~Factory() noexcept = default;
+
+  template <typename... Args>
+  auto serialize(std::string_view type, Args&&... args) const
   {
-    auto loader_exp = DLLoader::open(filepath);
-    RETURN_IF_UNEXPECTED(loader_exp);
-    auto& loader = *loader_exp;
-    auto factory_exp = loader.load<Allocator>(symbol);
-    RETURN_IF_UNEXPECTED(factory_exp);
-    return {Factory{std::move(loader), *factory_exp}};
+    auto serializer_exp = this->getSerializer(type);
+    if (!serializer_exp)
+      throw std::runtime_error{serializer_exp.error()};
+    auto const& serializer = (*serializer_exp).get();
+    return serializer.serialize(std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  auto make(Args&&... args) const noexcept
+  auto deserialize(std::string_view type, Args&&... args) const
   {
-    return std::invoke(this->allocator_, std::forward<Args>(args)...);
+    auto serializer_exp = this->getSerializer(type);
+    if (!serializer_exp)
+      throw std::runtime_error{serializer_exp.error()};
+    auto const& serializer = (*serializer_exp).get();
+    return serializer.deserialize(std::forward<Args>(args)...);
   }
 
-private:
-  explicit Factory(DLLoader loader, Allocator allocator) noexcept
-    : loader_{std::move(loader)}
-    , allocator_{allocator}
+  [[nodiscard]] virtual Expected<> loadSerializer(
+      std::filesystem::path const& path, std::string_view key) const
   {
+    auto dll_exp = DLLoader::get().getLibrary(path);
+    RETURN_IF_UNEXPECTED(dll_exp);
+    auto const& dll = (*dll_exp).get();
+    auto serializer_exp =
+        serializer_type::fromDL(dll, "serialize", "deserialize");
+    RETURN_IF_UNEXPECTED(serializer_exp);
+    auto [it, success] = this->serializers_.emplace(
+        key.data(), SerializerData{dll, std::move(*serializer_exp)});
+    if (!success)
+      return make_formatted_unexpected(
+          "Dynamic library {} not found", path.c_str());
+    return {};
   }
 
-  DLLoader loader_;
-  Allocator allocator_;
+protected:
+  struct SerializerData {
+    DynLibrary const& dll;
+    serializer_type serializer;
+  };
+
+  Expected<std::reference_wrapper<serializer_type>> getSerializer(
+      std::string_view key) const noexcept
+  {
+    auto serializer_it = this->serializers_.find(key.data());
+    if (serializer_it == this->serializers_.end()) {
+      auto load_exp = this->loadSerializer(key, key);
+      RETURN_IF_UNEXPECTED(load_exp);
+      return this->getSerializer(key);
+    } else {
+      return serializer_it->second.serializer;
+    }
+  }
+
+  mutable std::unordered_map<std::string, SerializerData> serializers_{};
 };
 } // namespace redoom::Utils

@@ -76,7 +76,7 @@ set(
   FORCE
 )
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb3")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb3 -fdebug-default-version=2")
 elseif(CMAKE_BUILD_TYPE MATCHES "tsan")
   set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -fno-omit-frame-pointer -fsanitize=thread")
 endif()

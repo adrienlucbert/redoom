@@ -68,7 +68,7 @@ public:
   ~Body() noexcept = default;
 
   Body(Body const&) noexcept = delete;
-  Body(Body&& rhs) noexcept = default;
+  Body(Body&&) noexcept = default;
 
   Body& operator=(Body const&) noexcept = delete;
   Body& operator=(Body&&) noexcept = delete;

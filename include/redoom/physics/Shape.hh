@@ -14,12 +14,12 @@ namespace redoom::physics
 class Shape
 {
 public:
-  Shape(Shape const& b) noexcept = default;
-  Shape(Shape&& b) noexcept = default;
+  Shape(Shape const&) noexcept = default;
+  Shape(Shape&&) noexcept = default;
   virtual ~Shape() noexcept = default;
 
-  Shape& operator=(Shape const& rhs) noexcept = default;
-  Shape& operator=(Shape&& rhs) noexcept = default;
+  Shape& operator=(Shape const&) noexcept = default;
+  Shape& operator=(Shape&&) noexcept = default;
 
   virtual void draw(graphics::Program& program) const noexcept = 0;
 

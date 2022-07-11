@@ -55,11 +55,11 @@ public:
   }
   ~OctTree() = default;
 
-  OctTree(OctTree const& rhs) noexcept = delete;
-  OctTree(OctTree&& rhs) noexcept = default;
+  OctTree(OctTree const&) noexcept = delete;
+  OctTree(OctTree&&) noexcept = default;
 
-  OctTree& operator=(OctTree const& rhs) noexcept = delete;
-  OctTree& operator=(OctTree&& rhs) noexcept = default;
+  OctTree& operator=(OctTree const&) noexcept = delete;
+  OctTree& operator=(OctTree&&) noexcept = default;
 
   void dump() const noexcept
   {
@@ -527,9 +527,8 @@ private:
   private:
     static std::unique_ptr<graphics::Mesh const> const& getMesh() noexcept
     {
-      static auto const mesh =
-          std::make_unique<graphics::Mesh const>(graphics::mesh::Cuboid{
-              1.0f, 1.0f, 1.0f, {0.0f, 0.0f, 1.0f}, {}, GL_LINE_STRIP});
+      static auto const mesh = std::make_unique<graphics::Mesh const>(
+          graphics::mesh::Cuboid{1.0f, 1.0f, 1.0f, {}, GL_LINE_STRIP});
       return mesh;
     }
 

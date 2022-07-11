@@ -19,18 +19,18 @@ public:
     , mesh_{tl::nullopt}
   {
   }
-  Sphere(Sphere const& b) noexcept = delete;
-  Sphere(Sphere&& b) noexcept = default;
+  Sphere(Sphere const&) noexcept = delete;
+  Sphere(Sphere&&) noexcept = default;
   ~Sphere() noexcept override = default;
 
-  Sphere& operator=(Sphere const& rhs) noexcept = delete;
-  Sphere& operator=(Sphere&& rhs) noexcept = default;
+  Sphere& operator=(Sphere const&) noexcept = delete;
+  Sphere& operator=(Sphere&&) noexcept = default;
 
   void draw(graphics::Program& program) const noexcept override
   {
     if (!this->mesh_.has_value())
-      this->mesh_ = graphics::mesh::Sphere{
-          this->radius_, 20, 20, {1.0f, 0.0f, 0.0f}, {}, GL_LINE_STRIP};
+      this->mesh_ =
+          graphics::mesh::Sphere{this->radius_, 20, 20, {}, GL_LINE_STRIP};
     this->mesh_->draw(program);
   }
 

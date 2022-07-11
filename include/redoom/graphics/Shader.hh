@@ -12,11 +12,11 @@ namespace redoom::graphics
 class Shader
 {
 public:
-  Shader(Shader const& b) noexcept = delete;
+  Shader(Shader const&) noexcept = delete;
   Shader(Shader&& b) noexcept;
   ~Shader() noexcept;
 
-  Shader& operator=(Shader const& rhs) noexcept = delete;
+  Shader& operator=(Shader const&) noexcept = delete;
   Shader& operator=(Shader&& rhs) noexcept;
 
   [[nodiscard]] static Expected<Shader> fromString(

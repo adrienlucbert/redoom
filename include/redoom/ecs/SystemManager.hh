@@ -24,12 +24,12 @@ class SystemManager
 {
 public:
   SystemManager() noexcept = default;
-  SystemManager(SystemManager const& b) noexcept = delete;
-  SystemManager(SystemManager&& b) noexcept = default;
+  SystemManager(SystemManager const&) noexcept = delete;
+  SystemManager(SystemManager&&) noexcept = default;
   ~SystemManager() noexcept = default;
 
-  SystemManager& operator=(SystemManager const& rhs) noexcept = delete;
-  SystemManager& operator=(SystemManager&& rhs) noexcept = default;
+  SystemManager& operator=(SystemManager const&) noexcept = delete;
+  SystemManager& operator=(SystemManager&&) noexcept = default;
 
   template <typename T, typename... Args>
   void make(SystemPriority priority, Args&&... args) noexcept

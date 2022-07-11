@@ -11,12 +11,12 @@ class Registry
 {
 public:
   Registry() noexcept = default;
-  Registry(Registry const& b) noexcept = delete;
-  Registry(Registry&& b) noexcept = default;
+  Registry(Registry const&) noexcept = delete;
+  Registry(Registry&&) noexcept = default;
   ~Registry() noexcept = default;
 
-  Registry& operator=(Registry const& rhs) noexcept = delete;
-  Registry& operator=(Registry&& rhs) noexcept = default;
+  Registry& operator=(Registry const&) noexcept = delete;
+  Registry& operator=(Registry&&) noexcept = default;
 
   [[nodiscard]] Entity makeEntity() noexcept;
   void releaseEntity(Entity entity) noexcept;

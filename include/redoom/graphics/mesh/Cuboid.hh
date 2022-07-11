@@ -16,73 +16,79 @@ public:
   Cuboid(float width,
       float height,
       float depth,
-      glm::vec3 color = {1.0f, 1.0f, 1.0f},
       std::vector<Texture2D> textures = {},
       GLenum topology = GL_TRIANGLES) noexcept
     // clang-format off
     : Mesh{
         std::vector{
           // front face
-          Vertex{{-width / 2, -height / 2, -depth / 2}, {  0.0f,    0.0f, -depth}, color, {0.0f, 0.0f}},
-          Vertex{{ width / 2,  height / 2, -depth / 2}, {  0.0f,    0.0f, -depth}, color, {1.0f, 1.0f}},
-          Vertex{{ width / 2, -height / 2, -depth / 2}, {  0.0f,    0.0f, -depth}, color, {1.0f, 0.0f}},
-          Vertex{{ width / 2,  height / 2, -depth / 2}, {  0.0f,    0.0f, -depth}, color, {1.0f, 1.0f}},
-          Vertex{{-width / 2, -height / 2, -depth / 2}, {  0.0f,    0.0f, -depth}, color, {0.0f, 0.0f}},
-          Vertex{{-width / 2,  height / 2, -depth / 2}, {  0.0f,    0.0f, -depth}, color, {0.0f, 1.0f}},
+          Vertex{{-width / 2, -height / 2, -depth / 2}, {  0.0f,    0.0f, -depth}, {0.0f, 0.0f}},
+          Vertex{{ width / 2,  height / 2, -depth / 2}, {  0.0f,    0.0f, -depth}, {1.0f, 1.0f}},
+          Vertex{{ width / 2, -height / 2, -depth / 2}, {  0.0f,    0.0f, -depth}, {1.0f, 0.0f}},
+          Vertex{{ width / 2,  height / 2, -depth / 2}, {  0.0f,    0.0f, -depth}, {1.0f, 1.0f}},
+          Vertex{{-width / 2, -height / 2, -depth / 2}, {  0.0f,    0.0f, -depth}, {0.0f, 0.0f}},
+          Vertex{{-width / 2,  height / 2, -depth / 2}, {  0.0f,    0.0f, -depth}, {0.0f, 1.0f}},
 
           // back face
-          Vertex{{-width / 2, -height / 2,  depth / 2}, {  0.0f,    0.0f,  depth}, color, {0.0f, 0.0f}},
-          Vertex{{ width / 2, -height / 2,  depth / 2}, {  0.0f,    0.0f,  depth}, color, {1.0f, 0.0f}},
-          Vertex{{ width / 2,  height / 2,  depth / 2}, {  0.0f,    0.0f,  depth}, color, {1.0f, 1.0f}},
-          Vertex{{ width / 2,  height / 2,  depth / 2}, {  0.0f,    0.0f,  depth}, color, {1.0f, 1.0f}},
-          Vertex{{-width / 2,  height / 2,  depth / 2}, {  0.0f,    0.0f,  depth}, color, {0.0f, 1.0f}},
-          Vertex{{-width / 2, -height / 2,  depth / 2}, {  0.0f,    0.0f,  depth}, color, {0.0f, 0.0f}},
+          Vertex{{-width / 2, -height / 2,  depth / 2}, {  0.0f,    0.0f,  depth}, {0.0f, 0.0f}},
+          Vertex{{ width / 2, -height / 2,  depth / 2}, {  0.0f,    0.0f,  depth}, {1.0f, 0.0f}},
+          Vertex{{ width / 2,  height / 2,  depth / 2}, {  0.0f,    0.0f,  depth}, {1.0f, 1.0f}},
+          Vertex{{ width / 2,  height / 2,  depth / 2}, {  0.0f,    0.0f,  depth}, {1.0f, 1.0f}},
+          Vertex{{-width / 2,  height / 2,  depth / 2}, {  0.0f,    0.0f,  depth}, {0.0f, 1.0f}},
+          Vertex{{-width / 2, -height / 2,  depth / 2}, {  0.0f,    0.0f,  depth}, {0.0f, 0.0f}},
 
           // left face
-          Vertex{{-width / 2,  height / 2,  depth / 2}, {-width,    0.0f,   0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{-width / 2,  height / 2, -depth / 2}, {-width,    0.0f,   0.0f}, color, {1.0f, 1.0f}},
-          Vertex{{-width / 2, -height / 2, -depth / 2}, {-width,    0.0f,   0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{-width / 2, -height / 2, -depth / 2}, {-width,    0.0f,   0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{-width / 2, -height / 2,  depth / 2}, {-width,    0.0f,   0.0f}, color, {0.0f, 0.0f}},
-          Vertex{{-width / 2,  height / 2,  depth / 2}, {-width,    0.0f,   0.0f}, color, {1.0f, 0.0f}},
+          Vertex{{-width / 2,  height / 2,  depth / 2}, {-width,    0.0f,   0.0f}, {1.0f, 0.0f}},
+          Vertex{{-width / 2,  height / 2, -depth / 2}, {-width,    0.0f,   0.0f}, {1.0f, 1.0f}},
+          Vertex{{-width / 2, -height / 2, -depth / 2}, {-width,    0.0f,   0.0f}, {0.0f, 1.0f}},
+          Vertex{{-width / 2, -height / 2, -depth / 2}, {-width,    0.0f,   0.0f}, {0.0f, 1.0f}},
+          Vertex{{-width / 2, -height / 2,  depth / 2}, {-width,    0.0f,   0.0f}, {0.0f, 0.0f}},
+          Vertex{{-width / 2,  height / 2,  depth / 2}, {-width,    0.0f,   0.0f}, {1.0f, 0.0f}},
 
           // right face
-          Vertex{{ width / 2,  height / 2,  depth / 2}, { width,    0.0f,   0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{ width / 2, -height / 2, -depth / 2}, { width,    0.0f,   0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{ width / 2,  height / 2, -depth / 2}, { width,    0.0f,   0.0f}, color, {1.0f, 1.0f}},
-          Vertex{{ width / 2, -height / 2, -depth / 2}, { width,    0.0f,   0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{ width / 2,  height / 2,  depth / 2}, { width,    0.0f,   0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{ width / 2, -height / 2,  depth / 2}, { width,    0.0f,   0.0f}, color, {0.0f, 0.0f}},
+          Vertex{{ width / 2,  height / 2,  depth / 2}, { width,    0.0f,   0.0f}, {1.0f, 0.0f}},
+          Vertex{{ width / 2, -height / 2, -depth / 2}, { width,    0.0f,   0.0f}, {0.0f, 1.0f}},
+          Vertex{{ width / 2,  height / 2, -depth / 2}, { width,    0.0f,   0.0f}, {1.0f, 1.0f}},
+          Vertex{{ width / 2, -height / 2, -depth / 2}, { width,    0.0f,   0.0f}, {0.0f, 1.0f}},
+          Vertex{{ width / 2,  height / 2,  depth / 2}, { width,    0.0f,   0.0f}, {1.0f, 0.0f}},
+          Vertex{{ width / 2, -height / 2,  depth / 2}, { width,    0.0f,   0.0f}, {0.0f, 0.0f}},
 
           // bottom face
-          Vertex{{-width / 2, -height / 2, -depth / 2}, {  0.0f, -height,   0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{ width / 2, -height / 2, -depth / 2}, {  0.0f, -height,   0.0f}, color, {1.0f, 1.0f}},
-          Vertex{{ width / 2, -height / 2,  depth / 2}, {  0.0f, -height,   0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{ width / 2, -height / 2,  depth / 2}, {  0.0f, -height,   0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{-width / 2, -height / 2,  depth / 2}, {  0.0f, -height,   0.0f}, color, {0.0f, 0.0f}},
-          Vertex{{-width / 2, -height / 2, -depth / 2}, {  0.0f, -height,   0.0f}, color, {0.0f, 1.0f}},
+          Vertex{{-width / 2, -height / 2, -depth / 2}, {  0.0f, -height,   0.0f}, {0.0f, 1.0f}},
+          Vertex{{ width / 2, -height / 2, -depth / 2}, {  0.0f, -height,   0.0f}, {1.0f, 1.0f}},
+          Vertex{{ width / 2, -height / 2,  depth / 2}, {  0.0f, -height,   0.0f}, {1.0f, 0.0f}},
+          Vertex{{ width / 2, -height / 2,  depth / 2}, {  0.0f, -height,   0.0f}, {1.0f, 0.0f}},
+          Vertex{{-width / 2, -height / 2,  depth / 2}, {  0.0f, -height,   0.0f}, {0.0f, 0.0f}},
+          Vertex{{-width / 2, -height / 2, -depth / 2}, {  0.0f, -height,   0.0f}, {0.0f, 1.0f}},
 
           // top face
-          Vertex{{-width / 2,  height / 2, -depth / 2}, {  0.0f,  height,   0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{ width / 2,  height / 2,  depth / 2}, {  0.0f,  height,   0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{ width / 2,  height / 2, -depth / 2}, {  0.0f,  height,   0.0f}, color, {1.0f, 1.0f}},
-          Vertex{{ width / 2,  height / 2,  depth / 2}, {  0.0f,  height,   0.0f}, color, {1.0f, 0.0f}},
-          Vertex{{-width / 2,  height / 2, -depth / 2}, {  0.0f,  height,   0.0f}, color, {0.0f, 1.0f}},
-          Vertex{{-width / 2,  height / 2,  depth / 2}, {  0.0f,  height,   0.0f}, color, {0.0f, 0.0f}},
+          Vertex{{-width / 2,  height / 2, -depth / 2}, {  0.0f,  height,   0.0f}, {0.0f, 1.0f}},
+          Vertex{{ width / 2,  height / 2,  depth / 2}, {  0.0f,  height,   0.0f}, {1.0f, 0.0f}},
+          Vertex{{ width / 2,  height / 2, -depth / 2}, {  0.0f,  height,   0.0f}, {1.0f, 1.0f}},
+          Vertex{{ width / 2,  height / 2,  depth / 2}, {  0.0f,  height,   0.0f}, {1.0f, 0.0f}},
+          Vertex{{-width / 2,  height / 2, -depth / 2}, {  0.0f,  height,   0.0f}, {0.0f, 1.0f}},
+          Vertex{{-width / 2,  height / 2,  depth / 2}, {  0.0f,  height,   0.0f}, {0.0f, 0.0f}},
         },
         std::vector<GLuint>{},
         std::move(textures),
         topology
     } // clang-format on
+    , size_{width, height, depth}
   {
   }
-  Cuboid(Cuboid const& b) noexcept = delete;
-  Cuboid(Cuboid&& b) noexcept = default;
+  Cuboid(Cuboid const&) noexcept = delete;
+  Cuboid(Cuboid&&) noexcept = default;
   ~Cuboid() noexcept override = default;
 
-  Cuboid& operator=(Cuboid const& rhs) noexcept = delete;
-  Cuboid& operator=(Cuboid&& rhs) noexcept = default;
+  Cuboid& operator=(Cuboid const&) noexcept = delete;
+  Cuboid& operator=(Cuboid&&) noexcept = default;
 
-private:
+  [[nodiscard]] std::string const& getType() const noexcept override
+  {
+    static auto const type = std::string{"Cuboid"};
+    return type;
+  }
+
+  glm::vec3 size_;
 };
 } // namespace redoom::graphics::mesh

@@ -18,29 +18,36 @@ public:
   explicit Sphere(float radius,
       unsigned int x_segment = 20,
       unsigned int y_segment = 20,
-      glm::vec3 color = {1.0f, 1.0f, 1.0f},
       std::vector<Texture2D> textures = {},
       GLenum topology = GL_TRIANGLES) noexcept
-    : Mesh{Sphere::create(radius,
-        x_segment,
-        y_segment,
-        color,
-        std::move(textures),
-        topology)}
+    : Mesh{Sphere::create(
+        radius, x_segment, y_segment, std::move(textures), topology)}
+    , radius_{radius}
+    , x_segment_{x_segment}
+    , y_segment_{y_segment}
   {
   }
-  Sphere(Sphere const& b) noexcept = delete;
-  Sphere(Sphere&& b) noexcept = default;
+  Sphere(Sphere const&) noexcept = delete;
+  Sphere(Sphere&&) noexcept = default;
   ~Sphere() noexcept override = default;
 
-  Sphere& operator=(Sphere const& rhs) noexcept = delete;
-  Sphere& operator=(Sphere&& rhs) noexcept = default;
+  Sphere& operator=(Sphere const&) noexcept = delete;
+  Sphere& operator=(Sphere&&) noexcept = default;
+
+  [[nodiscard]] std::string const& getType() const noexcept override
+  {
+    static auto const type = std::string{"Sphere"};
+    return type;
+  }
+
+  float radius_;
+  unsigned int x_segment_;
+  unsigned int y_segment_;
 
 private:
   static Mesh create(float radius,
       unsigned int x_segment,
       unsigned int y_segment,
-      glm::vec3 color,
       std::vector<Texture2D> textures,
       GLenum topology) noexcept
   {
@@ -74,7 +81,7 @@ private:
         auto t = static_cast<float>(j) / static_cast<float>(y_segment);
         auto uv = glm::vec2{s, t};
 
-        vertices.push_back({pos, norm, color, uv});
+        vertices.push_back({pos, norm, uv});
       }
     }
 
@@ -97,10 +104,8 @@ private:
       }
     }
 
-    return Mesh{std::move(vertices),
-        std::move(indices),
-        std::move(textures),
-        topology};
+    return Mesh{
+        std::move(vertices), std::move(indices), std::move(textures), topology};
   }
 };
 } // namespace redoom::graphics::mesh

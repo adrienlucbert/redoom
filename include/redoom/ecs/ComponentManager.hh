@@ -21,12 +21,12 @@ class ComponentManager
 {
 public:
   ComponentManager() noexcept = default;
-  ComponentManager(ComponentManager const& b) noexcept = delete;
-  ComponentManager(ComponentManager&& b) noexcept = default;
+  ComponentManager(ComponentManager const&) noexcept = delete;
+  ComponentManager(ComponentManager&&) noexcept = default;
   ~ComponentManager() noexcept = default;
 
-  ComponentManager& operator=(ComponentManager const& rhs) noexcept = delete;
-  ComponentManager& operator=(ComponentManager&& rhs) noexcept = default;
+  ComponentManager& operator=(ComponentManager const&) noexcept = delete;
+  ComponentManager& operator=(ComponentManager&&) noexcept = default;
 
   template <typename T, typename... Args>
   T& make(Entity entity, Args&&... args) noexcept

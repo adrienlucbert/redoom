@@ -13,12 +13,13 @@
 
 using redoom::ecs::Behaviour;
 using redoom::ecs::Entity;
+using redoom::ecs::components::BehaviourComponent;
 using redoom::ecs::components::BodyComponent;
 using redoom::ecs::components::MeshComponent;
 using redoom::ecs::components::ModelComponent;
 using redoom::ecs::components::TransformComponent;
 using redoom::physics::BodyDefinition;
-using redoom::physics::Force;
+// using redoom::physics::Force;
 
 struct KeyboardBehaviour : public Behaviour {
   [[nodiscard]] std::string const& getType() const noexcept override
@@ -110,7 +111,14 @@ struct KeyboardBehaviour : public Behaviour {
   }
 };
 
-std::unique_ptr<Behaviour> make() noexcept
+void serialize(YAML::Emitter& /*out*/, BehaviourComponent const* /*component*/)
+{
+}
+
+redoom::Expected<std::unique_ptr<Behaviour>> deserialize(
+    YAML::Node const& /*node*/,
+    redoom::Scene& /*scene*/,
+    redoom::ecs::Entity /*entity*/)
 {
   return std::make_unique<KeyboardBehaviour>();
 }

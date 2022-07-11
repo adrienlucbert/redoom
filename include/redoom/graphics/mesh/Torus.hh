@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <GL/glew.h>
+#include <yaml-cpp/emitter.h>
 
 #include <redoom/graphics/Mesh.hh>
 #include <redoom/graphics/Texture.hh>
@@ -19,26 +20,39 @@ public:
       float r2,
       unsigned int num_steps1,
       unsigned int num_steps2,
-      glm::vec3 color,
       std::vector<Texture2D> textures = {},
       GLenum topology = GL_TRIANGLES) noexcept
     : Mesh{Torus::create(
-        r1, r2, num_steps1, num_steps2, color, std::move(textures), topology)}
+        r1, r2, num_steps1, num_steps2, std::move(textures), topology)}
+    , r1_{r1}
+    , r2_{r2}
+    , num_steps1_{num_steps1}
+    , num_steps2_{num_steps2}
   {
   }
-  Torus(Torus const& b) noexcept = delete;
-  Torus(Torus&& b) noexcept = default;
+  Torus(Torus const&) noexcept = delete;
+  Torus(Torus&&) noexcept = default;
   ~Torus() noexcept override = default;
 
-  Torus& operator=(Torus const& rhs) noexcept = delete;
-  Torus& operator=(Torus&& rhs) noexcept = default;
+  Torus& operator=(Torus const&) noexcept = delete;
+  Torus& operator=(Torus&&) noexcept = default;
+
+  [[nodiscard]] std::string const& getType() const noexcept override
+  {
+    static auto const type = std::string{"Torus"};
+    return type;
+  }
+
+  float r1_;
+  float r2_;
+  unsigned int num_steps1_;
+  unsigned int num_steps2_;
 
 private:
   static Mesh create(float r1,
       float r2,
       unsigned int num_steps1,
       unsigned int num_steps2,
-      glm::vec3 color,
       std::vector<Texture2D> textures,
       GLenum topology) noexcept
   {
@@ -77,7 +91,7 @@ private:
             glm::vec2{static_cast<float>(i) / static_cast<float>(num_steps1) * 2
                           * static_cast<float>(std::numbers::pi),
                 static_cast<float>(j) / static_cast<float>(num_steps2)};
-        vertices[i * (num_steps2 + 1) + j] = Vertex{pos, normal, color, uv};
+        vertices[i * (num_steps2 + 1) + j] = Vertex{pos, normal, uv};
         _a += _step;
       }
     }

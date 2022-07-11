@@ -1,40 +1,40 @@
 #pragma once
 
-#include <dlfcn.h>
-#include <memory>
-#include <string_view>
+#include <filesystem>
+#include <unordered_map>
 
+#include <Utils/DynLibrary.hh>
 #include <Utils/Expected.hh>
+#include <Utils/Singleton.hh>
 
 namespace redoom::Utils
 {
-class DLLoader
+class DLLoader : public Singleton<DLLoader>
 {
 public:
-  template <typename SymT>
-  Expected<SymT> load(std::string_view symbol) const
+  Expected<std::reference_wrapper<DynLibrary const>> getLibrary(
+      std::filesystem::path const& filepath) noexcept
   {
-    auto* sym = dlsym(this->handle_.get(), symbol.data());
-    if (sym == nullptr)
-      return make_formatted_unexpected("{}: symbol not found", symbol);
-    return (reinterpret_cast<SymT>(sym)); // NOLINT
-  }
+    auto dll_it = this->dlls_.find(filepath);
+    if (dll_it != this->dlls_.end())
+      return dll_it->second;
 
-  static Expected<DLLoader> open(std::string_view filepath) noexcept
-  {
-    auto* handle = dlopen(filepath.data(), RTLD_LAZY);
+    auto* handle = dlopen(filepath.c_str(), RTLD_LAZY);
     if (handle == nullptr) {
-      return make_formatted_unexpected("{}: could not open library", filepath);
+      return make_formatted_unexpected(
+          "{}: could not open library", filepath.c_str());
     }
-    return {DLLoader{handle}};
+    auto [it, success] = this->dlls_.emplace(filepath, DynLibrary{handle});
+    if (!success) {
+      return make_formatted_unexpected(
+          "{}: could not add library to DLLoader", filepath.c_str());
+    }
+    return it->second;
   }
 
-private:
-  explicit DLLoader(void* handle) noexcept
-    : handle_{handle, &dlclose}
-  {
-  }
+protected:
+  DLLoader() noexcept = default;
 
-  std::unique_ptr<void, decltype(&dlclose)> handle_;
+  std::unordered_map<std::string, DynLibrary> dlls_{}; // NOLINT
 };
 } // namespace redoom::Utils

@@ -1,15 +1,6 @@
 #include <redoom/Application.hh>
 #include <redoom/EntryPoint.hh>
 #include <redoom/ecs/Registry.hh>
-#include <redoom/ecs/components/AmbientLightComponent.hh>
-#include <redoom/ecs/components/BehaviourComponent.hh>
-#include <redoom/ecs/components/BodyComponent.hh>
-#include <redoom/ecs/components/CameraComponent.hh>
-#include <redoom/ecs/components/DirectionalLightComponent.hh>
-#include <redoom/ecs/components/MaterialComponent.hh>
-#include <redoom/ecs/components/MeshComponent.hh>
-#include <redoom/ecs/components/ModelComponent.hh>
-#include <redoom/ecs/components/TransformComponent.hh>
 #include <redoom/ecs/systems/BehaviourSystem.hh>
 #include <redoom/ecs/systems/CameraSystem.hh>
 #include <redoom/ecs/systems/EventSystem.hh>
@@ -21,19 +12,8 @@
 #include <redoom/graphics/Model.hh>
 #include <redoom/graphics/ShaderLibrary.hh>
 #include <redoom/graphics/mesh/Quad.hh>
-#include <redoom/serializer/SceneSerializer.hh>
 
-using redoom::SceneSerializer;
 using redoom::ecs::SystemPriority;
-using redoom::ecs::components::AmbientLightComponent;
-using redoom::ecs::components::BehaviourComponent;
-using redoom::ecs::components::BodyComponent;
-using redoom::ecs::components::CameraComponent;
-using redoom::ecs::components::DirectionalLightComponent;
-using redoom::ecs::components::MaterialComponent;
-using redoom::ecs::components::MeshComponent;
-using redoom::ecs::components::ModelComponent;
-using redoom::ecs::components::TransformComponent;
 using redoom::ecs::systems::BehaviourSystem;
 using redoom::ecs::systems::CameraSystem;
 using redoom::ecs::systems::EventSystem;
@@ -56,43 +36,6 @@ struct ExampleApplication : public Application {
 std::unique_ptr<Application> createApplication(ApplicationArguments args)
 {
   auto app = std::make_unique<ExampleApplication>(args);
-
-  SceneSerializer::get().registerComponentFactory<TransformComponent>(
-      "TransformComponent",
-      std::make_unique<TransformComponent::Serializer>(),
-      SerializerPriority{0u});
-  SceneSerializer::get().registerComponentFactory<CameraComponent>(
-      "CameraComponent",
-      std::make_unique<CameraComponent::Serializer>(),
-      SerializerPriority{1u});
-  SceneSerializer::get().registerComponentFactory<DirectionalLightComponent>(
-      "DirectionalLightComponent",
-      std::make_unique<DirectionalLightComponent::Serializer>(),
-      SerializerPriority{2u});
-  SceneSerializer::get().registerComponentFactory<AmbientLightComponent>(
-      "AmbientLightComponent",
-      std::make_unique<AmbientLightComponent::Serializer>(),
-      SerializerPriority{2u});
-  SceneSerializer::get().registerComponentFactory<MeshComponent>(
-      "MeshComponent",
-      std::make_unique<MeshComponent::Serializer>(),
-      SerializerPriority{100u});
-  SceneSerializer::get().registerComponentFactory<MaterialComponent>(
-      "MaterialComponent",
-      std::make_unique<MaterialComponent::Serializer>(),
-      SerializerPriority{100u});
-  SceneSerializer::get().registerComponentFactory<ModelComponent>(
-      "ModelComponent",
-      std::make_unique<ModelComponent::Serializer>(),
-      SerializerPriority{101u});
-  SceneSerializer::get().registerComponentFactory<BodyComponent>(
-      "BodyComponent",
-      std::make_unique<BodyComponent::Serializer>(),
-      SerializerPriority{150u});
-  SceneSerializer::get().registerComponentFactory<BehaviourComponent>(
-      "BehaviourComponent",
-      std::make_unique<BehaviourComponent::Serializer>(),
-      SerializerPriority{1000u});
 
   auto scene_exp = app->loadScene(
       fmt::format("../examples/3d_scene/scenes/{}.yaml", "default"));

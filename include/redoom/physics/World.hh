@@ -24,12 +24,12 @@ class World
 {
 public:
   World() noexcept = default;
-  World(World const& b) noexcept = delete;
-  World(World&& b) noexcept = default;
+  World(World const&) noexcept = delete;
+  World(World&&) noexcept = default;
   ~World() noexcept = default;
 
-  World& operator=(World const& rhs) noexcept = delete;
-  World& operator=(World&& rhs) noexcept = default;
+  World& operator=(World const&) noexcept = delete;
+  World& operator=(World&&) noexcept = default;
 
   std::shared_ptr<Body> createBody(BodyDefinition def) noexcept;
   std::shared_ptr<Body> createBodyFromModel(

@@ -18,7 +18,7 @@ public:
   {
     this->release();
   }
-  Ptr(Ptr const& rhs) noexcept = delete;
+  Ptr(Ptr const&) noexcept = delete;
   Ptr(Ptr&& rhs) noexcept
     : ptr_{std::move(rhs.ptr_)}
     , deleter_{std::move(rhs.deleter_)}
@@ -26,7 +26,7 @@ public:
     rhs.ptr_ = nullptr;
   }
 
-  Ptr& operator=(Ptr const& rhs) noexcept = delete;
+  Ptr& operator=(Ptr const&) noexcept = delete;
   Ptr& operator=(Ptr&& rhs) noexcept
   {
     this->release();

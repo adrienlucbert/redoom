@@ -19,12 +19,12 @@ public:
   friend ptr_t;
 
   Allocator() noexcept = default;
-  Allocator(Allocator const& b) noexcept = delete;
-  Allocator(Allocator&& b) noexcept = default;
+  Allocator(Allocator const&) noexcept = delete;
+  Allocator(Allocator&&) noexcept = default;
   ~Allocator() noexcept override = default;
 
-  Allocator& operator=(Allocator const& rhs) noexcept = delete;
-  Allocator& operator=(Allocator&& rhs) noexcept = default;
+  Allocator& operator=(Allocator const&) noexcept = delete;
+  Allocator& operator=(Allocator&&) noexcept = default;
 
   template <typename... Args>
   ptr_t get(Args&&... args) noexcept

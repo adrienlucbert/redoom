@@ -31,7 +31,7 @@ public:
         static_cast<GLenum>(usage));
     this->unbind();
   }
-  Buffer(Buffer const& b) noexcept = delete;
+  Buffer(Buffer const&) noexcept = delete;
   Buffer(Buffer&& b) noexcept
     : id_{b.id_}
     , type_{b.type_}
@@ -45,7 +45,7 @@ public:
       glDeleteBuffers(1, &this->id_);
   }
 
-  Buffer& operator=(Buffer const& rhs) noexcept = delete;
+  Buffer& operator=(Buffer const&) noexcept = delete;
   Buffer& operator=(Buffer&& rhs) noexcept
   {
     if (this != &rhs) {

@@ -7,6 +7,7 @@ using redoom::ecs::Behaviour;
 using redoom::ecs::Context;
 using redoom::ecs::Entity;
 using redoom::ecs::UpdateContext;
+using redoom::ecs::components::BehaviourComponent;
 using redoom::ecs::components::TransformComponent;
 
 struct RotationBehaviour : public Behaviour {
@@ -37,7 +38,14 @@ private:
   double rotation_speed_{1.0};
 };
 
-std::unique_ptr<Behaviour> make() noexcept
+void serialize(YAML::Emitter& /*out*/, BehaviourComponent const* /*component*/)
+{
+}
+
+redoom::Expected<std::unique_ptr<Behaviour>> deserialize(
+    YAML::Node const& /*node*/,
+    redoom::Scene& /*scene*/,
+    redoom::ecs::Entity /*entity*/)
 {
   return std::make_unique<RotationBehaviour>();
 }
