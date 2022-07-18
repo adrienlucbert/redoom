@@ -56,9 +56,9 @@ public:
     return manifolds;
   }
 
-  void debugDraw(graphics::Program& program) const noexcept override
+  void debugDraw() const noexcept override
   {
-    this->tree_.debugDraw(program);
+    this->tree_.debugDraw();
   }
 
 private:

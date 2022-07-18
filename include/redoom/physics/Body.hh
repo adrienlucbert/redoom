@@ -77,7 +77,7 @@ public:
   Fixture& createFixtureFromMesh(
       FixtureDefinition def, graphics::Mesh const& mesh) noexcept;
 
-  void draw(graphics::Program& program) const noexcept;
+  void draw() const noexcept;
 
   [[nodiscard]] World& getWorld() const noexcept;
   [[nodiscard]] unsigned int getId() const noexcept;

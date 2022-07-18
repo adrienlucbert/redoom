@@ -12,11 +12,14 @@ void PhysicsDebugSystem::update(UpdateContext& context) noexcept
 {
   // Debug mode: draw bodies fixtures
   if (Application::get().getCurrentScene().getWorld().getDebugDraw()) {
-    auto shader_opt = graphics::ShaderLibrary::getShader("lit");
-    if (!shader_opt)
-      assert("Undefined shader" == nullptr);
-    auto& shader = *shader_opt;
+    auto program_opt = graphics::ShaderLibrary::getShader("unlit");
+    if (!program_opt)
+      assert("Undefined program" == nullptr);
+    auto& program = *program_opt;
+    renderer::Renderer::get().useProgram(program);
 
+    auto old_topology = renderer::Renderer::get().getTopology();
+    renderer::Renderer::get().setTopology(GL_LINE_STRIP);
     context.getComponentManager().apply<components::BodyComponent>(
         [&](auto entity, components::BodyComponent& component) {
           auto transform_opt =
@@ -33,16 +36,14 @@ void PhysicsDebugSystem::update(UpdateContext& context) noexcept
               model = glm::rotate(
                   model, transform.getAngle(), transform.getRotation());
             }
-            renderer::Renderer::draw(shader, fixture.getShape(), model);
+            renderer::Renderer::get().draw(*fixture.getShape(), model);
           }
           auto aabb = component.body_->getGlobalAABB();
           if (aabb.has_value()) {
             auto cuboid = graphics::mesh::Cuboid{
                 aabb->upper_bounds.x - aabb->lower_bounds.x,
                 aabb->upper_bounds.y - aabb->lower_bounds.y,
-                aabb->upper_bounds.z - aabb->lower_bounds.z,
-                {},
-                GL_LINE_STRIP};
+                aabb->upper_bounds.z - aabb->lower_bounds.z};
             auto offset = aabb->getCenter();
             /* The cuboid being centered on 0, in order to center the rendered
              * hitbox on the AABB coordinates, we need to translate the
@@ -50,10 +51,11 @@ void PhysicsDebugSystem::update(UpdateContext& context) noexcept
              */
             auto model = glm::mat4(1.0f);
             model = glm::translate(model, offset);
-            renderer::Renderer::draw(shader, cuboid, model);
+            renderer::Renderer::get().draw(cuboid, model);
           }
-          Application::get().getCurrentScene().getWorld().debugDraw(shader);
+          Application::get().getCurrentScene().getWorld().debugDraw();
         });
+    renderer::Renderer::get().setTopology(old_topology);
   }
 }
 } // namespace redoom::ecs::systems

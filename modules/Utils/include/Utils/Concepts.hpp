@@ -31,16 +31,9 @@ concept ContiguousContainer = requires(T v)
 };
 
 template <typename T>
-concept Drawable = requires(T const& v, graphics::Program &p)
+concept Drawable = requires(T const& v)
 {
-  { v.draw(p) } noexcept -> std::same_as<void>;
+  { v.draw() } noexcept -> std::same_as<void>;
 };
-
-template <typename T>
-concept DrawablePtr = requires(T const& v, graphics::Program &p)
-{
-  { v->draw(p) } noexcept -> std::same_as<void>;
-};
-
 // clang-format on
 } // namespace redoom::concepts

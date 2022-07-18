@@ -25,6 +25,8 @@ public:
 
   virtual void onUpdate(Entity entity, UpdateContext& context) noexcept;
 
+  virtual void onWindowFocus(
+      Entity entity, events::WindowFocusEvent& event) noexcept;
   virtual void onWindowResize(
       Entity entity, events::WindowResizeEvent& event) noexcept;
   virtual void onWindowClose(

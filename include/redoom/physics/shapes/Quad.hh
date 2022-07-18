@@ -25,12 +25,11 @@ public:
   Quad& operator=(Quad const&) noexcept = delete;
   Quad& operator=(Quad&&) noexcept = default;
 
-  void draw(graphics::Program& program) const noexcept override
+  void draw() const noexcept override
   {
     if (!this->mesh_.has_value())
-      this->mesh_ =
-          graphics::mesh::Quad{this->width_, this->height_, {}, GL_LINE_STRIP};
-    this->mesh_->draw(program);
+      this->mesh_ = graphics::mesh::Quad{this->width_, this->height_};
+    this->mesh_->draw();
   }
 
   [[nodiscard]] float getWidth() const noexcept

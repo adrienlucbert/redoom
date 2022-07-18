@@ -15,12 +15,8 @@ namespace redoom::graphics::mesh
 class Circle : public Mesh
 {
 public:
-  Circle(unsigned int edge_segments,
-      unsigned int ring_segments,
-      std::vector<Texture2D> textures = {},
-      GLenum topology = GL_TRIANGLE_STRIP) noexcept
-    : Mesh{Circle::create(
-        edge_segments, ring_segments, std::move(textures), topology)}
+  Circle(unsigned int edge_segments, unsigned int ring_segments) noexcept
+    : Mesh{Circle::create(edge_segments, ring_segments)}
     , edge_segments_{edge_segments}
     , ring_segments_{ring_segments}
   {
@@ -42,10 +38,8 @@ public:
   unsigned int ring_segments_;
 
 private:
-  static Mesh create(unsigned int edge_segments,
-      unsigned int ring_segments,
-      std::vector<Texture2D> textures,
-      GLenum topology) noexcept
+  static Mesh create(
+      unsigned int edge_segments, unsigned int ring_segments) noexcept
   {
     // source:
     // https://github.com/JoeyDeVries/Cell/blob/master/cell/mesh/circle.cpp
@@ -88,8 +82,7 @@ private:
       odd_row = !odd_row;
     }
 
-    return Mesh{
-        std::move(vertices), std::move(indices), std::move(textures), topology};
+    return Mesh{std::move(vertices), std::move(indices)};
   }
 };
 } // namespace redoom::graphics::mesh

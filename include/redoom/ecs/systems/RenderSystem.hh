@@ -4,7 +4,7 @@
 
 namespace redoom::ecs::systems
 {
-struct ModelSystem : public MonothreadedSystem<ModelSystem> {
+struct RenderSystem : public MonothreadedSystem<RenderSystem> {
   void update(UpdateContext& context) noexcept override;
 };
 } // namespace redoom::ecs::systems

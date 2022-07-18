@@ -21,7 +21,7 @@ public:
   Shape& operator=(Shape const&) noexcept = default;
   Shape& operator=(Shape&&) noexcept = default;
 
-  virtual void draw(graphics::Program& program) const noexcept = 0;
+  virtual void draw() const noexcept = 0;
 
   [[nodiscard]] std::string_view getType() const noexcept;
   [[nodiscard]] virtual AABB const& getAABB() const noexcept = 0;

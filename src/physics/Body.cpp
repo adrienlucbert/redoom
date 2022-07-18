@@ -85,10 +85,10 @@ Fixture& Body::createFixtureFromMesh(
   return this->fixtures_.back();
 }
 
-void Body::draw(graphics::Program& program) const noexcept
+void Body::draw() const noexcept
 {
   for (auto const& fixture : this->fixtures_)
-    fixture.draw(program);
+    fixture.draw();
 }
 
 World& Body::getWorld() const noexcept

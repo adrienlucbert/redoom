@@ -14,6 +14,11 @@ void Behaviour::onUpdate(Entity /*entity*/, UpdateContext& /*context*/) noexcept
 {
 }
 
+void Behaviour::onWindowFocus(
+    Entity /*entity*/, events::WindowFocusEvent& /*event*/) noexcept
+{
+}
+
 void Behaviour::onWindowResize(
     Entity /*entity*/, events::WindowResizeEvent& /*event*/) noexcept
 {

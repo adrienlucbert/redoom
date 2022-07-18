@@ -3,7 +3,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include <tl/optional.hpp>
+
 #include <redoom/events/EventQueue.hh>
+#include <redoom/graphics/FrameBuffer.hh>
 #include <redoom/renderer/RendererContext.hh>
 #include <redoom/renderer/Window.hh>
 

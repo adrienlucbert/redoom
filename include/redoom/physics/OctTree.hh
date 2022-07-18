@@ -67,12 +67,12 @@ public:
       this->root_.value().dump();
   }
 
-  void debugDraw(graphics::Program& program) const noexcept
+  void debugDraw() const noexcept
   {
     if (this->all_items_.size() == 0)
       return;
     if (this->root_.has_value())
-      this->root_->draw(program);
+      this->root_->draw();
   }
 
   bool insert(T& item) noexcept
@@ -509,18 +509,18 @@ private:
       return pairs;
     }
 
-    void draw(graphics::Program& program) const noexcept
+    void draw() const noexcept
     {
       auto const& aabb = this->getBoundingBox();
       auto offset = aabb.getCenter();
       auto model = glm::mat4{1.0f};
       model = glm::translate(model, offset);
       model = glm::scale(model, aabb.getSize());
-      renderer::Renderer::draw(program, *this->getMesh(), model);
+      renderer::Renderer::get().draw(*this->getMesh(), model);
 
       if (this->hasChildren()) {
         for (auto const& child : this->children_)
-          child->draw(program);
+          child->draw();
       }
     }
 
@@ -528,7 +528,7 @@ private:
     static std::unique_ptr<graphics::Mesh const> const& getMesh() noexcept
     {
       static auto const mesh = std::make_unique<graphics::Mesh const>(
-          graphics::mesh::Cuboid{1.0f, 1.0f, 1.0f, {}, GL_LINE_STRIP});
+          graphics::mesh::Cuboid{1.0f, 1.0f, 1.0f});
       return mesh;
     }
 

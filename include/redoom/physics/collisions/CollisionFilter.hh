@@ -25,7 +25,7 @@ public:
   virtual void update(
       std::vector<std::reference_wrapper<Body>> moved_items) noexcept = 0;
 
-  virtual void debugDraw(graphics::Program& /*program*/) const noexcept
+  virtual void debugDraw() const noexcept
   {
   }
 

@@ -24,8 +24,8 @@ std::shared_ptr<Body> World::createBodyFromModel(
 {
   auto body = World::createBody(def);
   auto lock = std::lock_guard{*this->mutex_};
-  for (auto const& mesh : model.getMeshes()) {
-    body->createFixtureFromMesh({}, mesh);
+  for (auto const& submodel : model.getSubModels()) {
+    body->createFixtureFromMesh({}, submodel.mesh_);
   }
   return body;
 }
@@ -108,11 +108,11 @@ void World::setDebugDraw(bool draw) noexcept
   this->debug_draw_ = draw;
 }
 
-void World::debugDraw(graphics::Program& program) const noexcept
+void World::debugDraw() const noexcept
 {
   if (!this->debug_draw_)
     return;
   auto lock = std::lock_guard{*this->mutex_};
-  this->collision_detector_.debugDraw(program);
+  this->collision_detector_.debugDraw();
 }
 } // namespace redoom::physics

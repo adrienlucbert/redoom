@@ -41,7 +41,9 @@ void EventSystem::update(UpdateContext& context) noexcept
       std::visit(
           [&](auto&& event) {
             using T = std::remove_cvref_t<decltype(event)>;
-            if constexpr (std::is_same_v<T, events::WindowResizeEvent>)
+            if constexpr (std::is_same_v<T, events::WindowFocusEvent>)
+              details::dispatchEvent(context, &Behaviour::onWindowFocus, event);
+            else if constexpr (std::is_same_v<T, events::WindowResizeEvent>)
               details::dispatchEvent(
                   context, &Behaviour::onWindowResize, event);
             else if constexpr (std::is_same_v<T, events::WindowCloseEvent>)

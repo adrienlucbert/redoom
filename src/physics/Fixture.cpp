@@ -17,10 +17,10 @@ Fixture::Fixture(Body& body, FixtureDefinition def) noexcept
 {
 }
 
-void Fixture::draw(graphics::Program& program) const noexcept
+void Fixture::draw() const noexcept
 {
   if (this->shape_)
-    this->shape_->draw(program);
+    this->shape_->draw();
 }
 
 Body& Fixture::getBody() const noexcept

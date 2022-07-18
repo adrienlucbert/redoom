@@ -6,6 +6,7 @@
 #include <Utils/Concepts.hpp>
 #include <redoom/graphics/BufferLayout.hh>
 #include <redoom/graphics/Vertex.hh>
+#include <redoom/renderer/Renderer.hh>
 
 namespace redoom::graphics
 {
@@ -32,12 +33,12 @@ public:
     this->unbind();
   }
   Buffer(Buffer const&) noexcept = delete;
-  Buffer(Buffer&& b) noexcept
-    : id_{b.id_}
-    , type_{b.type_}
-    , count_{b.count_}
+  Buffer(Buffer&& rhs) noexcept
+    : id_{rhs.id_}
+    , type_{rhs.type_}
+    , count_{rhs.count_}
   {
-    b.id_ = 0;
+    rhs.id_ = 0;
   }
   virtual ~Buffer() noexcept
   {
@@ -70,7 +71,7 @@ public:
     glBindBuffer(this->type_, 0);
   }
 
-  virtual void draw(GLenum /*topology*/) const noexcept
+  virtual void draw() const noexcept
   {
     assert("This buffer is not drawable" == nullptr);
   }
@@ -98,10 +99,12 @@ struct IndexBuffer : public Buffer<GLuint> {
   IndexBuffer& operator=(IndexBuffer const&) noexcept = delete;
   IndexBuffer& operator=(IndexBuffer&&) noexcept = default;
 
-  void draw(GLenum topology) const noexcept override
+  void draw() const noexcept override
   {
-    glDrawElements(
-        topology, static_cast<GLsizei>(this->count_), GL_UNSIGNED_INT, nullptr);
+    glDrawElements(renderer::Renderer::get().getTopology(),
+        static_cast<GLsizei>(this->count_),
+        GL_UNSIGNED_INT,
+        nullptr);
   }
 };
 
@@ -141,9 +144,11 @@ struct VertexBuffer : public Buffer<Vertex> {
     this->unbind();
   }
 
-  void draw(GLenum topology) const noexcept override
+  void draw() const noexcept override
   {
-    glDrawArrays(topology, 0, static_cast<GLsizei>(this->count_));
+    glDrawArrays(renderer::Renderer::get().getTopology(),
+        0,
+        static_cast<GLsizei>(this->count_));
   }
 };
 } // namespace redoom::graphics

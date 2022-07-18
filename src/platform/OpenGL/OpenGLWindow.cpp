@@ -115,8 +115,6 @@ Expected<std::unique_ptr<renderer::Window>> OpenGLWindow::create(
   }
   auto& context = *context_exp;
 
-  glEnable(GL_DEPTH_TEST);
-
   try {
     return std::unique_ptr<OpenGLWindow>(
         new OpenGLWindow{window, std::move(context), width, height});
@@ -135,14 +133,20 @@ OpenGLWindow::OpenGLWindow(GLFWwindow* window,
   , context_{std::move(context)}
   , has_vsync_{true}
 {
-  // Set OpenGL properties without calling OpenGLWindow virtual methods
-  // See clang-analyzer-optin.cplusplus.VirtualCall
-  glfwSwapInterval(1);
-  glfwSetInputMode(this->window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  this->setVSync(true);
+  this->setCursorMode(CursorMode::Disabled);
 
   this->events_.push(events::WindowResizeEvent{this->width_, this->height_});
 
   glfwSetWindowUserPointer(this->window_, &this->events_);
+
+  glfwSetWindowFocusCallback(
+      this->window_, [](GLFWwindow* native_window, int is_focused) {
+        auto* event_queue = static_cast<events::EventQueue*>(
+            glfwGetWindowUserPointer(native_window));
+        event_queue->push(
+            events::WindowFocusEvent{static_cast<bool>(is_focused)});
+      });
 
   glfwSetWindowSizeCallback(
       this->window_, [](GLFWwindow* native_window, int w, int h) {
@@ -150,7 +154,7 @@ OpenGLWindow::OpenGLWindow(GLFWwindow* window,
             glfwGetWindowUserPointer(native_window));
         event_queue->push(events::WindowResizeEvent{w, h});
 
-        renderer::Renderer::getAPI().setViewport({0, 0, w, h});
+        renderer::Renderer::get().getAPI().setViewport({0, 0, w, h});
       });
 
   glfwSetWindowCloseCallback(this->window_, [](GLFWwindow* native_window) {

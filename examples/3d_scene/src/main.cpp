@@ -5,10 +5,10 @@
 #include <redoom/ecs/systems/CameraSystem.hh>
 #include <redoom/ecs/systems/EventSystem.hh>
 #include <redoom/ecs/systems/LightSystem.hh>
-#include <redoom/ecs/systems/MeshSystem.hh>
-#include <redoom/ecs/systems/ModelSystem.hh>
+#include <redoom/ecs/systems/MousePickingSystem.hh>
 #include <redoom/ecs/systems/PhysicsDebugSystem.hh>
 #include <redoom/ecs/systems/PhysicsWorldSystem.hh>
+#include <redoom/ecs/systems/RenderSystem.hh>
 #include <redoom/graphics/Model.hh>
 #include <redoom/graphics/ShaderLibrary.hh>
 #include <redoom/graphics/mesh/Quad.hh>
@@ -18,10 +18,10 @@ using redoom::ecs::systems::BehaviourSystem;
 using redoom::ecs::systems::CameraSystem;
 using redoom::ecs::systems::EventSystem;
 using redoom::ecs::systems::LightSystem;
-using redoom::ecs::systems::MeshSystem;
-using redoom::ecs::systems::ModelSystem;
+using redoom::ecs::systems::MousePickingSystem;
 using redoom::ecs::systems::PhysicsDebugSystem;
 using redoom::ecs::systems::PhysicsWorldSystem;
+using redoom::ecs::systems::RenderSystem;
 using redoom::graphics::ShaderLibrary;
 
 namespace redoom
@@ -61,14 +61,15 @@ std::unique_ptr<Application> createApplication(ApplicationArguments args)
     std::abort();
   }
 
+  // TODO(alucbert): get rid of this by parsing SystemsExecutionOrder.yaml
   registry.attachSystem<EventSystem>(SystemPriority{0});
   registry.attachSystem<BehaviourSystem>(SystemPriority{1});
   registry.attachSystem<CameraSystem>(SystemPriority{1});
   registry.attachSystem<LightSystem>(SystemPriority{2});
   registry.attachSystem<PhysicsWorldSystem>(SystemPriority{900});
   registry.attachSystem<PhysicsDebugSystem>(SystemPriority{901});
-  registry.attachSystem<MeshSystem>(SystemPriority{1000});
-  registry.attachSystem<ModelSystem>(SystemPriority{1000});
+  registry.attachSystem<RenderSystem>(SystemPriority{1000});
+  registry.attachSystem<MousePickingSystem>(SystemPriority{1001});
   return app;
 }
 } // namespace redoom

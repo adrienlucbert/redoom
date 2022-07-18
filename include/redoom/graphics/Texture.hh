@@ -24,16 +24,17 @@ public:
     Displacement,
     Lightmap,
     Reflection,
-    BaseColor
+    BaseColor,
+    FrameBuffer
   };
-  Texture2D(Texture2D const&) noexcept = default;
+  Texture2D(Texture2D const&) noexcept = delete;
   Texture2D(Texture2D&& b) noexcept;
   ~Texture2D() noexcept;
 
   Texture2D& operator=(Texture2D const&) noexcept = delete;
   Texture2D& operator=(Texture2D&& rhs) noexcept;
 
-  [[nodiscard]] static Expected<Texture2D> fromFile(
+  [[nodiscard]] static Expected<std::reference_wrapper<Texture2D>> fromFile(
       std::filesystem::path const& path, Type type) noexcept;
   [[nodiscard]] static Expected<Texture2D> fromData(unsigned char const* data,
       int width,
@@ -47,13 +48,12 @@ public:
   [[nodiscard]] int getChannels() const noexcept;
   [[nodiscard]] Type getType() const noexcept;
 
-  void setUnit(
-      Program& program, std::string_view uniform, GLint unit) const noexcept;
+  void setUnit(std::string_view uniform, GLint unit) const noexcept;
 
   void bind() const noexcept;
   void unbind() const noexcept;
 
-  static Expected<Texture2D> getPlaceholder() noexcept;
+  static Expected<std::reference_wrapper<Texture2D>> getPlaceholder() noexcept;
 
 private:
   explicit Texture2D(

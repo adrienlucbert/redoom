@@ -26,12 +26,11 @@ public:
   Sphere& operator=(Sphere const&) noexcept = delete;
   Sphere& operator=(Sphere&&) noexcept = default;
 
-  void draw(graphics::Program& program) const noexcept override
+  void draw() const noexcept override
   {
     if (!this->mesh_.has_value())
-      this->mesh_ =
-          graphics::mesh::Sphere{this->radius_, 20, 20, {}, GL_LINE_STRIP};
-    this->mesh_->draw(program);
+      this->mesh_ = graphics::mesh::Sphere{this->radius_, 20, 20};
+    this->mesh_->draw();
   }
 
   [[nodiscard]] float getRadius() const noexcept

@@ -5,6 +5,7 @@
 
 #include <redoom/graphics/TextureLibrary.hh>
 #include <redoom/graphics/UniformTypes.hh>
+#include <redoom/renderer/Renderer.hh>
 
 namespace redoom::graphics
 {
@@ -88,7 +89,7 @@ Expected<Texture2D> Texture2D::fromData(unsigned char const* data,
   return Texture2D{id, width, height, channels, type};
 }
 
-Expected<Texture2D> Texture2D::fromFile(
+Expected<std::reference_wrapper<Texture2D>> Texture2D::fromFile(
     std::filesystem::path const& path, Type type) noexcept
 {
   // Search textures cache
@@ -107,8 +108,8 @@ Expected<Texture2D> Texture2D::fromFile(
     auto texture = Texture2D::fromData(data, width, height, channels, type);
     stbi_image_free(data);
     if (texture.has_value())
-      TextureLibrary::addTexture(path, *texture);
-    return texture;
+      TextureLibrary::addTexture(path, std::move(*texture));
+    return *TextureLibrary::getTexture(path);
   }
 }
 
@@ -137,12 +138,12 @@ Texture2D::Type Texture2D::getType() const noexcept
   return this->type_;
 }
 
-void Texture2D::setUnit(
-    Program& program, std::string_view uniform, GLint unit) const noexcept
+void Texture2D::setUnit(std::string_view uniform, GLint unit) const noexcept
 {
   this->unit_ = unit;
   glActiveTexture(GL_TEXTURE0 + this->unit_);
-  program.setUniform(uniform.data(), uniforms::Int{.value = this->unit_});
+  renderer::Renderer::get().setUniform(
+      uniform.data(), uniforms::Int{.value = this->unit_});
 }
 
 void Texture2D::bind() const noexcept
@@ -153,13 +154,22 @@ void Texture2D::bind() const noexcept
 
 void Texture2D::unbind() const noexcept // NOLINT
 {
-  glBindTexture(GL_TEXTURE_2D, 0);
   glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-Expected<Texture2D> Texture2D::getPlaceholder() noexcept
+Expected<std::reference_wrapper<Texture2D>> Texture2D::getPlaceholder() noexcept
 {
+  // Search textures cache
+  auto texture_opt = TextureLibrary::getTexture("placeholder");
+  if (texture_opt.has_value())
+    return *texture_opt;
+
   unsigned char const data[] = {255, 255, 255, 255}; // NOLINT
-  return Texture2D::fromData(data, 1, 1, 4, Type::Diffuse);
+  auto texture = Texture2D::fromData(data, 1, 1, 4, Type::Diffuse);
+
+  if (texture.has_value())
+    TextureLibrary::addTexture("placeholder", std::move(*texture));
+  return *TextureLibrary::getTexture("placeholder");
 }
 } // namespace redoom::graphics

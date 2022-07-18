@@ -16,12 +16,12 @@ redoom::Utils::type_id getTypeId() noexcept
 void serialize(YAML::Emitter& out, redoom::ecs::ComponentBase const* component)
 {
   auto const* mc = dynamic_cast<MaterialComponent const*>(component);
-  out << YAML::Key << "shader" << YAML::Value << mc->material.shader;
-  out << YAML::Key << "gloss" << YAML::Value << mc->material.gloss;
-  out << YAML::Key << "smoothness" << YAML::Value << mc->material.smoothness;
+  out << YAML::Key << "shader" << YAML::Value << mc->material.shader_;
+  out << YAML::Key << "gloss" << YAML::Value << mc->material.gloss_;
+  out << YAML::Key << "smoothness" << YAML::Value << mc->material.smoothness_;
   out << YAML::Key << "metallicness" << YAML::Value
-      << mc->material.metallicness;
-  out << YAML::Key << "color" << YAML::Value << mc->material.color;
+      << mc->material.metallicness_;
+  out << YAML::Key << "color" << YAML::Value << mc->material.color_;
 }
 
 redoom::Expected<> deserialize(
@@ -42,7 +42,16 @@ redoom::Expected<> deserialize(
   auto color = glm::vec3{1.0f, 1.0f, 1.0f};
   if (node["color"])
     color = node["color"].as<glm::vec3>();
+  auto topology = static_cast<GLenum>(GL_TRIANGLES);
+  if (node["topology"])
+    topology = node["topology"].as<unsigned int>();
   scene.getRegistry().attachComponent<MaterialComponent>(entity,
-      Material{std::move(shader), gloss, smoothness, metallicness, color});
+      Material{std::move(shader),
+          gloss,
+          smoothness,
+          metallicness,
+          color,
+          {},
+          topology});
   return {};
 }

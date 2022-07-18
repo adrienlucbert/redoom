@@ -19,7 +19,7 @@ using redoom::ecs::components::MeshComponent;
 using redoom::ecs::components::ModelComponent;
 using redoom::ecs::components::TransformComponent;
 using redoom::physics::BodyDefinition;
-// using redoom::physics::Force;
+using redoom::physics::Force;
 
 struct KeyboardBehaviour : public Behaviour {
   [[nodiscard]] std::string const& getType() const noexcept override
@@ -42,7 +42,7 @@ struct KeyboardBehaviour : public Behaviour {
     // Switch wireframe mode
     if (event.matches({.key = redoom::events::Key::SPACE,
             .action = redoom::events::Action::PRESS})) {
-      auto& renderer_api = redoom::renderer::Renderer::getAPI();
+      auto& renderer_api = redoom::renderer::Renderer::get().getAPI();
       renderer_api.setWireframe(!renderer_api.isWireframe());
       std::cout << "Setting wireframe mode: " << std::boolalpha
                 << renderer_api.isWireframe() << '\n';
@@ -84,16 +84,18 @@ struct KeyboardBehaviour : public Behaviour {
       std::cout << "Setting physics debug mode: " << std::boolalpha
                 << world.getDebugDraw() << '\n';
     }
+
     // Add gravity
-    // if (event.matches({.key = redoom::events::Key::SPACE,
-    //         .action = redoom::events::Action::PRESS})) {
-    //   auto& world = redoom::Application::get().getCurrentScene().getWorld();
-    //   world.addGlobalConstantForce(
-    //       Force{glm::vec3{0.0f, -0.1f, 0.0f}, Force::Type::Acceleration});
-    //   // TODO(alucbert): -9.81
-    //   std::cout << "Activating gravity" << '\n';
-    // }
-    // Switch VSync
+    if (event.matches({.key = redoom::events::Key::G,
+            .action = redoom::events::Action::PRESS})) {
+      auto& world = redoom::Application::get().getCurrentScene().getWorld();
+      world.addGlobalConstantForce(
+          Force{glm::vec3{0.0f, -0.1f, 0.0f}, Force::Type::Acceleration});
+      // TODO(alucbert): -9.81
+      std::cout << "Activating gravity" << '\n';
+    }
+
+    // Toggle VSync
     if (event.matches({.key = redoom::events::Key::GRAVE_ACCENT,
             .action = redoom::events::Action::PRESS})) {
       auto& window = redoom::Application::get().getWindow();
@@ -107,6 +109,24 @@ struct KeyboardBehaviour : public Behaviour {
             .action = redoom::events::Action::PRESS})) {
       auto& world = redoom::Application::get().getCurrentScene().getWorld();
       world.step(0.0);
+    }
+
+    // Unfocus window
+    if (event.matches({.key = redoom::events::Key::ESCAPE,
+            .action = redoom::events::Action::PRESS})) {
+      redoom::Application::get().getWindow().setCursorMode(
+          redoom::renderer::Window::CursorMode::Normal);
+    }
+  }
+
+  void onMouseButton(Entity /*entity*/,
+      redoom::events::MouseButtonEvent& event) noexcept override
+  {
+    // Focus window
+    if (event.matches({.button = redoom::events::Mouse::BUTTON_LEFT,
+            .action = redoom::events::Action::PRESS})) {
+      redoom::Application::get().getWindow().setCursorMode(
+          redoom::renderer::Window::CursorMode::Disabled);
     }
   }
 };

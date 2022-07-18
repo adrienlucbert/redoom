@@ -32,33 +32,33 @@ Expected<Model> Model::fromFile(std::filesystem::path path,
 }
 
 // NOLINTNEXTLINE(misc-no-recursion)
-Expected<std::vector<Mesh>> Model::parseNode(aiNode* node,
+Expected<std::vector<Model::SubModel>> Model::parseNode(aiNode* node,
     aiScene const* scene,
     std::filesystem::path const& root) noexcept
 {
-  auto meshes = std::vector<Mesh>{};
+  auto submodels = std::vector<SubModel>{};
 
   for (auto i = 0u; i < node->mNumMeshes; ++i) {
     auto* mesh = scene->mMeshes[node->mMeshes[i]];
     auto exp = Model::parseMesh(mesh, scene, root);
     RETURN_IF_UNEXPECTED(exp);
-    meshes.push_back(std::move(*exp));
+    submodels.push_back(std::move(*exp));
   }
   for (auto i = 0u; i < node->mNumChildren; ++i) {
     auto exp = Model::parseNode(node->mChildren[i], scene, root);
     RETURN_IF_UNEXPECTED(exp);
-    std::move((*exp).begin(), (*exp).end(), std::back_inserter(meshes));
+    std::move((*exp).begin(), (*exp).end(), std::back_inserter(submodels));
   }
-  return meshes;
+  return submodels;
 }
 
-Expected<Mesh> Model::parseMesh(aiMesh* mesh,
+Expected<Model::SubModel> Model::parseMesh(aiMesh* mesh,
     aiScene const* scene,
     std::filesystem::path const& root) noexcept
 {
   auto vertices = std::vector<Vertex>{};
   auto indices = std::vector<unsigned int>{};
-  auto textures = std::vector<Texture2D>{};
+  auto textures = std::vector<std::reference_wrapper<Texture2D>>{};
 
   // parse vertices
   for (auto i = 0u; i < mesh->mNumVertices; ++i) {
@@ -111,39 +111,47 @@ Expected<Mesh> Model::parseMesh(aiMesh* mesh,
     std::move((*exp).begin(), (*exp).end(), std::back_inserter(textures));
   }
 
-  return Mesh{std::move(vertices), std::move(indices), std::move(textures)};
+  return SubModel{.mesh_ = Mesh{std::move(vertices), std::move(indices)},
+      .textures_ = std::move(textures)};
 }
 
-Expected<std::vector<Texture2D>> Model::loadMaterialTexture(aiMaterial* mat,
+Expected<std::vector<std::reference_wrapper<Texture2D>>>
+Model::loadMaterialTexture(aiMaterial* mat,
     aiTextureType ai_type,
     Texture2D::Type tex_type,
     std::filesystem::path const& root) noexcept
 {
-  auto textures = std::vector<Texture2D>{};
+  auto textures = std::vector<std::reference_wrapper<Texture2D>>{};
 
   for (auto i = 0u; i < mat->GetTextureCount(ai_type); ++i) {
     auto str = aiString{};
     mat->GetTexture(ai_type, i, &str);
     auto exp = Texture2D::fromFile(root / str.C_Str(), tex_type);
     RETURN_IF_UNEXPECTED(exp);
-    textures.push_back(std::move(*exp));
+    textures.push_back(*exp);
   }
   return textures;
 }
 
 Model::Model(std::filesystem::path path,
     ModelImporterOptions importer_options,
-    std::vector<Mesh> meshes) noexcept
+    std::vector<Model::SubModel> submodels) noexcept
   : path_{std::move(path)}
   , importer_options_{importer_options}
-  , meshes_{std::move(meshes)}
+  , submodels_{std::move(submodels)}
 {
 }
 
-void Model::draw(Program& program) const noexcept
+void Model::draw() const noexcept
 {
-  for (auto const& mesh : this->meshes_)
-    mesh.draw(program);
+  for (auto const& submodel : this->submodels_) {
+    renderer::Renderer::get().useTextures(submodel.textures_);
+
+    submodel.mesh_.draw();
+
+    for (auto const& texture : submodel.textures_)
+      texture.get().unbind();
+  }
 }
 
 tl::optional<std::filesystem::path> const& Model::getPath() const noexcept
@@ -157,8 +165,8 @@ tl::optional<ModelImporterOptions> const& Model::getImporterOptions()
   return this->importer_options_;
 }
 
-std::vector<Mesh> const& Model::getMeshes() const noexcept
+std::vector<Model::SubModel> const& Model::getSubModels() const noexcept
 {
-  return this->meshes_;
+  return this->submodels_;
 }
 } // namespace redoom::graphics

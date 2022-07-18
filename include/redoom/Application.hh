@@ -6,7 +6,6 @@
 #include <Utils/Singleton.hh>
 #include <redoom/Scene.hh>
 #include <redoom/ecs/Registry.hh>
-#include <redoom/renderer/Renderer.hh>
 #include <redoom/renderer/RendererContext.hh>
 #include <redoom/renderer/Window.hh>
 
@@ -46,6 +45,9 @@ public:
 
   [[nodiscard]] renderer::Window& getWindow() noexcept;
   [[nodiscard]] ApplicationArguments const& getArgs() const noexcept;
+
+private:
+  Expected<> init(std::string_view title) noexcept;
 
 protected:
   Application(std::string_view title, ApplicationArguments args) noexcept;

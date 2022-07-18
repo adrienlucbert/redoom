@@ -9,6 +9,7 @@ Checks: '
   -bugprone-easily-swappable-parameters,
   -cert-env33-c,
   -clang-analyzer-cplusplus.NewDeleteLeaks,
+  -clang-analyzer-optin.cplusplus.VirtualCall,
   -clang-diagnostic-unused-macros,
   -cppcoreguidelines-non-private-member-variables-in-classes,
   -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
@@ -42,6 +43,7 @@ Checks: '
   -*namespace-comment,
   -*namespace-comments,
   -readability-else-after-return,
+  -readability-identifier-length,
   -readability-uppercase-literal-suffix,
 '
 CheckOptions:

@@ -19,11 +19,8 @@ public:
   Torus(float r1,
       float r2,
       unsigned int num_steps1,
-      unsigned int num_steps2,
-      std::vector<Texture2D> textures = {},
-      GLenum topology = GL_TRIANGLES) noexcept
-    : Mesh{Torus::create(
-        r1, r2, num_steps1, num_steps2, std::move(textures), topology)}
+      unsigned int num_steps2) noexcept
+    : Mesh{Torus::create(r1, r2, num_steps1, num_steps2)}
     , r1_{r1}
     , r2_{r2}
     , num_steps1_{num_steps1}
@@ -52,9 +49,7 @@ private:
   static Mesh create(float r1,
       float r2,
       unsigned int num_steps1,
-      unsigned int num_steps2,
-      std::vector<Texture2D> textures,
-      GLenum topology) noexcept
+      unsigned int num_steps2) noexcept
   {
     // source:
     // https://github.com/JoeyDeVries/Cell/blob/master/cell/mesh/sphere.cpp
@@ -117,8 +112,7 @@ private:
       }
     }
 
-    return Mesh{
-        std::move(vertices), std::move(indices), std::move(textures), topology};
+    return Mesh{std::move(vertices), std::move(indices)};
   }
 };
 } // namespace redoom::graphics::mesh

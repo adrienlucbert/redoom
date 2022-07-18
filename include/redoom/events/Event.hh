@@ -6,6 +6,10 @@
 
 namespace redoom::events
 {
+struct WindowFocusEvent {
+  bool is_focused;
+};
+
 struct WindowResizeEvent {
   int width;
   int height;
@@ -72,7 +76,8 @@ struct ScrollEvent {
   double y_offset;
 };
 
-using Event = std::variant<WindowResizeEvent,
+using Event = std::variant<WindowFocusEvent,
+    WindowResizeEvent,
     WindowCloseEvent,
     KeyEvent,
     CharEvent,

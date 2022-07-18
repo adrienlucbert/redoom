@@ -1,0 +1,14 @@
+#version 330 core
+
+layout(location = 0) out vec4 FragColor;
+  
+uniform uint EntityId;
+
+void main()
+{
+  uint r = (EntityId & 0x000000FFu) >>  0u;
+  uint g = (EntityId & 0x0000FF00u) >>  8u;
+  uint b = (EntityId & 0x00FF0000u) >> 16u;
+  vec3 color = vec3(r, g, b);
+  FragColor = vec4(color / 255.0f, 1.0f);
+}

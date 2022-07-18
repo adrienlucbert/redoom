@@ -14,10 +14,8 @@ namespace redoom::graphics::mesh
 class Cube : public Cuboid
 {
 public:
-  explicit Cube(float width,
-      std::vector<Texture2D> textures = {},
-      GLenum topology = GL_TRIANGLES) noexcept
-    : Cuboid(width, width, width, std::move(textures), topology)
+  explicit Cube(float width) noexcept
+    : Cuboid(width, width, width)
   {
   }
   Cube(Cube const&) noexcept = delete;

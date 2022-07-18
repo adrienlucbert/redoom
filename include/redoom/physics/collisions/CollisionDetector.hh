@@ -47,9 +47,9 @@ public:
     return collisions;
   }
 
-  void debugDraw(graphics::Program& program) const noexcept
+  void debugDraw() const noexcept
   {
-    this->filter_.debugDraw(program);
+    this->filter_.debugDraw();
   }
 
 private:

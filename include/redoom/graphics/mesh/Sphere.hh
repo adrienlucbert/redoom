@@ -7,7 +7,6 @@
 #include <GL/glew.h>
 
 #include <redoom/graphics/Mesh.hh>
-#include <redoom/graphics/Texture.hh>
 #include <redoom/graphics/Vertex.hh>
 
 namespace redoom::graphics::mesh
@@ -17,11 +16,8 @@ class Sphere : public Mesh
 public:
   explicit Sphere(float radius,
       unsigned int x_segment = 20,
-      unsigned int y_segment = 20,
-      std::vector<Texture2D> textures = {},
-      GLenum topology = GL_TRIANGLES) noexcept
-    : Mesh{Sphere::create(
-        radius, x_segment, y_segment, std::move(textures), topology)}
+      unsigned int y_segment = 20) noexcept
+    : Mesh{Sphere::create(radius, x_segment, y_segment)}
     , radius_{radius}
     , x_segment_{x_segment}
     , y_segment_{y_segment}
@@ -45,11 +41,8 @@ public:
   unsigned int y_segment_;
 
 private:
-  static Mesh create(float radius,
-      unsigned int x_segment,
-      unsigned int y_segment,
-      std::vector<Texture2D> textures,
-      GLenum topology) noexcept
+  static Mesh create(
+      float radius, unsigned int x_segment, unsigned int y_segment) noexcept
   {
     // source:
     // http://www.songho.ca/opengl/gl_sphere.html
@@ -104,8 +97,7 @@ private:
       }
     }
 
-    return Mesh{
-        std::move(vertices), std::move(indices), std::move(textures), topology};
+    return Mesh{std::move(vertices), std::move(indices)};
   }
 };
 } // namespace redoom::graphics::mesh

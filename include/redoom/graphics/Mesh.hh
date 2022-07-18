@@ -13,10 +13,8 @@ namespace redoom::graphics
 class Mesh
 {
 public:
-  Mesh(std::vector<Vertex> vertices,
-      std::vector<unsigned int> indices,
-      std::vector<Texture2D> textures,
-      GLenum topology = GL_TRIANGLES) noexcept;
+  Mesh(
+      std::vector<Vertex> vertices, std::vector<unsigned int> indices) noexcept;
   Mesh(Mesh const&) noexcept = delete;
   Mesh(Mesh&&) noexcept = default;
   virtual ~Mesh() noexcept = default;
@@ -24,19 +22,16 @@ public:
   Mesh& operator=(Mesh const&) noexcept = delete;
   Mesh& operator=(Mesh&&) noexcept = default;
 
-  void draw(Program& program) const noexcept;
+  void draw() const noexcept;
 
   [[nodiscard]] virtual std::string const& getType() const noexcept;
   [[nodiscard]] std::vector<Vertex> const& getVertices() const noexcept;
   [[nodiscard]] std::vector<unsigned int> const& getIndices() const noexcept;
-  [[nodiscard]] GLenum getTopology() const noexcept;
 
 protected:
   std::vector<Vertex> vertices_;
   std::vector<unsigned int> indices_;
-  std::vector<Texture2D> textures_;
 
-  GLenum topology_;
   VertexArray vao_;
   VertexBuffer<std::vector<Vertex>> vbo_;
   IndexBuffer<std::vector<unsigned int>> ebo_;

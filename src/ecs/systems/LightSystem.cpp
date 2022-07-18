@@ -16,16 +16,16 @@ void LightSystem::update(UpdateContext& context) noexcept
       context.getComponentManager().getOne<AmbientLightComponent>();
   if (ambient_opt.has_value()) {
     auto const& ambient = *ambient_opt;
-    Renderer::setGlobalUniform("AmbientLightColor",
+    Renderer::get().setGlobalUniform("AmbientLightColor",
         graphics::uniforms::Vector<3>{.value = ambient.color_});
   }
   auto dir_opt =
       context.getComponentManager().getOne<DirectionalLightComponent>();
   if (dir_opt.has_value()) {
     auto const& dir = *dir_opt;
-    Renderer::setGlobalUniform("DirectionalLightDirection",
+    Renderer::get().setGlobalUniform("DirectionalLightDirection",
         graphics::uniforms::Vector<3>{.value = dir.direction_});
-    Renderer::setGlobalUniform("DirectionalLightColor",
+    Renderer::get().setGlobalUniform("DirectionalLightColor",
         graphics::uniforms::Vector<3>{.value = dir.color_});
   }
 }

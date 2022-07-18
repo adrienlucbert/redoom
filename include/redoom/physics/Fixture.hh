@@ -34,7 +34,7 @@ public:
   Fixture& operator=(Fixture const&) noexcept = delete;
   Fixture& operator=(Fixture&&) noexcept = default;
 
-  void draw(graphics::Program& program) const noexcept;
+  void draw() const noexcept;
 
   [[nodiscard]] Body& getBody() const noexcept;
   [[nodiscard]] std::shared_ptr<Shape const> getShape() const noexcept;

@@ -25,7 +25,6 @@ Entities:
       radius: 10
       x_segment: 20
       y_segment: 20
-      topology: 4
     MaterialComponent:
       shader: lit
       gloss: 6
@@ -42,13 +41,13 @@ Entities:
       radius: 10
       x_segment: 20
       y_segment: 20
-      topology: 4
     MaterialComponent:
       shader: lit
       gloss: 6
       smoothness: 1
       metallicness: 0.200000003
-      color: [0, 0, 0]
+      color: [1, 0, 1]
+      topology: 4
   - TransformComponent:
       position: [2, 0, 0]
       angle: 0
@@ -60,6 +59,7 @@ Entities:
       smoothness: 1
       metallicness: 0.100000001
       color: [1, 1, 1]
+      topology: 4
     ModelComponent:
       path: ../assets/backpack/backpack.obj
       flip_uvs: true

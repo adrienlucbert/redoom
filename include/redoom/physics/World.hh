@@ -41,7 +41,7 @@ public:
 
   [[nodiscard]] bool getDebugDraw() const noexcept;
   void setDebugDraw(bool draw = true) noexcept;
-  void debugDraw(graphics::Program& program) const noexcept;
+  void debugDraw() const noexcept;
 
 private:
   bool deleteBody(Body const& body) noexcept;

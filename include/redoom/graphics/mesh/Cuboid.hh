@@ -13,11 +13,7 @@ namespace redoom::graphics::mesh
 class Cuboid : public Mesh
 {
 public:
-  Cuboid(float width,
-      float height,
-      float depth,
-      std::vector<Texture2D> textures = {},
-      GLenum topology = GL_TRIANGLES) noexcept
+  Cuboid(float width, float height, float depth) noexcept
     // clang-format off
     : Mesh{
         std::vector{
@@ -69,9 +65,7 @@ public:
           Vertex{{-width / 2,  height / 2, -depth / 2}, {  0.0f,  height,   0.0f}, {0.0f, 1.0f}},
           Vertex{{-width / 2,  height / 2,  depth / 2}, {  0.0f,  height,   0.0f}, {0.0f, 0.0f}},
         },
-        std::vector<GLuint>{},
-        std::move(textures),
-        topology
+        std::vector<GLuint>{}
     } // clang-format on
     , size_{width, height, depth}
   {

@@ -121,8 +121,8 @@ add_library(
   src/ecs/systems/CameraSystem.cpp
   src/ecs/systems/EventSystem.cpp
   src/ecs/systems/LightSystem.cpp
-  src/ecs/systems/MeshSystem.cpp
-  src/ecs/systems/ModelSystem.cpp
+  src/ecs/systems/RenderSystem.cpp
+  src/ecs/systems/MousePickingSystem.cpp
   src/ecs/systems/PhysicsDebugSystem.cpp
   src/ecs/systems/PhysicsWorldSystem.cpp
   src/ecs/UpdateContext.cpp
@@ -130,6 +130,7 @@ add_library(
   src/events/Key.cpp
   src/graphics/BufferLayout.cpp
   src/graphics/Camera.cpp
+  src/graphics/FrameBuffer.cpp
   src/graphics/Material.cpp
   src/graphics/Mesh.cpp
   src/graphics/Model.cpp
@@ -150,6 +151,7 @@ add_library(
   src/platform/OpenGL/OpenGLRendererAPI.cpp
   src/platform/OpenGL/OpenGLWindow.cpp
   src/platform/Platform.cpp
+  src/renderer/pipelines/DefaultRenderPipeline.cpp
   src/renderer/RendererAPI.cpp
   src/renderer/RendererContext.cpp
   src/renderer/Renderer.cpp

@@ -11,24 +11,19 @@ namespace redoom::graphics::mesh
 class Quad : public Mesh
 {
 public:
-  explicit Quad(float width,
-      float height,
-      std::vector<Texture2D> textures = {},
-      GLenum topology = GL_TRIANGLE_STRIP) noexcept
+  explicit Quad(float width, float height) noexcept
     // source:
     // https://github.com/JoeyDeVries/Cell/blob/master/cell/mesh/quad.cpp
     // clang-format off
     : Mesh{
         std::vector{
           // TODO(alucbert): determine actual normals
-          Vertex{{-width / 2,  height / 2, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
-          Vertex{{-width / 2, -height / 2, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-          Vertex{{ width / 2,  height / 2, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-          Vertex{{ width / 2, -height / 2, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+          Vertex{{-width * 0.5f,  height * 0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+          Vertex{{-width * 0.5f, -height * 0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+          Vertex{{ width * 0.5f,  height * 0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+          Vertex{{ width * 0.5f, -height * 0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
         },
-        std::vector<GLuint>{},
-        std::move(textures),
-        topology
+        std::vector<GLuint>{0, 1, 3, 0, 3, 2}
       } // clang-format on
     , size_{width, height}
   {
