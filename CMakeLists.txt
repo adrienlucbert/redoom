@@ -121,10 +121,10 @@ add_library(
   src/ecs/systems/CameraSystem.cpp
   src/ecs/systems/EventSystem.cpp
   src/ecs/systems/LightSystem.cpp
-  src/ecs/systems/RenderSystem.cpp
   src/ecs/systems/MousePickingSystem.cpp
   src/ecs/systems/PhysicsDebugSystem.cpp
   src/ecs/systems/PhysicsWorldSystem.cpp
+  src/ecs/systems/RenderSystem.cpp
   src/ecs/UpdateContext.cpp
   src/events/EventQueue.cpp
   src/events/Key.cpp
@@ -141,6 +141,7 @@ add_library(
   src/graphics/TextureLibrary.cpp
   src/graphics/UniformBase.cpp
   src/graphics/VertexArray.cpp
+  src/Layer.cpp
   src/physics/Body.cpp
   src/physics/collisions/CollisionResolver.cpp
   src/physics/Fixture.cpp

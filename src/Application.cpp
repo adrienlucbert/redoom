@@ -27,8 +27,29 @@ void Application::run() noexcept
     auto current_time = glfwGetTime();
     auto const elapsed_time = current_time - this->previous_time_;
     this->previous_time_ = current_time;
+
+    for (auto const& layer : this->layers_)
+      layer->onUpdate(elapsed_time);
+
+    // TODO(alucbert): turn this call into a layer
     this->getCurrentScene().getRegistry().update(*this->window_, elapsed_time);
+
     this->window_->onUpdate();
+  }
+}
+
+void Application::pushLayer(std::shared_ptr<Layer> layer) noexcept
+{
+  layer->onAttach();
+  this->layers_.emplace_back(std::move(layer));
+}
+
+void Application::popLayer(std::shared_ptr<Layer> const& layer) noexcept
+{
+  auto it = std::find(this->layers_.begin(), this->layers_.end(), layer);
+  if (it != this->layers_.end()) {
+    (*it)->onDetach();
+    this->layers_.erase(it);
   }
 }
 
@@ -118,5 +139,11 @@ Application::Application(
   auto exp = this->init(title);
   if (!exp)
     std::cerr << exp.error() << '\n';
+}
+
+Application::~Application() noexcept
+{
+  for (auto& layer : this->layers_)
+    layer->onDetach();
 }
 } // namespace redoom

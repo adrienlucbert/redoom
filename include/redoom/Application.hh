@@ -4,6 +4,7 @@
 
 #include <Utils/Expected.hh>
 #include <Utils/Singleton.hh>
+#include <redoom/Layer.hh>
 #include <redoom/Scene.hh>
 #include <redoom/ecs/Registry.hh>
 #include <redoom/renderer/RendererContext.hh>
@@ -29,13 +30,16 @@ class Application : public Utils::Singleton<Application>
 public:
   Application(Application const&) noexcept = delete;
   Application(Application&&) noexcept = delete;
-  ~Application() noexcept override = default;
+  ~Application() noexcept override;
 
   Application& operator=(Application const&) noexcept = delete;
   Application& operator=(Application&&) noexcept = delete;
 
   [[nodiscard]] bool isReady() const noexcept;
   void run() noexcept;
+
+  void pushLayer(std::shared_ptr<Layer> layer) noexcept;
+  void popLayer(std::shared_ptr<Layer> const& layer) noexcept;
 
   Scene& makeScene(std::string_view name, bool set_current = true) noexcept;
   Expected<std::reference_wrapper<Scene>> loadScene(
@@ -54,6 +58,7 @@ protected:
 
   ApplicationArguments args_;
   double previous_time_{0.0};
+  std::vector<std::shared_ptr<Layer>> layers_;
   std::unique_ptr<renderer::Window> window_;
   std::shared_ptr<Scene> current_scene_;
   std::unordered_map<std::string, std::shared_ptr<Scene>> scenes_;
