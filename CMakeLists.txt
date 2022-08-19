@@ -175,6 +175,7 @@ target_link_libraries(
   stb
   yaml-cpp
   assimp
+  imgui
 )
 
 add_executable(

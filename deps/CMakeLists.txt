@@ -61,3 +61,6 @@ add_library(glew ALIAS libglew_shared)
 
 # glm
 add_subdirectory(glm EXCLUDE_FROM_ALL)
+
+# imgui
+add_subdirectory(imgui)
