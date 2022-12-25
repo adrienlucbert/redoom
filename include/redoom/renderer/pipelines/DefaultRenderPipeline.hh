@@ -12,11 +12,14 @@ class DefaultRenderPipeline : public RenderPipeline
 public:
   DefaultRenderPipeline() noexcept;
 
-  void beginRendering() noexcept override;
-  void endRendering() noexcept override;
-
   [[nodiscard]] graphics::Material const& getDefaultMaterial()
       const noexcept override;
+  [[nodiscard]] graphics::FrameBuffer const& getFrameBuffer()
+      const noexcept override;
+  [[nodiscard]] graphics::FrameBuffer& getFrameBuffer() noexcept override;
+
+  void beginRendering() noexcept override;
+  void endRendering() noexcept override;
 
 private:
   graphics::FrameBuffer framebuffer_;

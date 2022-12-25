@@ -141,7 +141,12 @@ add_library(
   src/graphics/TextureLibrary.cpp
   src/graphics/UniformBase.cpp
   src/graphics/VertexArray.cpp
+	src/imgui/ImGuiWindow.cpp
+  src/imgui/LogImGuiWindow.cpp
+  src/imgui/PropertiesImGuiWindow.cpp
+  src/imgui/SceneImGuiWindow.cpp
   src/Layer.cpp
+  src/layers/ImGuiLayer.cpp
   src/physics/Body.cpp
   src/physics/collisions/CollisionResolver.cpp
   src/physics/Fixture.cpp

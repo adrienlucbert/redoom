@@ -28,11 +28,13 @@ void Application::run() noexcept
     auto const elapsed_time = current_time - this->previous_time_;
     this->previous_time_ = current_time;
 
-    for (auto const& layer : this->layers_)
-      layer->onUpdate(elapsed_time);
+    glfwPollEvents();
 
     // TODO(alucbert): turn this call into a layer
     this->getCurrentScene().getRegistry().update(*this->window_, elapsed_time);
+
+    for (auto const& layer : this->layers_)
+      layer->onUpdate(elapsed_time);
 
     this->window_->onUpdate();
   }

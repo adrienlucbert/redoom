@@ -12,6 +12,7 @@
 #include <redoom/graphics/Model.hh>
 #include <redoom/graphics/ShaderLibrary.hh>
 #include <redoom/graphics/mesh/Quad.hh>
+#include <redoom/layers/ImGuiLayer.hh>
 
 using redoom::ecs::SystemPriority;
 using redoom::ecs::systems::BehaviourSystem;
@@ -36,6 +37,8 @@ struct ExampleApplication : public Application {
 std::unique_ptr<Application> createApplication(ApplicationArguments args)
 {
   auto app = std::make_unique<ExampleApplication>(args);
+
+  app->pushLayer(std::make_shared<ImGuiLayer>());
 
   auto scene_exp = app->loadScene(
       fmt::format("../examples/3d_scene/scenes/{}.yaml", "default"));

@@ -80,7 +80,6 @@ bool OpenGLWindow::pollEvent(events::Event& buffer) noexcept
 
 void OpenGLWindow::onUpdate() noexcept
 {
-  glfwPollEvents();
   this->context_->swapBuffers();
 }
 
@@ -134,7 +133,7 @@ OpenGLWindow::OpenGLWindow(GLFWwindow* window,
   , has_vsync_{true}
 {
   this->setVSync(true);
-  this->setCursorMode(CursorMode::Disabled);
+  // this->setCursorMode(CursorMode::Disabled);
 
   this->events_.push(events::WindowResizeEvent{this->width_, this->height_});
 

@@ -38,6 +38,11 @@ RenderPipeline const& Renderer::getRenderPipeline() const noexcept
   return *this->rp_;
 }
 
+RenderPipeline& Renderer::getRenderPipeline() noexcept
+{
+  return *this->rp_;
+}
+
 void Renderer::beginRendering() noexcept
 {
   this->rp_->beginRendering();

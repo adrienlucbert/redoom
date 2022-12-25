@@ -7,12 +7,29 @@
 namespace redoom::renderer::pipelines
 {
 DefaultRenderPipeline::DefaultRenderPipeline() noexcept
-  : framebuffer_{graphics::FrameBuffer{
-      Application::get().getWindow().getWidth(),
-      Application::get().getWindow().getHeight()}}
+  : framebuffer_{graphics::FrameBuffer{1000, 800}}
   , screen_quad_{graphics::mesh::Quad{2.0f, 2.0f}}
   , shader_{*graphics::ShaderLibrary::getShader("draw_framebuffer")}
 {
+}
+
+graphics::Material const& DefaultRenderPipeline::getDefaultMaterial()
+    const noexcept
+{
+  static auto const default_material = graphics::Material{
+      "lit", 6.0f, 1.0f, 1.0f, glm::vec3{1.0f, 1.0f, 1.0f}, {}, GL_TRIANGLES};
+  return default_material;
+}
+
+graphics::FrameBuffer const& DefaultRenderPipeline::getFrameBuffer()
+    const noexcept
+{
+  return this->framebuffer_;
+}
+
+graphics::FrameBuffer& DefaultRenderPipeline::getFrameBuffer() noexcept
+{
+  return this->framebuffer_;
 }
 
 void DefaultRenderPipeline::beginRendering() noexcept
@@ -38,13 +55,5 @@ void DefaultRenderPipeline::endRendering() noexcept
   this->screen_quad_.draw();
   framebuffer_texture.unbind();
   Renderer::get().getAPI().setWireframe(is_wireframe);
-}
-
-graphics::Material const& DefaultRenderPipeline::getDefaultMaterial()
-    const noexcept
-{
-  static auto const default_material = graphics::Material{
-      "lit", 6.0f, 1.0f, 1.0f, glm::vec3{1.0f, 1.0f, 1.0f}, {}, GL_TRIANGLES};
-  return default_material;
 }
 } // namespace redoom::renderer::pipelines

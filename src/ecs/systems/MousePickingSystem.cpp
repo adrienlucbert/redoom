@@ -69,38 +69,37 @@ void MousePickingSystem::update(UpdateContext& context) noexcept
           redoom::Application::get().getWindow().getNativeWindow()),
       &xpos,
       &ypos);
-  if (xpos < 0.0 || xpos > redoom::Application::get().getWindow().getWidth()
-      || ypos < 0.0
-      || ypos > redoom::Application::get().getWindow().getHeight())
-    return;
-  glFlush();
-  glFinish();
+  if (xpos >= 0.0 && xpos <= redoom::Application::get().getWindow().getWidth()
+      && ypos >= 0.0
+      && ypos <= redoom::Application::get().getWindow().getHeight()) {
+    glFlush();
+    glFinish();
 
-  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-  float pixel[3]; // NOLINT
-  glReadPixels(static_cast<int>(xpos),
-      redoom::Application::get().getWindow().getHeight()
-          - static_cast<int>(ypos),
-      1,
-      1,
-      GL_RGB,
-      GL_FLOAT,
-      &pixel);
+    float pixel[3]; // NOLINT
+    glReadPixels(static_cast<int>(xpos),
+        redoom::Application::get().getWindow().getHeight()
+            - static_cast<int>(ypos),
+        1,
+        1,
+        GL_RGB,
+        GL_FLOAT,
+        &pixel);
 
-  auto entity_id = ((static_cast<unsigned int>(pixel[0] * 255.0f) << 0u)
-                    + (static_cast<unsigned int>(pixel[1] * 255.0f) << 8u)
-                    + (static_cast<unsigned int>(pixel[2] * 255.0f) << 16u));
+    auto entity_id = ((static_cast<unsigned int>(pixel[0] * 255.0f) << 0u)
+                      + (static_cast<unsigned int>(pixel[1] * 255.0f) << 8u)
+                      + (static_cast<unsigned int>(pixel[2] * 255.0f) << 16u));
 
-  if (entity_id != (255 << 0) + (255 << 8) + (255 << 16)) {
-    std::cout << fmt::format("({} {}): [{}/{}]",
-        static_cast<int>(xpos),
-        static_cast<int>(ypos),
-        entity_id,
-        (255 << 0) + (255 << 8) + (255 << 16))
-              << '\n';
+    if (entity_id != (255 << 0) + (255 << 8) + (255 << 16)) {
+      std::cout << fmt::format("({} {}): [{}/{}]",
+          static_cast<int>(xpos),
+          static_cast<int>(ypos),
+          entity_id,
+          (255 << 0) + (255 << 8) + (255 << 16))
+                << '\n';
+    }
   }
-
   framebuffer.unbind();
 }
 } // namespace redoom::ecs::systems

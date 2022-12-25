@@ -10,6 +10,7 @@
 namespace redoom::graphics
 {
 FrameBuffer::FrameBuffer(int width, int height) noexcept
+  : size_{width, height}
 {
   glGenFramebuffers(1, &this->id_);
   this->bind();
@@ -42,14 +43,14 @@ FrameBuffer::FrameBuffer(FrameBuffer&& rhs) noexcept
   : id_{rhs.id_}
   , rb_{std::move(rhs.rb_)}
   , texture_{std::move(rhs.texture_)}
+  , size_{rhs.size_}
 {
   rhs.id_ = 0;
 }
 
 FrameBuffer::~FrameBuffer() noexcept
 {
-  if (this->id_ != 0)
-    glDeleteFramebuffers(1, &this->id_);
+  this->destroy();
 }
 
 FrameBuffer& FrameBuffer::operator=(FrameBuffer&& rhs) noexcept
@@ -72,8 +73,27 @@ void FrameBuffer::unbind() const noexcept // NOLINT
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void FrameBuffer::resize(int width, int height) noexcept
+{
+  this->destroy();
+  *this = FrameBuffer{width, height};
+}
+
 Texture2D const& FrameBuffer::getTexture() const noexcept
 {
   return *this->texture_;
+}
+
+glm::vec2 const& FrameBuffer::getSize() const noexcept
+{
+  return this->size_;
+}
+
+void FrameBuffer::destroy() noexcept
+{
+  if (this->id_ != 0) {
+    glDeleteFramebuffers(1, &this->id_);
+    this->id_ = 0;
+  }
 }
 } // namespace redoom::graphics

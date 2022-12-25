@@ -19,11 +19,17 @@ public:
   void bind() const noexcept;
   void unbind() const noexcept;
 
+  void resize(int width, int height) noexcept;
+
   [[nodiscard]] Texture2D const& getTexture() const noexcept;
+  [[nodiscard]] glm::vec2 const& getSize() const noexcept;
 
 private:
+  void destroy() noexcept;
+
   unsigned int id_{};
   RenderBuffer rb_{};
   std::unique_ptr<Texture2D> texture_;
+  glm::vec2 const size_;
 };
 } // namespace redoom::graphics

@@ -47,6 +47,7 @@ public:
   [[nodiscard]] GLenum getTopology() const noexcept;
 
   [[nodiscard]] RenderPipeline const& getRenderPipeline() const noexcept;
+  [[nodiscard]] RenderPipeline& getRenderPipeline() noexcept;
 
   void beginRendering() noexcept;
   void endRendering() noexcept;
