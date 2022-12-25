@@ -8,6 +8,8 @@
 
 namespace redoom::renderer
 {
+using EventCallback = std::function<void(events::Event const&)>;
+
 class Window
 {
 public:
@@ -31,13 +33,14 @@ public:
 
   virtual void setCursorMode(CursorMode mode) noexcept = 0;
 
-  [[nodiscard]] virtual bool pollEvent(events::Event& buffer) noexcept = 0;
+  virtual void setEventCallback(EventCallback const& callback) noexcept = 0;
 
   virtual void onUpdate() noexcept = 0;
 
   [[nodiscard]] static Expected<std::unique_ptr<Window>> create(
       std::string_view title = "Redoom Engine",
       int width = 1600,
-      int height = 900) noexcept;
+      int height = 900,
+      EventCallback const& event_callback = nullptr) noexcept;
 };
 }; // namespace redoom::renderer

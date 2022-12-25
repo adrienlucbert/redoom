@@ -25,7 +25,8 @@ public:
 
   void setCursorMode(CursorMode /*mode*/) noexcept override;
 
-  [[nodiscard]] bool pollEvent(redoom::events::Event& buffer) noexcept override;
+  void setEventCallback(
+      redoom::renderer::EventCallback const& callback) noexcept override;
 
   void onUpdate() noexcept override;
 };

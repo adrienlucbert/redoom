@@ -7,6 +7,7 @@
 #include <redoom/Layer.hh>
 #include <redoom/Scene.hh>
 #include <redoom/ecs/Registry.hh>
+#include <redoom/events/EventQueue.hh>
 #include <redoom/renderer/RendererContext.hh>
 #include <redoom/renderer/Window.hh>
 
@@ -38,6 +39,9 @@ public:
   [[nodiscard]] bool isReady() const noexcept;
   void run() noexcept;
 
+  void onEvent(events::Event const& event) noexcept;
+  [[nodiscard]] bool pollEvent(events::Event& buffer) noexcept;
+
   void pushLayer(std::shared_ptr<Layer> layer) noexcept;
   void popLayer(std::shared_ptr<Layer> const& layer) noexcept;
 
@@ -62,6 +66,7 @@ protected:
   std::unique_ptr<renderer::Window> window_;
   std::shared_ptr<Scene> current_scene_;
   std::unordered_map<std::string, std::shared_ptr<Scene>> scenes_;
+  events::EventQueue events_;
 };
 
 std::unique_ptr<Application> createApplication(ApplicationArguments args);

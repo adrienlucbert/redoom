@@ -10,7 +10,12 @@ namespace redoom
 {
 void ImGuiStyleVarPair::apply() const noexcept
 {
-  std::visit([&](auto&& v) { ImGui::PushStyleVar(this->idx, v); }, this->value);
+  try {
+    std::visit(
+        [&](auto&& v) { ImGui::PushStyleVar(this->idx, v); }, this->value);
+  } catch (std::bad_variant_access const&) {
+    std::abort();
+  }
 }
 
 std::vector<ImGuiStyleVarPair> const& ImGuiWindow::getStyleVars() const noexcept

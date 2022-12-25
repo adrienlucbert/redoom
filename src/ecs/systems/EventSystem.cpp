@@ -5,6 +5,7 @@
 #include <type_traits>
 #include <variant>
 
+#include <redoom/Application.hh>
 #include <redoom/ecs/components/BehaviourComponent.hh>
 #include <redoom/events/Event.hh>
 
@@ -36,7 +37,7 @@ void dispatchEvent(
 void EventSystem::update(UpdateContext& context) noexcept
 {
   auto event_buffer = events::Event{};
-  while (context.getWindow().pollEvent(event_buffer)) {
+  while (Application::get().pollEvent(event_buffer)) {
     try {
       std::visit(
           [&](auto&& event) {

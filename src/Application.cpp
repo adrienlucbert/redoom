@@ -40,6 +40,19 @@ void Application::run() noexcept
   }
 }
 
+void Application::onEvent(events::Event const& event) noexcept
+{
+  this->events_.push(event);
+}
+
+bool Application::pollEvent(events::Event& buffer) noexcept
+{
+  if (this->events_.empty())
+    return false;
+  buffer = this->events_.pop();
+  return true;
+}
+
 void Application::pushLayer(std::shared_ptr<Layer> layer) noexcept
 {
   layer->onAttach();
@@ -105,7 +118,8 @@ ApplicationArguments const& Application::getArgs() const noexcept
 
 Expected<> Application::init(std::string_view title) noexcept
 {
-  auto window_exp = renderer::Window::create(title);
+  auto window_exp = renderer::Window::create(
+      title, 1600, 900, [this](events::Event const& e) { this->onEvent(e); });
   RETURN_IF_UNEXPECTED(window_exp);
   this->window_ = std::move(*window_exp);
 

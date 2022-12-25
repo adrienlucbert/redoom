@@ -92,7 +92,7 @@ known bugs or performance issues I want to fix.
   <th rowspan=2>User interface</th>
   <tr>
     <td>Basic game engine UI and scene visualization/edition</td>
-    <td title="planned">📅</td>
+    <td title="in progress">🚧</td>
   </tr>
 
   <th rowspan=8>Computer graphics</th>

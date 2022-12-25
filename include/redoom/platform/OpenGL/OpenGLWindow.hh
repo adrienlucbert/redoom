@@ -5,7 +5,6 @@
 
 #include <tl/optional.hpp>
 
-#include <redoom/events/EventQueue.hh>
 #include <redoom/graphics/FrameBuffer.hh>
 #include <redoom/renderer/RendererContext.hh>
 #include <redoom/renderer/Window.hh>
@@ -32,24 +31,31 @@ public:
 
   void setCursorMode(CursorMode mode) noexcept override;
 
-  [[nodiscard]] bool pollEvent(events::Event& buffer) noexcept override;
+  void setEventCallback(
+      renderer::EventCallback const& callback) noexcept override;
 
   void onUpdate() noexcept override;
 
   [[nodiscard]] static Expected<std::unique_ptr<renderer::Window>> create(
-      std::string_view title, int width, int height) noexcept;
+      std::string_view title,
+      int width,
+      int height,
+      renderer::EventCallback const& event_callback = nullptr) noexcept;
 
 protected:
   OpenGLWindow(GLFWwindow* window,
       std::unique_ptr<renderer::RendererContext> context,
       int width,
-      int height) noexcept;
+      int height,
+      renderer::EventCallback event_callback = nullptr) noexcept;
+
+  void dispatchEvent(events::Event const& e) const noexcept;
 
   int width_;
   int height_;
   GLFWwindow* window_;
   std::unique_ptr<renderer::RendererContext> context_;
   bool has_vsync_;
-  events::EventQueue events_;
+  renderer::EventCallback event_callback_;
 };
 } // namespace redoom::platform::OpenGL

@@ -42,6 +42,7 @@ Checks: '
   -modernize-use-trailing-return-type,
   -*namespace-comment,
   -*namespace-comments,
+	-readability-convert-member-functions-to-static,
   -readability-else-after-return,
   -readability-identifier-length,
   -readability-uppercase-literal-suffix,

@@ -28,9 +28,9 @@ void TestWindow::setCursorMode(TestWindow::CursorMode /*mode*/) noexcept
 {
 }
 
-bool TestWindow::pollEvent(redoom::events::Event& /*buffer*/) noexcept
+void TestWindow::setEventCallback(
+    redoom::renderer::EventCallback const& callback) noexcept
 {
-  return false;
 }
 
 void TestWindow::onUpdate() noexcept
