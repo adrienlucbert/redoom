@@ -78,7 +78,7 @@ set(
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb3 -fdebug-default-version=2")
 elseif(CMAKE_BUILD_TYPE MATCHES "tsan")
-  set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -fno-omit-frame-pointer -fsanitize=thread")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer -fsanitize=thread")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -147,6 +147,7 @@ add_library(
   src/imgui/SceneImGuiWindow.cpp
   src/Layer.cpp
   src/layers/ImGuiLayer.cpp
+	src/layers/RuntimeLayer.cpp
   src/physics/Body.cpp
   src/physics/collisions/CollisionResolver.cpp
   src/physics/Fixture.cpp
@@ -162,6 +163,7 @@ add_library(
   src/renderer/RendererContext.cpp
   src/renderer/Renderer.cpp
   src/renderer/Window.cpp
+	src/Runtime.cpp
   src/Scene.cpp
   src/SceneSerializer.cpp
   src/serializer/common.cpp

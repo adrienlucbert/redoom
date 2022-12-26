@@ -1,6 +1,6 @@
 #include <redoom/ecs/systems/PhysicsDebugSystem.hh>
 
-#include <redoom/Application.hh>
+#include <redoom/Runtime.hh>
 #include <redoom/ecs/components/BodyComponent.hh>
 #include <redoom/ecs/components/TransformComponent.hh>
 #include <redoom/graphics/ShaderLibrary.hh>
@@ -11,7 +11,7 @@ namespace redoom::ecs::systems
 void PhysicsDebugSystem::update(UpdateContext& context) noexcept
 {
   // Debug mode: draw bodies fixtures
-  if (Application::get().getCurrentScene().getWorld().getDebugDraw()) {
+  if (Runtime::get().getCurrentScene().getWorld().getDebugDraw()) {
     auto program_opt = graphics::ShaderLibrary::getShader("unlit");
     if (!program_opt)
       assert("Undefined program" == nullptr);
@@ -53,7 +53,7 @@ void PhysicsDebugSystem::update(UpdateContext& context) noexcept
             model = glm::translate(model, offset);
             renderer::Renderer::get().draw(cuboid, model);
           }
-          Application::get().getCurrentScene().getWorld().debugDraw();
+          Runtime::get().getCurrentScene().getWorld().debugDraw();
         });
     renderer::Renderer::get().setTopology(old_topology);
   }

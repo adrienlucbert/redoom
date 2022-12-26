@@ -96,11 +96,11 @@ struct CameraBehaviour : public Behaviour {
     this->component_->camera_.setYaw(yaw);
     this->component_->camera_.setPitch(pitch);
 
-    auto direction =
+    auto direction = glm::normalize(
         glm::vec3{std::cos(glm::radians(yaw)) * std::cos(glm::radians(pitch)),
             std::sin(glm::radians(pitch)),
-            std::sin(glm::radians(yaw)) * std::cos(glm::radians(pitch))};
-    this->component_->camera_.setFront(glm::normalize(direction));
+            std::sin(glm::radians(yaw)) * std::cos(glm::radians(pitch))});
+    this->component_->camera_.setFront(direction);
   }
 
   void onScroll(Entity /*entity*/, ScrollEvent& event) noexcept override

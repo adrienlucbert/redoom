@@ -4,7 +4,7 @@
 #include <stb/stb_image_write.h>
 
 #include <Utils/Concepts.hpp>
-#include <redoom/Application.hh>
+#include <redoom/Runtime.hh>
 #include <redoom/ecs/components/MaterialComponent.hh>
 #include <redoom/ecs/components/MeshComponent.hh>
 #include <redoom/ecs/components/ModelComponent.hh>
@@ -46,8 +46,8 @@ static void renderDrawable(
 void MousePickingSystem::update(UpdateContext& context) noexcept
 {
   static auto framebuffer =
-      graphics::FrameBuffer{redoom::Application::get().getWindow().getWidth(),
-          redoom::Application::get().getWindow().getHeight()};
+      graphics::FrameBuffer{redoom::Runtime::get().getWindow().getWidth(),
+          redoom::Runtime::get().getWindow().getHeight()};
   framebuffer.bind();
   glEnable(GL_DEPTH_TEST);
   glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -64,14 +64,13 @@ void MousePickingSystem::update(UpdateContext& context) noexcept
 
   double xpos = 0;
   double ypos = 0;
-  glfwGetCursorPos(
-      static_cast<GLFWwindow*>(
-          redoom::Application::get().getWindow().getNativeWindow()),
+  glfwGetCursorPos(static_cast<GLFWwindow*>(
+                       redoom::Runtime::get().getWindow().getNativeWindow()),
       &xpos,
       &ypos);
-  if (xpos >= 0.0 && xpos <= redoom::Application::get().getWindow().getWidth()
+  if (xpos >= 0.0 && xpos <= redoom::Runtime::get().getWindow().getWidth()
       && ypos >= 0.0
-      && ypos <= redoom::Application::get().getWindow().getHeight()) {
+      && ypos <= redoom::Runtime::get().getWindow().getHeight()) {
     glFlush();
     glFinish();
 
@@ -79,8 +78,7 @@ void MousePickingSystem::update(UpdateContext& context) noexcept
 
     float pixel[3]; // NOLINT
     glReadPixels(static_cast<int>(xpos),
-        redoom::Application::get().getWindow().getHeight()
-            - static_cast<int>(ypos),
+        redoom::Runtime::get().getWindow().getHeight() - static_cast<int>(ypos),
         1,
         1,
         GL_RGB,

@@ -1,6 +1,6 @@
 #include <behaviours/extern.hh>
 
-#include <redoom/Application.hh>
+#include <redoom/Runtime.hh>
 #include <redoom/ecs/Behaviour.hh>
 #include <redoom/ecs/components/BodyComponent.hh>
 #include <redoom/ecs/components/MeshComponent.hh>
@@ -36,7 +36,7 @@ struct KeyboardBehaviour : public Behaviour {
             .action = redoom::events::Action::PRESS,
             .mods = static_cast<int>(redoom::events::Mod::CONTROL)})) {
       std::cout << "Saving current scene" << '\n';
-      redoom::Application::get().getCurrentScene().serialize(
+      redoom::Runtime::get().getCurrentScene().serialize(
           "../examples/3d_scene/scenes/default.yaml");
     }
     // Switch wireframe mode
@@ -50,9 +50,8 @@ struct KeyboardBehaviour : public Behaviour {
     // Switch physics debug mode
     if (event.matches({.key = redoom::events::Key::F3,
             .action = redoom::events::Action::PRESS})) {
-      auto& registry =
-          redoom::Application::get().getCurrentScene().getRegistry();
-      auto& world = redoom::Application::get().getCurrentScene().getWorld();
+      auto& registry = redoom::Runtime::get().getCurrentScene().getRegistry();
+      auto& world = redoom::Runtime::get().getCurrentScene().getWorld();
 
       // Generate missing bodies
       registry.apply<ModelComponent>(
@@ -88,7 +87,7 @@ struct KeyboardBehaviour : public Behaviour {
     // Add gravity
     if (event.matches({.key = redoom::events::Key::G,
             .action = redoom::events::Action::PRESS})) {
-      auto& world = redoom::Application::get().getCurrentScene().getWorld();
+      auto& world = redoom::Runtime::get().getCurrentScene().getWorld();
       world.addGlobalConstantForce(
           Force{glm::vec3{0.0f, -0.1f, 0.0f}, Force::Type::Acceleration});
       // TODO(alucbert): -9.81
@@ -98,7 +97,7 @@ struct KeyboardBehaviour : public Behaviour {
     // Toggle VSync
     if (event.matches({.key = redoom::events::Key::GRAVE_ACCENT,
             .action = redoom::events::Action::PRESS})) {
-      auto& window = redoom::Application::get().getWindow();
+      auto& window = redoom::Runtime::get().getWindow();
       window.setVSync(!window.hasVSync());
       std::cout << "Setting VSync: " << std::boolalpha << window.hasVSync()
                 << '\n';
@@ -107,14 +106,14 @@ struct KeyboardBehaviour : public Behaviour {
     // Trigger collision detection
     if (event.matches({.key = redoom::events::Key::C,
             .action = redoom::events::Action::PRESS})) {
-      auto& world = redoom::Application::get().getCurrentScene().getWorld();
+      auto& world = redoom::Runtime::get().getCurrentScene().getWorld();
       world.step(0.0);
     }
 
     // Unfocus window
     if (event.matches({.key = redoom::events::Key::ESCAPE,
             .action = redoom::events::Action::PRESS})) {
-      redoom::Application::get().getWindow().setCursorMode(
+      redoom::Runtime::get().getWindow().setCursorMode(
           redoom::renderer::Window::CursorMode::Normal);
     }
   }
@@ -125,7 +124,7 @@ struct KeyboardBehaviour : public Behaviour {
     // Focus window
     if (event.matches({.button = redoom::events::Mouse::BUTTON_LEFT,
             .action = redoom::events::Action::PRESS})) {
-      redoom::Application::get().getWindow().setCursorMode(
+      redoom::Runtime::get().getWindow().setCursorMode(
           redoom::renderer::Window::CursorMode::Disabled);
     }
   }

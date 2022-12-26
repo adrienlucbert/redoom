@@ -1,5 +1,6 @@
 #include <redoom/Application.hh>
 #include <redoom/EntryPoint.hh>
+#include <redoom/Runtime.hh>
 #include <redoom/ecs/Registry.hh>
 #include <redoom/ecs/systems/BehaviourSystem.hh>
 #include <redoom/ecs/systems/CameraSystem.hh>
@@ -13,6 +14,7 @@
 #include <redoom/graphics/ShaderLibrary.hh>
 #include <redoom/graphics/mesh/Quad.hh>
 #include <redoom/layers/ImGuiLayer.hh>
+#include <redoom/layers/RuntimeLayer.hh>
 
 using redoom::ecs::SystemPriority;
 using redoom::ecs::systems::BehaviourSystem;
@@ -40,7 +42,7 @@ std::unique_ptr<Application> createApplication(ApplicationArguments args)
 
   app->pushLayer(std::make_shared<ImGuiLayer>());
 
-  auto scene_exp = app->loadScene(
+  auto scene_exp = Runtime::get().loadScene(
       fmt::format("../examples/3d_scene/scenes/{}.yaml", "default"));
   if (!scene_exp) {
     std::cerr << scene_exp.error() << '\n';

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <redoom/events/Event.hh>
+
 namespace redoom
 {
 class Layer
@@ -18,5 +20,9 @@ public:
   virtual void onDetach() noexcept;
 
   virtual void onUpdate(double elapsed_time) noexcept;
+
+  virtual void afterUpdate() noexcept;
+
+  virtual void onEvent(events::Event const& event) noexcept;
 };
 } // namespace redoom

@@ -7,7 +7,7 @@
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_internal.h>
 
-#include <redoom/Application.hh>
+#include <redoom/Runtime.hh>
 #include <redoom/imgui/ImGuiWindow.hh>
 #include <redoom/imgui/LogImGuiWindow.hh>
 #include <redoom/imgui/PropertiesImGuiWindow.hh>
@@ -28,11 +28,36 @@ void ImGuiLayer::onAttach() noexcept
   ImGui::StyleColorsDark();
 
   // ImGui Init
-  auto* native_window = static_cast<GLFWwindow*>(
-      Application::get().getWindow().getNativeWindow());
+  auto* native_window =
+      static_cast<GLFWwindow*>(Runtime::get().getWindow().getNativeWindow());
 
   ImGui_ImplGlfw_InitForOpenGL(native_window, true);
   ImGui_ImplOpenGL3_Init("#version 330");
+}
+
+void ImGuiLayer::onDetach() noexcept
+{
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  ImGui::DestroyContext();
+}
+
+void ImGuiLayer::onUpdate(double /*elapsed_time*/) noexcept
+{
+  ImGui_ImplOpenGL3_NewFrame();
+  ImGui_ImplGlfw_NewFrame();
+  ImGui::NewFrame();
+  this->showEditor();
+  auto& io = ImGui::GetIO();
+  auto& window = Runtime::get().getWindow();
+  io.DisplaySize = ImVec2(static_cast<float>(window.getWidth()),
+      static_cast<float>(window.getHeight()));
+  ImGui::Render();
+  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void ImGuiLayer::onEvent(events::Event const& /*event*/) noexcept
+{
 }
 
 void ImGuiLayer::showEditor() noexcept
@@ -84,8 +109,10 @@ void ImGuiLayer::showEditor() noexcept
 
     if (ImGui::BeginMenuBar()) {
       if (ImGui::BeginMenu("Windows")) {
-        if (ImGui::MenuItem("")) {
-          std::cout << "Save" << '\n';
+        for (auto const& window : windows) {
+          if (ImGui::MenuItem(window->getName().data())) {
+            std::cout << "Toggle " << window->getName() << '\n';
+          }
         }
         ImGui::EndMenu();
       }
@@ -103,31 +130,5 @@ void ImGuiLayer::showEditor() noexcept
     window->onUpdate();
     ImGui::End();
   }
-}
-
-void ImGuiLayer::onUpdate(double /*elapsed_time*/) noexcept
-{
-  ImGui_ImplOpenGL3_NewFrame();
-  ImGui_ImplGlfw_NewFrame();
-  ImGui::NewFrame();
-
-  auto& io = ImGui::GetIO();
-
-  // ImGui::ShowDemoWindow();
-  this->showEditor();
-
-  auto& window = Application::get().getWindow();
-  io.DisplaySize = ImVec2(static_cast<float>(window.getWidth()),
-      static_cast<float>(window.getHeight()));
-
-  ImGui::Render();
-  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-}
-
-void ImGuiLayer::onDetach() noexcept
-{
-  ImGui_ImplOpenGL3_Shutdown();
-  ImGui_ImplGlfw_Shutdown();
-  ImGui::DestroyContext();
 }
 } // namespace redoom
