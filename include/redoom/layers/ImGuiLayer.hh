@@ -13,7 +13,7 @@ struct ImGuiLayer : public Layer {
 
   void onUpdate(double elapsed_time) noexcept override;
 
-  void onEvent(events::Event const& event) noexcept override;
+  EventPropagation onEvent(events::Event const& event) noexcept override;
 
 protected:
   void showEditor() noexcept;

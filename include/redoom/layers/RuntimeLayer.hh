@@ -11,6 +11,6 @@ struct RuntimeLayer : public Layer {
 
   void afterUpdate() noexcept override;
 
-  void onEvent(events::Event const& event) noexcept override;
+  EventPropagation onEvent(events::Event const& event) noexcept override;
 };
 } // namespace redoom

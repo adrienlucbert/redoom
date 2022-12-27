@@ -18,7 +18,8 @@ void Layer::afterUpdate() noexcept
 {
 }
 
-void Layer::onEvent(events::Event const& /*event*/) noexcept
+EventPropagation Layer::onEvent(events::Event const& /*event*/) noexcept
 {
+  return Forward;
 }
 } // namespace redoom

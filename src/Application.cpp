@@ -29,8 +29,12 @@ void Application::run() noexcept
 
 void Application::onEvent(events::Event const& event) noexcept
 {
-  for (auto const& layer : this->layers_)
-    layer->onEvent(event);
+  // NOLINTNEXTLINE(modernize-loop-convert) because std::range is not ready yet.
+  for (auto it = this->layers_.rbegin(); it != this->layers_.rend(); ++it) {
+    // Pass events through layers (last to first) unless one halts propagation.
+    if ((*it)->onEvent(event) == EventPropagation::Halt)
+      break;
+  }
 }
 
 void Application::pushLayer(std::shared_ptr<Layer> layer) noexcept

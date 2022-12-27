@@ -14,8 +14,9 @@ void RuntimeLayer::afterUpdate() noexcept
   Runtime::get().afterUpdate();
 }
 
-void RuntimeLayer::onEvent(events::Event const& event) noexcept
+EventPropagation RuntimeLayer::onEvent(events::Event const& event) noexcept
 {
   Runtime::get().onEvent(event);
+  return Forward;
 }
 } // namespace redoom

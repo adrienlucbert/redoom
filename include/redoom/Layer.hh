@@ -4,6 +4,13 @@
 
 namespace redoom
 {
+enum EventPropagation {
+  // Event should be forwarded to the next layers.
+  Forward,
+  // Event should not be forwarded to the next layers.
+  Halt,
+};
+
 class Layer
 {
 public:
@@ -23,6 +30,6 @@ public:
 
   virtual void afterUpdate() noexcept;
 
-  virtual void onEvent(events::Event const& event) noexcept;
+  virtual EventPropagation onEvent(events::Event const& event) noexcept;
 };
 } // namespace redoom

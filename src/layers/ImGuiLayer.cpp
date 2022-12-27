@@ -56,8 +56,9 @@ void ImGuiLayer::onUpdate(double /*elapsed_time*/) noexcept
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void ImGuiLayer::onEvent(events::Event const& /*event*/) noexcept
+EventPropagation ImGuiLayer::onEvent(events::Event const& /*event*/) noexcept
 {
+  return Halt;
 }
 
 void ImGuiLayer::showEditor() noexcept
