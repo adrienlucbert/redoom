@@ -23,4 +23,12 @@ std::vector<ImGuiStyleVarPair> const& ImGuiWindow::getStyleVars() const noexcept
   static auto const& style = std::vector<ImGuiStyleVarPair>{};
   return style;
 }
+
+void ImGuiWindow::onFocusIn() noexcept
+{
+}
+
+void ImGuiWindow::onFocusOut() noexcept
+{
+}
 } // namespace redoom

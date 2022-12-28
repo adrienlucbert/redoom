@@ -5,7 +5,9 @@
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_internal.h>
 
+#include <redoom/Runtime.hh>
 #include <redoom/renderer/Renderer.hh>
+#include <redoom/renderer/Window.hh>
 
 namespace redoom
 {
@@ -44,5 +46,17 @@ std::vector<ImGuiStyleVarPair> const& SceneImGuiWindow::getStyleVars()
   static auto const& style = std::vector<ImGuiStyleVarPair>{
       {ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f)}};
   return style;
+}
+
+void SceneImGuiWindow::onFocusIn() noexcept
+{
+  Runtime::get().getWindow().setCursorMode(
+      renderer::Window::CursorMode::Hidden);
+}
+
+void SceneImGuiWindow::onFocusOut() noexcept
+{
+  Runtime::get().getWindow().setCursorMode(
+      renderer::Window::CursorMode::Normal);
 }
 } // namespace redoom

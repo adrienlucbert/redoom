@@ -136,7 +136,7 @@ OpenGLWindow::OpenGLWindow(GLFWwindow* window,
   , event_callback_{std::move(event_callback)}
 {
   this->setVSync(true);
-  // this->setCursorMode(CursorMode::Disabled);
+  this->setCursorMode(CursorMode::Disabled);
 
   this->dispatchEvent(events::WindowResizeEvent{this->width_, this->height_});
 

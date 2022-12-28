@@ -13,5 +13,8 @@ struct SceneImGuiWindow : public ImGuiWindow {
       const noexcept override;
 
   void onUpdate() noexcept override;
+
+  void onFocusIn() noexcept override;
+  void onFocusOut() noexcept override;
 };
 } // namespace redoom

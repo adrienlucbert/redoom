@@ -31,5 +31,8 @@ public:
       const noexcept;
 
   virtual void onUpdate() noexcept = 0;
+
+  virtual void onFocusIn() noexcept;
+  virtual void onFocusOut() noexcept;
 };
 } // namespace redoom

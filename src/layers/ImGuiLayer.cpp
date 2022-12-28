@@ -1,13 +1,12 @@
 #include <redoom/layers/ImGuiLayer.hh>
 
-#include <array>
-
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_internal.h>
 
 #include <redoom/Runtime.hh>
+#include <redoom/events/Key.hh>
 #include <redoom/imgui/ImGuiWindow.hh>
 #include <redoom/imgui/LogImGuiWindow.hh>
 #include <redoom/imgui/PropertiesImGuiWindow.hh>
@@ -15,6 +14,15 @@
 
 namespace redoom
 {
+ImGuiLayer::ImGuiLayer() noexcept
+  : windows_{
+      {WindowID::Scene, std::make_shared<SceneImGuiWindow>()},
+      {WindowID::Properties, std::make_shared<PropertiesImGuiWindow>()},
+      {WindowID::Log, std::make_shared<LogImGuiWindow>()},
+  }
+{
+}
+
 void ImGuiLayer::onAttach() noexcept
 {
   IMGUI_CHECKVERSION();
@@ -58,17 +66,19 @@ void ImGuiLayer::onUpdate(double /*elapsed_time*/) noexcept
 
 EventPropagation ImGuiLayer::onEvent(events::Event const& /*event*/) noexcept
 {
+  if (this->focused_window_ == WindowID::Scene) {
+    if (events::isKeyPressed(events::Key::ESCAPE)) {
+      ImGui::FocusWindow(nullptr);
+      this->onWindowUnfocus(WindowID::Scene);
+    }
+    return Forward;
+  }
   return Halt;
 }
 
 void ImGuiLayer::showEditor() noexcept
 {
   static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-  static auto const windows = std::array<std::unique_ptr<ImGuiWindow>, 3>{
-      std::make_unique<SceneImGuiWindow>(),
-      std::make_unique<PropertiesImGuiWindow>(),
-      std::make_unique<LogImGuiWindow>(),
-  };
 
   ImGuiWindowFlags window_flags =
       ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
@@ -110,9 +120,9 @@ void ImGuiLayer::showEditor() noexcept
 
     if (ImGui::BeginMenuBar()) {
       if (ImGui::BeginMenu("Windows")) {
-        for (auto const& window : windows) {
-          if (ImGui::MenuItem(window->getName().data())) {
-            std::cout << "Toggle " << window->getName() << '\n';
+        for (auto const& window : this->windows_) {
+          if (ImGui::MenuItem(window.second->getName().data())) {
+            std::cout << "Toggle " << window.second->getName() << '\n';
           }
         }
         ImGui::EndMenu();
@@ -122,14 +132,39 @@ void ImGuiLayer::showEditor() noexcept
   }
   ImGui::End();
 
-  for (auto const& window : windows) {
-    auto const& styleVars = window->getStyleVars();
+  for (auto const& window : this->windows_) {
+    auto const& styleVars = window.second->getStyleVars();
     for (auto const& styleVar : styleVars)
       styleVar.apply();
-    ImGui::Begin(window->getName().data());
+    ImGui::Begin(window.second->getName().data());
     ImGui::PopStyleVar(static_cast<int>(styleVars.size()));
-    window->onUpdate();
+    if (ImGui::IsWindowFocused())
+      this->onWindowFocus(window.first);
+    window.second->onUpdate();
     ImGui::End();
   }
+}
+
+bool ImGuiLayer::onWindowFocus(WindowID window) noexcept
+{
+  auto const focusInWindowIt = this->windows_.find(window);
+  if (focusInWindowIt == this->windows_.end())
+    return false;
+  auto focusOutWindowIt = this->windows_.find(window);
+  if (focusOutWindowIt != this->windows_.end())
+    focusOutWindowIt->second->onFocusOut();
+  focusInWindowIt->second->onFocusIn();
+  this->focused_window_ = window;
+  return true;
+}
+
+bool ImGuiLayer::onWindowUnfocus(WindowID window) noexcept
+{
+  auto focusOutWindowIt = this->windows_.find(window);
+  if (focusOutWindowIt == this->windows_.end())
+    return false;
+  focusOutWindowIt->second->onFocusOut();
+  this->focused_window_ = WindowID::Unknown;
+  return true;
 }
 } // namespace redoom
