@@ -38,10 +38,13 @@ static void renderDrawable(
 }
 } // namespace detail
 
-void RenderSystem::update(UpdateContext& context) noexcept
+void RenderSystem::beforeUpdate(UpdateContext& /*context*/) noexcept
 {
   renderer::Renderer::get().beginRendering();
+}
 
+void RenderSystem::update(UpdateContext& context) noexcept
+{
   context.getComponentManager().apply<components::MeshComponent>(
       [&](auto entity, components::MeshComponent& component) {
         detail::renderDrawable(context, entity, *component.mesh_);
@@ -50,7 +53,10 @@ void RenderSystem::update(UpdateContext& context) noexcept
       [&](auto entity, components::ModelComponent& component) {
         detail::renderDrawable(context, entity, component.model_);
       });
+}
 
+void RenderSystem::afterUpdate(UpdateContext& /*context*/) noexcept
+{
   renderer::Renderer::get().endRendering();
 }
 } // namespace redoom::ecs::systems

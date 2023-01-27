@@ -86,6 +86,9 @@ public:
   void update(UpdateContext& context) noexcept;
 
 private:
+  void runUpdateHook(void (SystemBase::*hook)(UpdateContext&),
+      UpdateContext& context) noexcept;
+
   struct SystemData {
     Utils::type_id type_id;
     std::unique_ptr<SystemBase> system;
