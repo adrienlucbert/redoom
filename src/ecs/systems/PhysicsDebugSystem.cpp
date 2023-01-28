@@ -29,12 +29,12 @@ void PhysicsDebugSystem::update(UpdateContext& context) noexcept
             auto model = glm::mat4(1.0f);
             if (transform_opt) {
               auto& transform = *transform_opt;
-              model = glm::translate(model,
-                  transform.getPosition()
-                      + fixture.getLocalPosition() * transform.getScale());
-              model = glm::scale(model, transform.getScale());
+              model = glm::translate(model, transform.getPosition());
               model = glm::rotate(
                   model, transform.getAngle(), transform.getRotation());
+              model = glm::translate(
+                  model, fixture.getLocalPosition() * transform.getScale());
+              model = glm::scale(model, transform.getScale());
             }
             renderer::Renderer::get().draw(*fixture.getShape(), model);
           }
