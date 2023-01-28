@@ -28,7 +28,7 @@ struct AABB {
   template <>
   [[nodiscard]] AABB operator*(glm::mat4 const& rhs) const noexcept
   {
-    // TODO(alucbert): make this less computation heavy!
+    // PERF(alucbert): make this less computation heavy!
 
     auto initialized = false;
     auto aabb = AABB{};

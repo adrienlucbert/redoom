@@ -142,9 +142,9 @@ tl::optional<AABB> Body::getGlobalAABB() const noexcept
   if (!aabb_opt)
     return tl::nullopt;
   auto model = glm::mat4(1.0f);
-  model = glm::scale(model, this->transform_.getScale());
   model = glm::rotate(
-      model, this->transform_.getAngle(), this->transform_.getRotation());
+      model, this->transform_.getAngle(), -this->transform_.getRotation());
+  model = glm::scale(model, this->transform_.getScale());
   return aabb_opt.value() * model + this->transform_.getPosition();
 }
 
