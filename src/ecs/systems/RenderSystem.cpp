@@ -22,8 +22,8 @@ static void renderDrawable(
   if (transform_opt) {
     auto& transform = *transform_opt;
     model = glm::translate(model, transform.getPosition());
-    model = glm::scale(model, transform.getScale());
     model = glm::rotate(model, transform.getAngle(), transform.getRotation());
+    model = glm::scale(model, transform.getScale());
   }
   renderer::Renderer::get().setGlobalUniform("EntityId",
       graphics::uniforms::Uint{.value = static_cast<GLuint>(entity)});
