@@ -113,8 +113,8 @@ TEST_CASE("[Registry] Thread safety tests", "[.][Thread][ECS][Registry]")
       registry.detachSystem<mock::TestSystem1>();
     });
     auto t2 = std::thread([&]() {
-      registry.attachSystem<mock::TestSystem1>();
-      registry.detachSystem<mock::TestSystem1>();
+      registry.attachSystem<mock::TestSystem2>();
+      registry.detachSystem<mock::TestSystem2>();
     });
     t1.join();
     t2.join();

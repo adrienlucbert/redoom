@@ -36,12 +36,16 @@ public:
   {
     static_assert(std::is_base_of_v<detail::System<T>, T>,
         "T must inherit from System<T>");
-    auto lock = std::lock_guard{*this->mutex_};
-    auto data = SystemData{
-        T::getTypeId(), std::make_unique<T>(std::forward<Args>(args)...)};
-    this->systems_.emplace(priority.priority, std::move(data));
-    if constexpr (std::is_base_of_v<MultithreadedSystem<T>, T>) {
-      this->thread_pool_.reserve(this->thread_pool_.size() + 1);
+    if (this->find<T>() != this->systems_.end()) {
+      assert("Cannot make more than one system of the same type" == nullptr);
+    } else {
+      auto lock = std::lock_guard{*this->mutex_};
+      auto data = SystemData{
+          T::getTypeId(), std::make_unique<T>(std::forward<Args>(args)...)};
+      this->systems_.emplace(priority.priority, std::move(data));
+      if constexpr (std::is_base_of_v<MultithreadedSystem<T>, T>) {
+        this->thread_pool_.reserve(this->thread_pool_.size() + 1);
+      }
     }
   }
 
