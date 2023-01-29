@@ -7,6 +7,7 @@
 
 #include <redoom/Runtime.hh>
 #include <redoom/events/Key.hh>
+#include <redoom/imgui/FrameBufferImGuiWindow.hh>
 #include <redoom/imgui/ImGuiWindow.hh>
 #include <redoom/imgui/LogImGuiWindow.hh>
 #include <redoom/imgui/PropertiesImGuiWindow.hh>
@@ -17,6 +18,8 @@ namespace redoom
 ImGuiLayer::ImGuiLayer() noexcept
   : windows_{
       {WindowID::Scene, std::make_shared<SceneImGuiWindow>()},
+      {WindowID::FrameBuffer,
+          std::make_shared<FrameBufferImGuiWindow>("mouse_picking")},
       {WindowID::Properties, std::make_shared<PropertiesImGuiWindow>()},
       {WindowID::Log, std::make_shared<LogImGuiWindow>()},
   }

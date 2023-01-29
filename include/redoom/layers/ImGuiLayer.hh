@@ -24,6 +24,7 @@ private:
   enum WindowID {
     Unknown,
     Scene,
+    FrameBuffer,
     Properties,
     Log,
   };

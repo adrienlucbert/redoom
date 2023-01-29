@@ -1,5 +1,7 @@
 #include <redoom/ecs/systems/MousePickingSystem.hh>
 
+#include <iostream>
+
 #include <GLFW/glfw3.h>
 #include <stb/stb_image_write.h>
 
@@ -9,6 +11,7 @@
 #include <redoom/ecs/components/MeshComponent.hh>
 #include <redoom/ecs/components/ModelComponent.hh>
 #include <redoom/ecs/components/TransformComponent.hh>
+#include <redoom/graphics/FrameBufferLibrary.hh>
 #include <redoom/graphics/ShaderLibrary.hh>
 #include <redoom/renderer/Renderer.hh>
 
@@ -43,11 +46,22 @@ static void renderDrawable(
 }
 } // namespace detail
 
+void MousePickingSystem::onAttach() noexcept
+{
+  auto const& window = redoom::Runtime::get().getWindow();
+  graphics::FrameBufferLibrary::addFrameBuffer(
+      "mouse_picking", window.getWidth(), window.getHeight());
+}
+
 void MousePickingSystem::update(UpdateContext& context) noexcept
 {
-  static auto framebuffer =
-      graphics::FrameBuffer{redoom::Runtime::get().getWindow().getWidth(),
-          redoom::Runtime::get().getWindow().getHeight()};
+  static auto const& framebuffer_opt =
+      graphics::FrameBufferLibrary::getFrameBuffer("mouse_picking");
+  if (!framebuffer_opt.has_value()) {
+    std::cerr << "Framebuffer not available" << '\n';
+    return;
+  }
+  const auto& framebuffer = *framebuffer_opt;
   framebuffer.bind();
   glEnable(GL_DEPTH_TEST);
   glClearColor(1.0f, 1.0f, 1.0f, 1.0f);

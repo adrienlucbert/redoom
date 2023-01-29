@@ -142,7 +142,8 @@ add_library(
   src/graphics/TextureLibrary.cpp
   src/graphics/UniformBase.cpp
   src/graphics/VertexArray.cpp
-	src/imgui/ImGuiWindow.cpp
+  src/imgui/FrameBufferImGuiWindow.cpp
+  src/imgui/ImGuiWindow.cpp
   src/imgui/LogImGuiWindow.cpp
   src/imgui/PropertiesImGuiWindow.cpp
   src/imgui/SceneImGuiWindow.cpp

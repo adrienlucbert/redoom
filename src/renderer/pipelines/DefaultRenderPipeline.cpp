@@ -1,13 +1,15 @@
 #include <redoom/renderer/pipelines/DefaultRenderPipeline.hh>
 
 #include <redoom/Application.hh>
+#include <redoom/graphics/FrameBufferLibrary.hh>
 #include <redoom/graphics/ShaderLibrary.hh>
 #include <redoom/graphics/mesh/Quad.hh>
 
 namespace redoom::renderer::pipelines
 {
 DefaultRenderPipeline::DefaultRenderPipeline() noexcept
-  : framebuffer_{graphics::FrameBuffer{1000, 800}}
+  : framebuffer_{graphics::FrameBufferLibrary::addFrameBuffer(
+      "default", 1000, 800)}
   , screen_quad_{graphics::mesh::Quad{2.0f, 2.0f}}
   , shader_{*graphics::ShaderLibrary::getShader("draw_framebuffer")}
 {
@@ -34,7 +36,7 @@ graphics::FrameBuffer& DefaultRenderPipeline::getFrameBuffer() noexcept
 
 void DefaultRenderPipeline::beginRendering() noexcept
 {
-  this->framebuffer_.bind();
+  this->framebuffer_.get().bind();
   glEnable(GL_DEPTH_TEST);
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -42,13 +44,13 @@ void DefaultRenderPipeline::beginRendering() noexcept
 
 void DefaultRenderPipeline::endRendering() noexcept
 {
-  this->framebuffer_.unbind();
+  this->framebuffer_.get().unbind();
   auto is_wireframe = Renderer::get().getAPI().isWireframe();
   Renderer::get().getAPI().setWireframe(false);
   glDisable(GL_DEPTH_TEST);
   glClearColor(0.5f, 0.0f, 0.5f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
-  auto const& framebuffer_texture = this->framebuffer_.getTexture();
+  auto const& framebuffer_texture = this->framebuffer_.get().getTexture();
   this->shader_.get().use();
   framebuffer_texture.setUnit("framebuffer", 0u);
   framebuffer_texture.bind();

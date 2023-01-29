@@ -22,7 +22,7 @@ public:
   void endRendering() noexcept override;
 
 private:
-  graphics::FrameBuffer framebuffer_;
+  std::reference_wrapper<graphics::FrameBuffer> framebuffer_;
   graphics::mesh::Quad screen_quad_;
   std::reference_wrapper<graphics::Program> shader_;
 };
