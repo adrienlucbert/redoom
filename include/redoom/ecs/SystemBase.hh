@@ -14,9 +14,13 @@ public:
   SystemBase& operator=(SystemBase const&) noexcept = default;
   SystemBase& operator=(SystemBase&&) noexcept = default;
 
+  virtual void onAttach() noexcept;
+
   virtual void beforeUpdate(UpdateContext& /*unused*/) noexcept;
   virtual void update(UpdateContext& /*unused*/) noexcept;
   virtual void afterUpdate(UpdateContext& /*unused*/) noexcept;
+
+  virtual void onDetach() noexcept;
 
   [[nodiscard]] bool isMultithreaded() const noexcept;
 

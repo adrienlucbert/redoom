@@ -7,12 +7,15 @@ namespace redoom::graphics
 // NOLINTNEXTLINE
 auto ShaderLibrary::shaders_ = std::unordered_map<std::string, Program>{};
 
-void ShaderLibrary::addShader(std::string name, Program program) noexcept
+Program& ShaderLibrary::addShader(std::string name, Program program) noexcept
 {
-  ShaderLibrary::shaders_.emplace(std::move(name), std::move(program));
+  auto it =
+      ShaderLibrary::shaders_.emplace(std::move(name), std::move(program));
+  return it.first->second;
 }
 
-Expected<> ShaderLibrary::addShader(std::string name,
+Expected<std::reference_wrapper<Program>> ShaderLibrary::addShader(
+    std::string name,
     std::filesystem::path const& vertex_shader,
     std::filesystem::path const& fragment_shader) noexcept
 {
@@ -25,8 +28,7 @@ Expected<> ShaderLibrary::addShader(std::string name,
   auto& fs = *fs_exp;
   auto program_exp = Program::create(vs, fs);
   RETURN_IF_UNEXPECTED(program_exp);
-  ShaderLibrary::addShader(std::move(name), std::move(*program_exp));
-  return {};
+  return {ShaderLibrary::addShader(std::move(name), std::move(*program_exp))};
 }
 
 tl::optional<Program&> ShaderLibrary::getShader(std::string_view name) noexcept

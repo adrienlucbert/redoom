@@ -5,9 +5,12 @@ namespace redoom::graphics
 // NOLINTNEXTLINE
 auto TextureLibrary::textures_ = std::unordered_map<std::string, Texture2D>{};
 
-void TextureLibrary::addTexture(std::string path, Texture2D texture) noexcept
+Texture2D& TextureLibrary::addTexture(
+    std::string path, Texture2D texture) noexcept
 {
-  TextureLibrary::textures_.emplace(std::move(path), std::move(texture));
+  auto it =
+      TextureLibrary::textures_.emplace(std::move(path), std::move(texture));
+  return it.first->second;
 }
 
 tl::optional<Texture2D&> TextureLibrary::getTexture(

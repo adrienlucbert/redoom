@@ -7,6 +7,10 @@ SystemBase::SystemBase(bool pis_multithreaded) noexcept
 {
 }
 
+void SystemBase::onAttach() noexcept
+{
+}
+
 void SystemBase::beforeUpdate(UpdateContext& /*unused*/) noexcept
 {
 }
@@ -16,6 +20,10 @@ void SystemBase::update(UpdateContext& /*unused*/) noexcept
 }
 
 void SystemBase::afterUpdate(UpdateContext& /*unused*/) noexcept
+{
+}
+
+void SystemBase::onDetach() noexcept
 {
 }
 

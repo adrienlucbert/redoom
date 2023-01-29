@@ -10,7 +10,7 @@ namespace redoom::graphics
 class TextureLibrary
 {
 public:
-  static void addTexture(std::string path, Texture2D texture) noexcept;
+  static Texture2D& addTexture(std::string path, Texture2D texture) noexcept;
   [[nodiscard]] static tl::optional<Texture2D&> getTexture(
       std::filesystem::path const& path) noexcept;
   [[nodiscard]] static tl::optional<Texture2D&> getPlaceholder() noexcept;

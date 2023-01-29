@@ -131,6 +131,7 @@ add_library(
   src/graphics/BufferLayout.cpp
   src/graphics/Camera.cpp
   src/graphics/FrameBuffer.cpp
+  src/graphics/FrameBufferLibrary.cpp
   src/graphics/Material.cpp
   src/graphics/Mesh.cpp
   src/graphics/Model.cpp

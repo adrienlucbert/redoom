@@ -26,7 +26,7 @@ public:
   SystemManager() noexcept = default;
   SystemManager(SystemManager const&) noexcept = delete;
   SystemManager(SystemManager&&) noexcept = default;
-  ~SystemManager() noexcept = default;
+  ~SystemManager() noexcept;
 
   SystemManager& operator=(SystemManager const&) noexcept = delete;
   SystemManager& operator=(SystemManager&&) noexcept = default;
@@ -42,7 +42,8 @@ public:
       auto lock = std::lock_guard{*this->mutex_};
       auto data = SystemData{
           T::getTypeId(), std::make_unique<T>(std::forward<Args>(args)...)};
-      this->systems_.emplace(priority.priority, std::move(data));
+      auto it = this->systems_.emplace(priority.priority, std::move(data));
+      it->second.system->onAttach();
       if constexpr (std::is_base_of_v<MultithreadedSystem<T>, T>) {
         this->thread_pool_.reserve(this->thread_pool_.size() + 1);
       }
@@ -76,6 +77,7 @@ public:
     auto const& system_it = this->find<T>();
     if (system_it != this->systems_.end()) {
       auto lock = std::lock_guard{*this->mutex_};
+      system_it->second.system->onDetach();
       this->systems_.erase(system_it);
     } else
       assert("Exactly one element should be released" == nullptr);
