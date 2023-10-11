@@ -74,7 +74,7 @@ std::unique_ptr<Application> createApplication(ApplicationArguments args)
   registry.attachSystem<PhysicsWorldSystem>(SystemPriority{900});
   registry.attachSystem<PhysicsDebugSystem>(SystemPriority{901});
   registry.attachSystem<RenderSystem>(SystemPriority{1000});
-  registry.attachSystem<MousePickingSystem>(SystemPriority{1001});
+  // registry.attachSystem<MousePickingSystem>(SystemPriority{1001});
   return app;
 }
 } // namespace redoom

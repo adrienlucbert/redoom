@@ -2,9 +2,9 @@ Scene: default
 Entities:
   - CameraComponent:
       camera:
-        position: [1.47554326, 0.231499761, 1.14498329]
-        yaw: 273.29953
-        pitch: -8.60012722
+        position: [0.651240826, 0.305449426, 1.78517389]
+        yaw: 270.299286
+        pitch: -10.9000149
         speed: 0.00100000005
         sensitivity: 0.300000012
         fov: 0.785398185
@@ -16,7 +16,7 @@ Entities:
       direction: [-1, 1, 1]
       color: [1, 1, 1]
   - TransformComponent:
-      position: [1.5, 0, 0]
+      position: [0.5, 0, 0]
       angle: 0
       rotation: [1, 1, 1]
       scale: [0.00999999978, 0.00999999978, 0.00999999978]
@@ -31,10 +31,8 @@ Entities:
       smoothness: 1
       metallicness: 0.200000003
       color: [1, 0, 0]
-    BehaviourComponent:
-      RotationBehaviour
   - TransformComponent:
-      position: [1, 0, 0]
+      position: [0, 0, 0]
       angle: 0
       rotation: [1, 1, 1]
       scale: [0.00999999978, 0.00999999978, 0.00999999978]
@@ -50,10 +48,8 @@ Entities:
       metallicness: 0.200000003
       color: [1, 0, 1]
       topology: 4
-    BehaviourComponent:
-      RotationBehaviour
   - TransformComponent:
-      position: [2, 0, 0]
+      position: [1, 0, 0]
       angle: 0
       rotation: [0, 1, 0]
       scale: [0.100000001, 0.100000001, 0.100000001]
@@ -67,8 +63,36 @@ Entities:
     ModelComponent:
       path: ../assets/backpack/backpack.obj
       flip_uvs: true
-    BehaviourComponent:
-      RotationBehaviour
+  - TransformComponent:
+      position: [0.5, -0.5, 0]
+      angle: 1.57
+      rotation: [1, 0, 0]
+      scale: [1, 1, 1]
+    MeshComponent:
+      type: Quad
+      size: [2, 1]
+    MaterialComponent:
+      shader: lit
+      gloss: 6
+      smoothness: 1
+      metallicness: 0.200000003
+      color: [0, 0, 1]
+      topology: 4
+    BodyComponent:
+      type: Static
+      linear_velocity: [0, 0, 0]
+      angular_velocity: 0
+      has_fixed_rotation: false
+      gravity_scale: 1
+      fixtures:
+        - shape:
+            type: Quad
+            width: 2
+            height: 1
+          local_position: [0, 0, 0]
+          friction: 0.200000003
+          restitution: 0
+          density: 1
   - BehaviourComponent:
       KeyboardBehaviour
   - BehaviourComponent:
